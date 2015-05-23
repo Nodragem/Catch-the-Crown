@@ -1,0 +1,59 @@
+<!--
+Default Profile for Keyboard
+
+-->
+<InputProfile>
+	<type name = "Keyboard"/>
+	<states>
+		<state name="Up">
+			<key code="51" />
+		</state>	
+		<state name="Down">
+			<key code="47" />
+		</state>
+		<state name="Left">
+			<key code="29" />
+		</state>
+		<state name="Right">
+			<key code="32" />
+		</state>
+	</states>
+	
+	<contexts>
+		<context name="MainMenu" >
+			<actions>
+				<action name="NextOption">
+					<key code="0" />
+				</action>
+				
+				<action name="PreviousOption">
+					<key code="0" />
+				</action>
+				
+				<action name="SelectOption">
+					<key code="0" />
+				</action>
+			</actions>
+		</context>
+		
+		<context name="Game" >
+			<states>
+				<state name="Jump">
+					<key code="62" />
+				</state>
+				
+				<state name="Attack1">
+					<mouse code="0" />
+				</state>
+				
+				<state name="Attack2">
+					<key code="129" />
+				</state>
+				
+				<state name="PickUp">
+					<key code="59" />
+				</state>
+			</states>
+		</context>
+	</contexts>
+</InputProfile>

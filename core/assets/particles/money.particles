@@ -1,0 +1,328 @@
+Money
+- Delay -
+active: true
+lowMin: 0.0
+lowMax: 0.0
+- Duration - 
+lowMin: 1000.0
+lowMax: 1000.0
+- Count - 
+min: 0
+max: 100
+- Emission - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 100.0
+highMax: 100.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 1.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.20547946
+timeline2: 0.8287671
+- Life - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 5000.0
+highMax: 5000.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 1.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.66
+timeline2: 1.0
+- Life Offset - 
+active: false
+- X Offset - 
+active: false
+- Y Offset - 
+active: false
+- Spawn Shape - 
+shape: line
+- Spawn Width - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 1.0
+highMax: 30.0
+relative: false
+scalingCount: 2
+scaling0: 1.0
+scaling1: 1.0
+timelineCount: 2
+timeline0: 0.0
+timeline1: 0.3561644
+- Spawn Height - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Scale - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 8.0
+highMax: 10.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Velocity - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 390.0
+highMax: 410.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 0.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.22201139
+timeline2: 0.22301139
+- Angle - 
+active: true
+lowMin: -70.0
+lowMax: -90.0
+highMin: -90.0
+highMax: -105.0
+relative: false
+scalingCount: 1
+scaling0: 0.50980395
+timelineCount: 1
+timeline0: 0.0
+- Rotation - 
+active: true
+lowMin: 1.0
+lowMax: 360.0
+highMin: 180.0
+highMax: 180.0
+relative: true
+scalingCount: 2
+scaling0: 0.0
+scaling1: 1.0
+timelineCount: 2
+timeline0: 0.0
+timeline1: 1.0
+- Wind - 
+active: false
+- Gravity - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Tint - 
+colorsCount: 3
+colors0: 1.0
+colors1: 1.0
+colors2: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Transparency - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 1.0
+highMax: 1.0
+relative: false
+scalingCount: 4
+scaling0: 0.0
+scaling1: 1.0
+scaling2: 1.0
+scaling3: 0.0
+timelineCount: 4
+timeline0: 0.0
+timeline1: 0.001
+timeline2: 0.999
+timeline3: 1.0
+- Options - 
+attached: false
+continuous: true
+aligned: false
+additive: false
+behind: false
+premultipliedAlpha: false
+- Image Path -
+star
+
+
+Rubby
+- Delay -
+active: true
+lowMin: 0.0
+lowMax: 0.0
+- Duration - 
+lowMin: 1000.0
+lowMax: 1000.0
+- Count - 
+min: 0
+max: 20
+- Emission - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 100.0
+highMax: 100.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 1.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.20547946
+timeline2: 0.8287671
+- Life - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 5000.0
+highMax: 5000.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 1.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.66
+timeline2: 1.0
+- Life Offset - 
+active: false
+- X Offset - 
+active: false
+- Y Offset - 
+active: false
+- Spawn Shape - 
+shape: line
+- Spawn Width - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 1.0
+highMax: 1.0
+relative: false
+scalingCount: 2
+scaling0: 1.0
+scaling1: 1.0
+timelineCount: 2
+timeline0: 0.0
+timeline1: 0.3561644
+- Spawn Height - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Scale - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 8.0
+highMax: 10.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Velocity - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 400.0
+highMax: 410.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 1.0
+scaling2: 0.0
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.21917808
+timeline2: 0.22017808
+- Angle - 
+active: true
+lowMin: -70.0
+lowMax: -90.0
+highMin: -90.0
+highMax: -110.0
+relative: false
+scalingCount: 1
+scaling0: 0.50980395
+timelineCount: 1
+timeline0: 0.0
+- Rotation - 
+active: true
+lowMin: 1.0
+lowMax: 360.0
+highMin: 180.0
+highMax: 180.0
+relative: true
+scalingCount: 2
+scaling0: 0.0
+scaling1: 1.0
+timelineCount: 2
+timeline0: 0.0
+timeline1: 1.0
+- Wind - 
+active: false
+- Gravity - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Tint - 
+colorsCount: 3
+colors0: 1.0
+colors1: 1.0
+colors2: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Transparency - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 1.0
+highMax: 1.0
+relative: false
+scalingCount: 4
+scaling0: 0.0
+scaling1: 1.0
+scaling2: 1.0
+scaling3: 0.0
+timelineCount: 4
+timeline0: 0.0
+timeline1: 0.001
+timeline2: 0.999
+timeline3: 1.0
+- Options - 
+attached: false
+continuous: true
+aligned: false
+additive: false
+behind: false
+premultipliedAlpha: false
+- Image Path -
+ruby_main

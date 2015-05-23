@@ -1,0 +1,95 @@
+package com.mygdx.rope.util;
+
+import com.badlogic.gdx.utils.ArrayMap;
+
+public class Constants {
+	public static final float VIEW_PORT_WIDTH = 32.0f;
+	public static final float VIEW_PORT_HEIGHT = 17.0f;
+	public static final float TILES_SIZE = 32.0f; //  one meter equal 32 pixels
+	public static final float VIEWPORT_GUI_WIDTH = 1920.0f;
+	public static final float VIEWPORT_GUI_HEIGHT = 1080.0f;
+	public static final float CROWNGOLDRATE = 0.5f;
+    public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
+    public static enum GUI_STATE {DISPLAY_GUI, DISPLAY_END}
+    public static final int MOVESTOFREE = 5;
+    public static final float BONUSCROWN = 300;
+    public static final float GOLDENDLEVEL = 3500;//500000;
+    public static final float GOLDVALUE = 10;
+	public static final String TEXTURE_ATLAS_OBJECTS = "nothing-yet.pack";
+	public static final String LEVEL_01= "tournament_levels/level_jungle01.tmx";
+	public static final String FEET_TAG= "feet";
+    public static final float TIMEATTACK1 = 0.5f;
+    public static final float RESPAWNTIME = 5.0f;
+    public static final float COINSTIME = - 20.0f;
+    public static final float STARTTIMER = 2*60; //2*60; // 2*60; // 2 minutes
+
+
+    public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}
+    public static enum TRAPSTATE {ON, OFF, RELOADING}
+    public static enum SWITCHSTATE {ON, OFF, ACTIVATED}
+    public static enum VIEW_DIRECTION { LEFT, RIGHT, UP, DOWN}
+    public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
+    public static enum JUMP_STATE {IDLE, GROUNDED, FALLING, RISING}
+    public static enum MOVE_STATE {PINCKINGUP, PICKEDUP, THROWED, NORMAL}
+    public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, AIMING, CHARGING}
+    public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}
+    public static enum COLLIDER_TYPE {STICKY, SENSOR, HURTABLE, ONEWAY, CROWN}
+    public static enum TRIGGERABLE_TYPE {SPIKES, LAUNCHER, PLATFORM}
+    public static enum INTEGRATOR_TYPE {INVISIBLESWITCH, SIMPLESWITCH, HOLDINGSWITCH}
+
+
+    public static final ArrayMap<String, Short> CATEGORY = new ArrayMap<String, Short>();
+        static {
+            CATEGORY.put("Player",(short)0x0001);
+            CATEGORY.put("Sensor",(short)0x0002);
+            CATEGORY.put("Object",(short)0x0004);
+            CATEGORY.put("Weapon",(short)0x0008);
+            CATEGORY.put("Collectable",(short)0x0010);
+            CATEGORY.put("AttachedObject",(short)0x0020);
+            CATEGORY.put("Scenery", (short) 0x0040);
+        }
+
+    public static final ArrayMap<String, Short> MASK = new ArrayMap<String, Short>();
+    static {
+        MASK.put("Player", (short) (CATEGORY.get("Weapon") | CATEGORY.get("Sensor") | CATEGORY.get("Collectable") | CATEGORY.get("Scenery") | CATEGORY.get("AttachedObject") ) );
+        //MASK.put("Sensor", (short)(CATEGORY.get("Player") | CATEGORY.get("Scenery")) );
+        MASK.put("Sensor", (short)CATEGORY.get("Player" ));
+        MASK.put("Object",(short)(CATEGORY.get("Sensor") | CATEGORY.get("Object") | CATEGORY.get("Scenery") ) );
+        //MASK.put("Weapon",  (short) ~( CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );
+        MASK.put("Weapon",  (short) ~( CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );
+        //MASK.put("Weapon",  (short) (CATEGORY.get("Player") | CATEGORY.get("Scenery")) );
+        //MASK.put("Weapon",  (short) 0 );
+        MASK.put("Collectable", CATEGORY.get("Player"));
+        MASK.put("AttachedObject",(short)(CATEGORY.get("Player") | CATEGORY.get("Sensor")) );
+        MASK.put("Scenery", (short) ~CATEGORY.get("Scenery") );
+        MASK.put("Ghost", (short) 0 );
+    }
+}
+
+//    public static final short CATEGORY_PLAYER = 0x0001;  // 0000000000000001 in binary
+//    public static final short CATEGORY_SENSOR = 0x0002; // 0000000000000010 in binary
+//    public static final short CATEGORY_OBJECT = 0x0008;
+//    public static final short CATEGORY_WEAPON = 0x0010;
+//    public static final short CATEGORY_COLLECTABLE = 0x0020;
+//    public static final short CATEGORY_ATTACHEDOBJECT = 0x0040;
+//    public static final short CATEGORY_SCENERY = 0x0004; //
+//
+//    // attempt to make things better, simpler (does not work):
+////    public static final short MASK_PLAYER = CATEGORY_SENSOR |  CATEGORY_WEAPON | CATEGORY_COLLECTABLE | CATEGORY_ATTACHEDOBJECT | CATEGORY_SCENERY;
+////    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_SCENERY;
+////    public static final short MASK_OBJECT = CATEGORY_OBJECT | CATEGORY_SCENERY;
+////    public static final short MASK_WEAPON = CATEGORY_PLAYER | CATEGORY_SCENERY;
+////    public static final short MASK_COLLECTABLE = CATEGORY_PLAYER;
+////    public static final short MASK_ATTACHEDOBJECT = CATEGORY_PLAYER;
+////    public static final short MASK_SCENERY = CATEGORY_PLAYER| CATEGORY_SENSOR|CATEGORY_OBJECT|CATEGORY_WEAPON;
+//
+//    public static final short MASK_PLAYER = CATEGORY_WEAPON | CATEGORY_SENSOR | CATEGORY_COLLECTABLE | CATEGORY_SCENERY | CATEGORY_ATTACHEDOBJECT; // or ~CATEGORY_PLAYER
+//    //public static final short MASK_MONSTER = CATEGORY_PLAYER | CATEGORY_SCENERY; // or ~CATEGORY_MONSTER
+//    public static final short MASK_WEAPON = ~(CATEGORY_OBJECT & CATEGORY_WEAPON & CATEGORY_SENSOR);
+//    public static final short MASK_ATTACHEDOBJECT = CATEGORY_PLAYER | CATEGORY_SENSOR; // | CATEGORY_WEAPON; // or ~CATEGORY_MONSTER
+//    public static final short MASK_COLLECTABLE = CATEGORY_PLAYER;
+//    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_SCENERY;
+//
+//    public static final short MASK_OBJECT = CATEGORY_SENSOR | CATEGORY_OBJECT | CATEGORY_SCENERY; // or ~CATEGORY_MONSTER
+//    public static final short MASK_GHOST = 0;
+//    public static final short MASK_SCENERY = ~CATEGORY_SCENERY;

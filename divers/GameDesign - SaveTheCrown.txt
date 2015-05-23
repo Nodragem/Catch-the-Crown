@@ -1,0 +1,261 @@
+
+##- Tournament mode:
+
+- players have to collect coins, but they can't do it without the crown.
+Players fight for the crown, the guy who collect the most gold at the end of the timer wins the round. A player need to win N rouns to win the tournament and be the king of the world: "the king and his vassals".
+However, times to times the tournament winner will differ from the guy who collected the most money.
+This person will be "the goldsmith", "richer than the king".
+The person who will the most often the crown carrier will be "the king slayer".
+The person with the most kills is the "assassin".
+The less rich is the "beggar",
+The player still have a collective wallet, more the collective wallet is full and more you get item distribution in the 	next round,
+
+##- Story mode:
+	
+Here, you can pass to the next level only in the collective wallet reach a certain amount of gold. This makes people 	want to cooperate. To prevent people to get bored, ennemies pop on the map if the Crown Carrier is not attacked during 10 seconds.
+The Crown carrier can't protect himself. Except with dodge, slaps and items.
+(that means no body try to kill him, as people want to cooperate a minimum).
+However, to keep some competition, the player who collect the most momey is the king of the level.
+- the king of losers when level not passed,
+- the king of winners, and his knight, for the guy who protected the crown the most,
+- you also have the title, "king slayer" which provide you a bonus.
+
+
+-----------------------------------------------------------------------------------------------------------
+
+TO-DO LIST:
+
+##- Bugs:
+	- Automatically die after respawn, after spike death,
+	- We can fly (jump never stop, or stuck on the ceiling, I dont really remember),
+	- Apparently we can pick up moving platform ... which is not good,
+	- bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
+	- Lance can kill fireball,
+
+
+##- General Issue:
+
+	- add sounds, add asset manager?
+
+	- add Menu
+
+	- [to check] we can use the Lance Charge time to limits intensive use of Lance without lacking of reactivity (to 			repetitively press the button will throw Lances, yes, but at 1 meter from you)
+
+	
+##- General Gameplay Improvement:
+
+	[/] Usable/throwable object system (use the LanceManager, make it an ItemManager)
+
+	- Modifier Object system (transient/constant?)
+
+	- some switcher can activate the onset of a group of coins
+
+	- we could have a switch to respawn the gold coin, instead of an automatic respawn.
+
+	- do bridges with the Lances??
+
+	- to have been knock out/throwed would increase the death time?
+
+	- lost of money when die/ revive? 15% of money to revive,
+
+	- crown carrier can't attack,
+
+	- lance are locked when touched the other player,
+
+	- limit the firing rate of lance,
+
+	- jump automatism only when falling
+
+	- dodging system?
+
+	- collect a ruby give you 1 second of invicibility?
+
+	- lance locking system
+
+##- Level design idea:
+	
+	- Dark Room, you can switch off the main light of the level (the switch can be not under the players control). When in the dark the player can switch on the individual light of their character, or switch it off to become invisible, even for themselve :)
+
+	- ropes could hold platform, to cut the rope would make the platform fall,
+
+	- explosion could break specific blocks.
+
+
+## Ennemies ideas:
+
+	- crickets: walk and jumps on you
+
+	- flies: fly on you
+
+	- frogs: jump off the screen, then you see its shadows coming and it falls where the shadows appeared, with range damage.
+
+##- Moves Ideas:
+
+
+	- Combination down+B to take/drop an object (make things more difficult to project someone)
+
+	- Combination down+B to pick downward if lance is the current object?
+
+	- we could lock our lances (not come back to the magic pool)
+
+	- make projection action more difficult (5 press) like that it is a competition between the two player	
+
+	- animation for projection fight,
+
+	- can lock the lastly used Lance, (can lock more than one Lance)
+
+	- can hang to a wall with a Lance,
+
+	- can pick the Lance on the ground and stand on it (in balance)
+
+	- slow down character who carry something,
+
+	- sprint button ? or dash/dodge
+
+
+##- Bonus/Object Idea:
+
+	- Divine Resurection -- after you died a column appear on the screen to control where you want to respawn, you will be 	send off the sky to the first platform above, making a huge and destrutive impact while ressurecting.
+
+	- lance with rope
+
+	- autopilot lance (remote and blocked)
+	
+	- explosive lance
+
+	- mine lance
+
+	- fire/ice lance
+
+	- bonus which decrease your respawn time or payment to revive,
+
+	- increase/decrease death time, but how?
+
+	- life
+
+	- speed
+
+	- basebal bat -- beat people to knock them out.
+
+	- baseball ball -- bounce on all the screen if beaten with baseball bat
+
+	- star --  anyone you touch die, you are immortal until you get the crown.
+
+	- double jump ?
+
+	- spring lance?
+
+	- Grapple -- swap the wallet (score), the current position, and the crown owning from the targeted character.
+
+	- Mind Swapper Lance -- you exchange the control of your character for a while. The curse stops when one of the character 		dies.	
+
+	- Boomerang -- throw it and gets the money which passes through. Get items or steal the crown otherwise.
+
+	- Chicken -- unleach a chicken which will collect money for you. The chicken will try to collect all coins connected 			together. If the chicken or the player get beaten during the calling time (summon time), the chicken stop.
+	If you don't have the crown, the chicken just eat the coins (make them not available for the current Crown owner)
+
+	- Clock time -- when pick up, pause the game, display a clock, you can either increase the remaining time or decrease it, 		or do nothing.
+
+	- Banquier -- an item which transfers the Crown wallet to your wallet permanently
+
+	- Money eater bomb -- absorb all the money in the action radius, then you need to collect the capsule to get the money.
+
+	- permanent money collector -- collect money in a certain radius, make it unavailable for the others.
+
+	- platform/lava/water creation from an object throw in between two lances?
+
+
+
+-----------------------------------------------------------------
+SOLVED/DONE
+
+[x] Controller/Keyboard distribution,
+
+[x] preference for Keyboard/Controllers distribution.
+
+[x] no lance collision when lance on the players,
+
+[x] Lance angles -- no collision/one way collision
+ --> longer than what I thought to resolve. Finally create a new collision shape for the player.
+ 	[x] bug: when jumping through an almost vertical lance, the character can get stuck in the FALLING state
+	Solution: add a bigger array for the Feet ContactData.
+
+
+[x] First trap, fire launcher, add trap fireball (extend the throwable system to a non player object)
+
+[x] switch improvements? switcher (Trigerrable) specific to character / switcher specific to weapons
+
+[x] Color the characters
+
+[x] GUI
+
+[x] bug: now the projectiles have a good strat point and a good rotation,
+
+[x] bug: moving platform, started at a random distance when triggered bu a switch (the timer was counting when not activated)
+
+[x] bug: the one-way collicsion of Lances was not working anymore.
+--> the problem came from the mainBodyBox addition in GameObject. All object has a ContactSensor now. The ConstactListener was considering that only the lance would have a ContactSensor.
+
+[x] check the code line 138-150 in Lance Manager, I got the impression, it is wrong. (powerLoad == defaultLoad) ??
+
+[x] bug: slapping when close to the oponent was not working anymore
+--> the problem came from the mainBodyBox addition in GameObject which was not well used (ignored) in children objects, especially in the LanceManager.
+
+[x] system of crown score / player score (money go to the crown account or to the player account)
+
+[x] add moving platforms
+--> Note that for now, it is the character adds by itself to itself the speed of the last grounded object.
+Indeed, no suitable solution has been found with using the friction and the physics engine. Indeed the player class is using the physics in a tricky way to make the character fully controllable.
+
+[x] bug: threshold/switcher (trap were initially activated while the threshold was not reached)
+
+[x] Separate Player from Character.
+	[x] bug: Aiming and moving does not works after this change
+
+[x] add compatibility with keyboard / allow custom button mapping
+
+[x] the friction switch has been added back, with some modification. Low Friction of 0.01 when moving prevent to stick of hard corner. Also prevent to stick on top edge when jumping? even thought we also cut down the top of the hit box of the character to prevent it.
+
+[not applicable] in MapBodyBuilder, we could try to play with friction and restitution to hav block which glides and block which stick, and block which bounces. (not possible)
+
+[x] to remove the friction switch (0.2 when grounded, 0.0 when in air), remove the casual bugs of staying blocked on a downer corner of a brick when jumping.
+However, this switch is needed in order to not slide on moving platform :/
+
+[x] the bug of the omnipresent slap occur after carrying the victim player.
+RESOLVED: a loop while in the function "public boolean removeTouchedFixtures(Fixture f)" in ContactData has been added, to make sure we remove all the instances of the fixture in the list.
+
+[x] the bug of free flying is not yet resolved...
+--> was happening, for instance, when a Lance disappeared from the Player's feet. It stayed in the feet sensor.
+RESOLVED: coming from the ContactData gestion, we add a loop which find any fixture touched by the removed Lance and tell it to remove the Lance from its ContactData list.
+However, the Lance itself didn't have enough space in its ContactData list to keep track to every body, we increase its size (from 1 to 8).
+Finally, the last issue was that the ContactListener was not adding the Contact to ContactData if the fixture was not a Sensor... So the Lance even didn't know it was touching the feet.
+--> note also we modified the function pushTouchedFixtures(Fixture f) so that it add a fixture only if not already present in the list of ContactData.
+That change would probably resolved the bug of the slap also.
+
+[x] add LT for launching a Lance and aim
+
+[x] use texture like "--->" instead of the actual Lance when aiming
+
+[x] bug Lance: stop display when was aiming and hit an object box:
+	> changed to "short attack not aiming and is colliding something"
+	> if you collide something, you can still aim if you were previously aiming.
+
+[x] bug Lance: the lance has to hit and hang on the Player body, not on the sensors,
+
+[x] bug Lance: remove them when character die (on him, and his own?)
+
+[x] respawn the coins
+
+[x] the crown can't die (and why there is a crash when it did?)
+
+[x] crown stealing bugs
+
+[x] remove bug: when throw a lance, the lance spawn always at an angle of 0 degree.
+
+[x] add trap pick
+
+[x] add timer and screen end
+
+[x] decrease force of projection
+
+[x] decrease time of KO when projected

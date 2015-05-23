@@ -1,0 +1,80 @@
+<!--
+Default Profile made based on the Xbox360 mapping:
+
+BUTTON_X = 2;
+BUTTON_Y = 3;
+BUTTON_A = 0;
+BUTTON_B = 1;
+BUTTON_BACK = 6;
+BUTTON_START = 7;
+PovDirection BUTTON_DPAD_UP = PovDirection.north;
+PovDirection BUTTON_DPAD_DOWN = PovDirection.south;
+PovDirection BUTTON_DPAD_RIGHT = PovDirection.east;
+PovDirection BUTTON_DPAD_LEFT = PovDirection.west;
+BUTTON_LB = 4;
+BUTTON_L3 = 8;
+BUTTON_RB = 5;
+BUTTON_R3 = 9;
+AXIS_LEFT_X = 1; //-1 is left | +1 is right
+AXIS_LEFT_Y = 0; //-1 is up | +1 is down
+AXIS_LEFT_TRIGGER = 4; //value 0 to 1f
+AXIS_RIGHT_X = 3; //-1 is left | +1 is right
+AXIS_RIGHT_Y = 2; //-1 is up | +1 is down
+AXIS_RIGHT_TRIGGER = 4; //value 0 to -1f
+
+-->
+<InputProfile>
+	<type name = "Controller"/>
+	<states>
+		<state name="MovingAxis_X">
+			<key code="1" />
+		</state>	
+		<state name="MovingAxis_Y">
+			<key code="0" />
+		</state>
+		<state name="AimingAxis_X">
+			<key code="3" />
+		</state>
+		<state name="AimingAxis_Y">
+			<key code="2" />
+		</state>
+	</states>
+	
+	<contexts>
+		<context name="MainMenu" >
+			<actions>
+				<action name="NextOption">
+					<key code="0" />
+				</action>
+				
+				<action name="PreviousOption">
+					<key code="0" />
+				</action>
+				
+				<action name="SelectOption">
+					<key code="0" />
+				</action>
+			</actions>
+		</context>
+		
+		<context name="Game" >
+			<states>
+				<state name="Jump">
+					<key code="0" />
+				</state>
+				
+				<state name="Attack1">
+					<key code="2" />
+				</state>
+				
+				<state name="Attack2">
+					<key code="4" />
+				</state>
+				
+				<state name="PickUp">
+					<key code="1" />
+				</state>
+			</states>
+		</context>
+	</contexts>
+</InputProfile>
