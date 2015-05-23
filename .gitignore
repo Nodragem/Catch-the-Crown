@@ -11,6 +11,8 @@ divers/*.csv
 divers/*.ods
 divers/backup_img
 divers/screen_shots
+*.uxf
+*.mdj
 
 ## GWT
 war/
