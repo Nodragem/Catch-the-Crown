@@ -14,13 +14,9 @@ import com.mygdx.rope.util.Constants.JUMP_STATE;
 import com.mygdx.rope.util.Constants.MOVE_STATE;
 import com.mygdx.rope.util.Constants.AWAKE_STATE;
 import com.mygdx.rope.util.Constants.VIEW_DIRECTION;
-import com.mygdx.rope.util.Constants.INPUTSTATE;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 import com.mygdx.rope.util.InputHandler.InputProfile;
-import com.mygdx.rope.util.Xbox360Map;
-
-import java.util.HashMap;
 
 public class Player implements ControlProcessor, Updatable  {
     /**
@@ -39,11 +35,13 @@ public class Player implements ControlProcessor, Updatable  {
     private boolean jumpButtonPressed = false;
     private boolean pickUpButtonPressed = false;
     private LanceManager weapon;
+    private int challengePressCount = 0; // the players compete in pressing the action buttons when they are picking or picked up.
     private Vector2 bodyVel =  new Vector2(0,0);
     private Vector2 bodyPos = new Vector2(0,0);
     private Float currentAimingAngle = 0.0f;
     private Vector2 currentMovingVector = new Vector2(0,0);
     private int jumpButtonCount;
+    private boolean challengePressed = false;
 
     public Player(String name, Character character, InputProfile inputProfile, GameScreen gameScreen)  {
         this.gameScreen =gameScreen;
@@ -101,7 +99,8 @@ public class Player implements ControlProcessor, Updatable  {
         processAimingInput();
         processMovingInput();
         processJumpInput(inputProfile.getButtonState("Jump"));
-        processAttackInput((inputProfile.getButtonState("Attack1") || inputProfile.getButtonState("Attack2")), playerExplicitAiming, deltaTime);
+        processLongAttackInput((inputProfile.getButtonState("LongAttack1") || inputProfile.getButtonState("LongAttack2")), playerExplicitAiming, deltaTime);
+        processShortAttackInput((inputProfile.getButtonState("ShortAttack") ), playerExplicitAiming, deltaTime);
         processActionInput(inputProfile.getButtonState("PickUp"));
     }
 
@@ -122,21 +121,23 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     private void processActionInput(boolean isPressed) {
-        if(character.moveState == MOVE_STATE.PICKEDUP){
+        if(character.moveState == MOVE_STATE.PICKUPCHALLENGER){
+            processChallenge(isPressed);
             return;
         }
         if(isPressed && !pickUpButtonPressed) { // basically, here you want a push request and not to pull.
             pickUpButtonPressed = true;
-            if (!character.hasCarriedObject()) { // is that not equivalent to "is  not MOVE_STATE.PICKINGUP"
+            //if (!character.hasCarriedObject()) { // is that not equivalent to "is  not MOVE_STATE.PICKINGUP" ?
+            if (character.moveState == MOVE_STATE.NORMAL){
                 sensorBuffer = (ContactData) character.currentHand.getUserData();
                 Array<Fixture> touched = sensorBuffer.getTouchedFixtures();
                 for (Fixture f : touched) {
                     if (f.getUserData() != null) {
-                        character.setCarriedObject(f.getBody());
+                        character.setCarriedObject(f.getBody()); // this will change the movestate to PICKINGUP or PICKUPCHALLENGER / PICKUPCHALLENGED
                     }
                 }
                 sensorBuffer = null;
-            } else {
+            } else if (character.moveState == MOVE_STATE.PICKINGUP){
                 character.useCarriedBody(currentAimingAngle, 260.0f);
             }
         }
@@ -145,11 +146,51 @@ public class Player implements ControlProcessor, Updatable  {
         }
     }
 
-    private void processAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
-        if (character.moveState == MOVE_STATE.PINCKINGUP){
+    private void processChallenge(boolean isPressed) {
+        if(isPressed && !challengePressed) {
+            challengePressed = true;
+            challengePressCount += 1;
+            Gdx.app.debug("Press Challenge", "nb: " + challengePressCount);
+            if(character.moveState == MOVE_STATE.PICKUPCHALLENGED){
+                if (challengePressCount >= Constants.MOVESTOFREE-2) {
+//                    character.getCarrier().moveState = MOVE_STATE.THROWED;
+                    character.setCarriedObject(character.getCarrier().getBody());
+                    character.getCarrier().setCarriedObject(null);
+                    character.moveState = MOVE_STATE.NORMAL;
+//                    character.getCarrier().getBody().applyLinearImpulse(MathUtils.cos(currentAimingAngle) * 260.0f,
+//                            MathUtils.sin(currentAimingAngle) * 260.0f, 0.5f, 0.5f, true);
+                    character.useCarriedBody(Math.abs(currentAimingAngle)%MathUtils.PI+1 ,260.0f);
+                    challengePressCount = 0;
+                }
+                Gdx.app.debug("jumpEscape", "nb " + jumpButtonCount);
+            }
+            else {
+                if (challengePressCount >= Constants.MOVESTOFREE) {
+                    character.moveState = MOVE_STATE.NORMAL;
+                    character.useCarriedBody(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
+                    challengePressCount = 0;
+                }
+                Gdx.app.debug("smash it!", "nb " + jumpButtonCount);
+            }
+        }
+        else if (!isPressed && challengePressed){
+            challengePressed = false;
+        }
+
+    }
+
+    private void processShortAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
+        if (character.moveState == MOVE_STATE.PICKINGUP){
             return;
         }
-        weapon.setAttack(isPressed, bodyPos, currentAimingAngle, isAiming, deltaTime);
+        weapon.shortDistanceAttack(isPressed, deltaTime);
+    }
+
+    private void processLongAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
+        if (character.moveState == MOVE_STATE.PICKINGUP){
+            return;
+        }
+        weapon.longDistanceAttack(isPressed, bodyPos, currentAimingAngle, isAiming, deltaTime);
         /* the PlayerController is doing the job of a Child System, it is positionning the weapon on the character
         but it is not all, the LanceManager itself is applying a shift of (0.5, 0.5) units for aligning the Lance to the Player center.
         That's not readable/easy to maintain.
@@ -157,19 +198,14 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     private void processJumpInput(boolean isPressed) {
+        if(character.moveState == MOVE_STATE.PICKUPCHALLENGED){
+            processChallenge(isPressed);
+            return;
+        }
         if(isPressed){
-            if(character.moveState == MOVE_STATE.PICKEDUP){
-                if (!jumpButtonPressed) { // here we would like to get a push request (we don't care of following the button state)
-                    jumpButtonPressed = true;
-                    jumpButtonCount += 1;
-                }
-                if(jumpButtonCount>Constants.MOVESTOFREE){
-                    character.getCarrier().useCarriedBody(90.0f*MathUtils.degreesToRadians, 50.0f);
-                    jumpButtonCount = 0;
-                }
-                Gdx.app.debug("jumpEscape", "nb "+jumpButtonCount);
-            }
-            else if (character.jumpState == JUMP_STATE.GROUNDED | character.jumpState == JUMP_STATE.IDLE) { // here we want the state.
+            if (character.jumpState == JUMP_STATE.GROUNDED | character.jumpState == JUMP_STATE.IDLE) { // here we want the state.
+                if(character.previousJumpState == JUMP_STATE.RISING)
+                    return;
                 bodyVel.y = 0; // we cancel any force on Y before to apply our force.
                 // (especially useful for jumping immediately after a FALLINGSTATE, the grounded sensor is activated while we are still falling
                 objBody.setLinearVelocity(bodyVel);

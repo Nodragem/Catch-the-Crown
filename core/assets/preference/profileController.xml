@@ -63,11 +63,15 @@ AXIS_RIGHT_TRIGGER = 4; //value 0 to -1f
 					<key code="0" />
 				</state>
 				
-				<state name="Attack1">
+				<state name="LongAttack1">
 					<key code="2" />
 				</state>
 				
-				<state name="Attack2">
+				<state name="ShortAttack">
+					<key code="3" />
+				</state>
+				
+				<state name="LongAttack2">
 					<key code="4" />
 				</state>
 				

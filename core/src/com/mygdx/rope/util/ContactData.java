@@ -1,6 +1,7 @@
 package com.mygdx.rope.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -14,16 +15,28 @@ public class ContactData {
     private final Fixture observedFixture;
     public Constants.COLLIDER_TYPE myColliderType;
     public Array<Fixture> touchedFixtures;
-    //public Array<GameObject> touchedObjects;
+    public Array<Body> ignoredBodies;
     private int capacity;
     private float lastImpulse;
 
     public ContactData(int capacity, Fixture fixture){
         observedFixture = fixture;
+        ignoredBodies = new Array<Body>(1);
         observedFixture.setUserData(this);
         myColliderType = Constants.COLLIDER_TYPE.SENSOR;
         this.capacity = capacity;
         touchedFixtures = new Array<Fixture>(capacity);
+    }
+
+    public void addBodyToIgnore(Body body){
+        // note that you should use Mask and Category filter when you can group in a category the bodies you want to ignore
+        // this function is to be used uniquely when you cannot but the body to ignored in a category. A good example would be:
+        // "I want to ignore the object/body which created this body/object" which can be useful for a bullet not to injure the shooter.
+        ignoredBodies.add(body);
+    }
+
+    public void removeBodyToIgnore(Body body){
+        ignoredBodies.removeValue(body, true);
     }
 
     public void flush(){
@@ -48,6 +61,11 @@ public class ContactData {
     }
 
     public void pushTouchedFixtures(Fixture f){
+        Body receivedBody = f.getBody();
+        for (Body ignoredBody : ignoredBodies) {
+            if (ignoredBody == receivedBody)
+                return;
+        }
         if (!isTouchedBy(f)) {
             if (touchedFixtures.size == capacity)
                 touchedFixtures.removeIndex(capacity - 1);

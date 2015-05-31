@@ -18,6 +18,11 @@ public class MyContactListener implements ContactListener {
         fixtA = contact.getFixtureA();
         fixtB = contact.getFixtureB();
 
+//        if (fixtA.getBody() == fixtB.getBody()){
+//            Gdx.app.debug("ContactListener: ", "this contact won't be added to ContactData.");
+//            return;
+//        }
+
         if(fixtA.getUserData() != null){
             contactDataFixtA = (ContactData)fixtA.getUserData();
             contactDataFixtA.pushTouchedFixtures(fixtB);
@@ -32,6 +37,10 @@ public class MyContactListener implements ContactListener {
     public void endContact(Contact contact) {
         fixtA = contact.getFixtureA();
         fixtB = contact.getFixtureB();
+
+//        if (fixtA.getBody() == fixtB.getBody()){
+//            return;
+//        }
 
         if(fixtA!=null && fixtA.getUserData() != null){
             contactDataFixtA = (ContactData)fixtA.getUserData();
@@ -50,12 +59,16 @@ public class MyContactListener implements ContactListener {
         fixtA = contact.getFixtureA();
         fixtB = contact.getFixtureB();
 
+//        if (fixtA.getBody() == fixtB.getBody()){
+//            return;
+//        }
+
         if(fixtA.getUserData() != null){
             contactDataFixtA = (ContactData)fixtA.getUserData();
             contactDataFixtA.pushTouchedFixtures(fixtB);
             if (contactDataFixtA.getMyColliderType().equals(Constants.COLLIDER_TYPE.ONEWAY)) {
                 // if you are here, that means that the Fixture A was part of a Lance, or another one-way plateform
-                Gdx.app.debug("PreSolve", "One Way detected!");
+                //Gdx.app.debug("PreSolve", "One Way detected!");
                 float posy = contactDataFixtA.peekTouchedFixtures().getBody().getPosition().y + 0.1f; // that the position y of the collided player or object + 0.1
                 if (posy < contact.getWorldManifold().getPoints()[0].y) { // contact.getWorldManifold().getPoints()[0].y is where was the collision between the two objects.
                     contact.setEnabled(false);
@@ -67,7 +80,7 @@ public class MyContactListener implements ContactListener {
             contactDataFixtB.pushTouchedFixtures(fixtA);
             // see comments above with contactDataFixtA for explaination
             if (contactDataFixtB.getMyColliderType().equals(Constants.COLLIDER_TYPE.ONEWAY)) {
-                Gdx.app.debug("PreSolve", "One Way detected!");
+                //Gdx.app.debug("PreSolve", "One Way detected!");
                 float posy = contactDataFixtB.peekTouchedFixtures().getBody().getPosition().y + 0.1f;
                 if (posy < contact.getWorldManifold().getPoints()[0].y) {
                     contact.setEnabled(false);
@@ -80,6 +93,10 @@ public class MyContactListener implements ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
         fixtA = contact.getFixtureA();
         fixtB = contact.getFixtureB();
+
+//        if (fixtA.getBody() == fixtB.getBody()){
+//            return;
+//        }
 
         if(fixtA.getUserData() != null){
             contactDataFixtA = (ContactData)fixtA.getUserData();

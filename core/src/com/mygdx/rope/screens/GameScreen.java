@@ -43,7 +43,7 @@ import java.lang.String;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
-	private static final boolean DEBUG_BOX2D = false;
+	private static final boolean DEBUG_BOX2D = true;
 	private TiledMap map;
     private ArrayMap <String, Player> playersList;
 	private OrthogonalTiledMapRenderer map_renderer;
@@ -68,7 +68,6 @@ public class GameScreen implements Screen {
     private Array<Vector2> playerSpawners;
     private boolean fullscreen;
     public float timer; // ms
-    public String debugText;
     private float groupScore;
     private Crown theCrown;
     private String currentLevel;
@@ -77,7 +76,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        debugText="DEBUG";
+
         //enableFullScreen();
         if (gameViewport == null) {
 //        //gameViewport = null;
@@ -95,6 +94,7 @@ public class GameScreen implements Screen {
         cameraHelper.setTarget(cameraTarget);
         currentLevel = Constants.LEVEL_01;
         GUIlayer = new GUILayer(this); // is empty (no players)
+        setDebugText("DEBUG ON");
         startNewLevel(currentLevel);
         if (victoryTable == null){
             victoryTable = new ArrayMap<String, Integer>(4);
@@ -241,15 +241,15 @@ public class GameScreen implements Screen {
         }
         batch.end();
         map_renderer.render(foregroundLayers);
-        if (DEBUG_BOX2D) {
+        if (DEBUG_BOX2D)
             b2debug.render(b2world, camera.combined); // again the same as setProjectionMatrix
-        }
-        GUIlayer.renderUI(batch);
+        GUIlayer.renderUI(batch, DEBUG_BOX2D);
 
 	}
 
     public void update(float deltaTime){
         timer -= deltaTime;
+        setDebugText("");
 		cameraHelper.update(deltaTime);
 		cameraHelper.applyTo(camera);
         //b2world.step(deltaTime, 8, 3);
@@ -503,11 +503,20 @@ public class GameScreen implements Screen {
     }
 
     public void setDebugText(String debugText) {
-        this.debugText = debugText;
+        if(GUIlayer != null)
+            GUIlayer.debugText = debugText;
+    }
+
+    public void addDebugText(String s) {
+        if(GUIlayer != null)
+            GUIlayer.debugText += s;
     }
 
     public String getDebugText() {
-        return debugText;
+        if(GUIlayer != null)
+            return GUIlayer.debugText;
+        else
+            return "";
     }
 
     public float getCrownGoldValue(){
@@ -537,5 +546,6 @@ public class GameScreen implements Screen {
     public OrthographicCamera getCamera() {
         return camera;
     }
+
 
 }

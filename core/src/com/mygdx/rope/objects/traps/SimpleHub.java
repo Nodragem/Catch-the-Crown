@@ -39,7 +39,7 @@ public class SimpleHub implements HubInterface, Updatable {
         for (Integrable integrator : integrators) {
             sum_input += integrator.getIntegratedValue();
         }
-        gameScreen.debugText = "hub: " + sum_input + "on "+myThreshold;
+        gameScreen.setDebugText("hub: " + sum_input + "on "+myThreshold);
         myCurrentValue = sum_input;
         return  (myCurrentValue >= myThreshold);
     }

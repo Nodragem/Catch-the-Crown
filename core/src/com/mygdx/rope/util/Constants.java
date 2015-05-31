@@ -9,9 +9,12 @@ public class Constants {
 	public static final float VIEWPORT_GUI_WIDTH = 1920.0f;
 	public static final float VIEWPORT_GUI_HEIGHT = 1080.0f;
 	public static final float CROWNGOLDRATE = 0.5f;
+    public static final float MARKPENALTY = 3f ;
+
     public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
     public static enum GUI_STATE {DISPLAY_GUI, DISPLAY_END}
-    public static final int MOVESTOFREE = 5;
+    public static final int MOVESTOFREE = 4;
+    public static final int MAXMARKS = 5;
     public static final float BONUSCROWN = 300;
     public static final float GOLDENDLEVEL = 3500;//500000;
     public static final float GOLDVALUE = 10;
@@ -20,8 +23,9 @@ public class Constants {
 	public static final String FEET_TAG= "feet";
     public static final float TIMEATTACK1 = 0.5f;
     public static final float RESPAWNTIME = 5.0f;
+    public static final float SLAPDAMAGE = 8.4f;
     public static final float COINSTIME = - 20.0f;
-    public static final float STARTTIMER = 2*60; //2*60; // 2*60; // 2 minutes
+    public static final float STARTTIMER = 10*60; //2*60; // 2*60; // 2 minutes
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}
@@ -30,7 +34,7 @@ public class Constants {
     public static enum VIEW_DIRECTION { LEFT, RIGHT, UP, DOWN}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
     public static enum JUMP_STATE {IDLE, GROUNDED, FALLING, RISING}
-    public static enum MOVE_STATE {PINCKINGUP, PICKEDUP, THROWED, NORMAL}
+    public static enum MOVE_STATE {PICKINGUP, PICKUPCHALLENGED, PICKUPCHALLENGER, THROWED, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.
     public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, AIMING, CHARGING}
     public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}
     public static enum COLLIDER_TYPE {STICKY, SENSOR, HURTABLE, ONEWAY, CROWN}

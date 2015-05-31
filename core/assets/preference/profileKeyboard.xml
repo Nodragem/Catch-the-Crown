@@ -42,11 +42,15 @@ Default Profile for Keyboard
 					<key code="62" />
 				</state>
 				
-				<state name="Attack1">
+				<state name="LongAttack1">
 					<mouse code="0" />
 				</state>
 				
-				<state name="Attack2">
+				<state name="ShortAttack">
+					<mouse code="1" />
+				</state>
+				
+				<state name="LongAttack2">
 					<key code="129" />
 				</state>
 				

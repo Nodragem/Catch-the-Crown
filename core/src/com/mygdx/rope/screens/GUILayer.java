@@ -49,6 +49,7 @@ public class GUILayer {
     private float offset_clock_y;
     private float offset_clock_x;
     private float progress_ratio;
+    public String debugText;
     private ScoreTableWindow scoreTableWindow;
 
 
@@ -96,7 +97,7 @@ public class GUILayer {
             this.GUIstate = GUIstate;
     }
 
-    public void renderUI(SpriteBatch batch) {
+    public void renderUI(SpriteBatch batch, boolean DEBUG_MODE) {
         GUIViewport.apply();
         batch.setProjectionMatrix(cameraUI.combined);
         batch.begin();
@@ -104,6 +105,8 @@ public class GUILayer {
         if (GUIstate == GUIstate.DISPLAY_END && scoreTableWindow != null) {
             displayTheEnd(batch);
         }
+        if(DEBUG_MODE)
+            renderDebug(batch);
         batch.end();
     }
 
@@ -192,11 +195,14 @@ public class GUILayer {
     }
 
     private void drawHeartLife(SpriteBatch batch, Player p, float x, float y){
+        int liferound = Math.round(p.getCharacterLife() / 3.33f);
+         // life between 0 and 30,
+         // this round up is useful in order to get one heart removed for 34.0f of damage for example (we are kind of a buffer)
         for (int j = 0; j < 3 ; j++) {
-            if (p.getCharacterLife() > j*33.33f + 33.33f){
+            if (liferound >= j*10 + 10){
                 batch.draw(fullHeart, x+95 + j*45, y+22, 45, 45);
             }
-            else if(p.getCharacterLife() > j*33.33f + 16.66f){
+            else if(liferound >= j*10 + 5){
                 batch.draw(halfHeart, x+95 + j*45, y+22, 45, 45);
             }
             else{
@@ -249,5 +255,9 @@ public class GUILayer {
 
     public void loadTheScoreTable(ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable) {
         scoreTableWindow = new ScoreTableWindow(gameScreen, GUIViewport, font, players, victoryTable, scoreTable, rankTable);
+    }
+
+    public void renderDebug(SpriteBatch batch) {
+        font.drawMultiLine(batch, debugText, Constants.VIEWPORT_GUI_WIDTH/2, Constants.VIEWPORT_GUI_HEIGHT/2);
     }
 }

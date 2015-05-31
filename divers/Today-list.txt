@@ -11,16 +11,42 @@ Today TODO-list:
 [x] debug: fireball are doing weird thing when colliding an other fireball, (it seems that body.setActive(False) call endContact() of the contact listener, and then remove the fixture of the contactdata of the other fireball)
 [x] improve Fixture ContactData --> reference to their fixture and deepFlush (clean Flush)
 
-[/] bug: sometimes the player revive with automatic damage per second. In an attempt to debug, we replace flush() with the deepFlush() function in the isDead() function. We can't test if it is effective.
+[!] bug: sometimes the player revive with automatic damage per second. In an attempt to debug, we replace flush() with the deepFlush() function in the isDead() function. We can't test if it is effective.
+	[!] I think that it is actually better to flush in the respawn function!!
 
-- bug: moving platform are pickable by the player!!
-- bug: revive in the arm of a player if picked up...
+[x] bug: moving platform are pickable by the player!!
+[x] bug: revive in the arm of a player if picked up...
+[x] bug: respawn is cleaner now / less buggy:
+	- throwing challenge was ON with dead character. This was causing bug.
+[x] bug: sometimes the slap was giving a strong impulse.
+[x] bug: we were able to attack when carrying someone
 
 Note: that the crown doesnt use the mainBoxContact, I dont know why
 
+Note: I remove the flush after throwing (useCarriedBody and setCarriedBody(null)), this is better to allow throwing someone just after having throwed someone. However, it happened twice that a character reappear in my hands while taking the crown. Didn't succed to replicate.
+
+[x] debug text system,
+[ ] keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
+[ ] add something on the wealthest character to recognize it quickly.
+[x] jump system, add this limitation: can't automatically re-jump if RISING 
+	[x] we tried to do it, with saving previous state, we get a bug when on moving 	ascending platform...
+	 - the bug comes from a y_vel > 0.1 detected before the ground contact has been detected.
+	 - the solution to avoid complex solution was to forbid FALLING --> RISING (which will allow forbid double-jump).
+[x] marking system, to slap give a mark to the slapped character, a top of 5 marks, 1 mark add 3 seconds to next death (an usual death is 5 seconds),
+[ ] marking system idea: when slap you get rid of one mark and give one to the opponent,
+[x] separate short and long attack, for more control,
+[-] make the competition system for throwing each other when someone is picked up,
+	[x] system made,
+	[ ] add graphical feedback,
 [x] add texture for platform, |--o--|
-- Gold distribution: you see the money going from the place it's picked up to the chest of the player,
-- spiking moving platform --> parent system, switch will also be able to follow a platform.
-- Menu - restart/resume/quit/preference
+[x] slapping and attack has been improve! 
+	- slapping box is wider/inside player (of course, it ignores the slapper player)
+	- can't attack during animation (consequently, that decreases the shooting rate)
+	- increase impulse distance when slapped.
+	- 3 lances to kill,
+	- 12 slaps to kill,
+[ ] spiking moving platform --> parent system, switch will also be able to follow a platform (attachable interface)
+[ ] Menu - restart/resume/quit/preference
+[ ] Gold distribution: you see the money going from the place it's picked up to the chest of the player,
 
 

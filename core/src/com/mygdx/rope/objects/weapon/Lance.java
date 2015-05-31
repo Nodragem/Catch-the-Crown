@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
+import com.mygdx.rope.objects.characters.*;
+import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.screens.GameScreen;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
@@ -103,6 +105,9 @@ public class Lance extends GameObject {
         GameObject touchedObj = (GameObject) touchedBody.getUserData();
         if( touchedObj != null) {
             touchedObj.addDamage(givenDamage);
+            if(touchedObj instanceof com.mygdx.rope.objects.characters.Character){
+                ((Character) touchedObj).dropObjects();
+            }
         }
         wJD.initialize(touchedBody, body, worldAnchorPoint);
         //wJD.referenceAngle = body.getAngle();

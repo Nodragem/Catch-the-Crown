@@ -1,7 +1,10 @@
 package com.mygdx.rope.objects.characters;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -22,6 +25,8 @@ public class Character extends GameObject {
 	//private Animation animNormal;
 	private Animation animJump;
 	private Animation animFalling;
+    public int marks;
+    public JUMP_STATE previousJumpState;
     public JUMP_STATE jumpState;
     public MOVE_STATE moveState;
     public AWAKE_STATE awakeState;
@@ -39,15 +44,20 @@ public class Character extends GameObject {
     private Animation animDying;
     public Body lastGroundedBody;
     public String color_texture;
+    private Texture MarkTexture;
+    private float respawnTime;
     //private ContactData mainBoxContact;
 
     public Character(GameScreen game, Vector2 position, String name_texture ){
         super(game, position, new Vector2(1, 0.9f), 0, name_texture);
+        respawnTime = -1;
         color_texture = name_texture;
+        marks = 0;
         player = null;
         lastGroundedBody = null;
         isKillable = true;
         this.name = name;
+        previousJumpState = JUMP_STATE.FALLING;
         jumpState = JUMP_STATE.FALLING;
         moveState = MOVE_STATE.NORMAL;
         awakeState = AWAKE_STATE.AWAKE;
@@ -80,8 +90,22 @@ public class Character extends GameObject {
         this.myFeet.setFilterData(filter);
     }
 
+    public void setJumpState(JUMP_STATE jumpState) {
+        if(this.jumpState != jumpState) {
+            this.previousJumpState = this.jumpState;
+            this.jumpState = jumpState;
+            Gdx.app.debug("Character", "jumpState from "+ previousJumpState + " to " + jumpState);
+        }
+    }
+
     @Override
     public void initAnimation(String name_texture) {
+        // -- Marks:
+        Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
+        pixmap.setColor(1f, 1f, 1f, 1.0f);
+        pixmap.fillRectangle(0, 0, 1, 2);
+        MarkTexture =  new Texture(pixmap);
+        // -- Texture:
         Array<AtlasRegion> regions = null;
         // anim normal:
         regions = atlas.findRegions("Piaf_"+name_texture+"_stand");
@@ -89,7 +113,7 @@ public class Character extends GameObject {
             main_animation = new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP);
             //animNormal = new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP);
 
-        regions = atlas.findRegions("Piaf_"+name_texture+"_walk");
+        regions = atlas.findRegions("Piaf_" + name_texture + "_walk");
         if (regions != null)
             animWalk = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
 
@@ -105,7 +129,7 @@ public class Character extends GameObject {
         if (regions != null)
             animDying = new Animation(1.0f/4.0f, regions, Animation.PlayMode.NORMAL);
 
-        regions = atlas.findRegions("Piaf_"+name_texture+"_sleeping");
+        regions = atlas.findRegions("Piaf_" + name_texture + "_sleeping");
         if (regions != null)
             animSleeping = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
 
@@ -136,20 +160,7 @@ public class Character extends GameObject {
         myBodyFixture = this.body.createFixture(fd); // has to be the first one
         p.dispose();
         mainFixtureIndex = 0;
-//        CircleShape c = new CircleShape();
-//        c.setPosition(new Vector2(dimension.x / 2, dimension.y / 2.5f));
-//        c.setRadius(dimension.x / 2.5f);
-//        FixtureDef fd = new FixtureDef();
-//        fd.shape = c;
-//        fd.density = 5.0f;
-//        fd.restitution = 0.0f;
-//        fd.friction = 0.0f;
-//        myBodyFixture = this.body.createFixture(fd); // has to be the first one
-//        c.dispose();
-//        mainFixtureIndex = 0;
-//        PolygonShape p = new PolygonShape();
 
-        // fixture-sensor to detect the ground
         p = new PolygonShape();
         p.setAsBox(dimension.x/4.5f, dimension.y/10, new Vector2(dimension.x / 2, 0), 0);
         fd = new FixtureDef();
@@ -207,9 +218,9 @@ public class Character extends GameObject {
         // Damage from collision management: (might part of the GameObject themself), or should be a component...
         if(mainBoxContact.isTouched()){
             //Gdx.app.debug("Player", "impulse of "+ mainBoxContact.getLastImpulse());
-            if(mainBoxContact.getLastImpulse() > 220.0){ // threshold before to get injured
-                addToLife(-90);  // the injure could be proportionnal to the chock, don't care about invincibility frame
-                goToSleepFor(1.0f);  // knock out from the collision should be optionnal
+            if(mainBoxContact.getLastImpulse() > 110.0 && moveState == MOVE_STATE.THROWED){ // threshold before to get injured
+                addToLife(-101);  // the injure could be proportionnal to the chock, don't care about invincibility frame
+                //goToSleepFor(1.0f);  // knock out from the collision should be optionnal
                 Gdx.app.debug("Player", "impulse of "+ mainBoxContact.getLastImpulse());
             }
         }
@@ -227,28 +238,42 @@ public class Character extends GameObject {
 
     }
 
+    @Override
+    public void render(SpriteBatch batch) {
+        super.render(batch);
+        for (int i = 0; i < Constants.MAXMARKS; i++) {
+            if (i < marks)
+                batch.setColor(1,1,1,1); // markers in white
+            else
+                batch.setColor(0.4f, 0.4f, 0.4f, 1f); // not marked in grey
+            batch.draw(MarkTexture, position.x+0.15f*i, position.y+dimension.y + 0.2f, 0.1f, 0.2f);
+            batch.setColor(1, 1, 1, 1); // markers in white
+        }
+
+    }
+
     private void updateTheStateMachine(float deltaTime) {
         ContactData sensorData = (ContactData) myFeet.getUserData();
         if (sensorData.isTouched()){
-            lastGroundedBody = sensorData.getTouchedFixtures().peek().getBody();
+            lastGroundedBody = sensorData.getTouchedFixtures().peek().getBody(); // returns the last item, but do not remove it
             //Gdx.app.debug("Player", "Platform idling on: "+ lastGroundedBody);
             if(moveState == MOVE_STATE.THROWED)
                 moveState = MOVE_STATE.NORMAL;
             if (Math.abs(this.body.getLinearVelocity().x - lastGroundedBody.getLinearVelocity().x)< 0.001)
-                this.jumpState = JUMP_STATE.IDLE;
+                setJumpState(JUMP_STATE.IDLE);
             else
-                this.jumpState = JUMP_STATE.GROUNDED;
+                setJumpState(JUMP_STATE.GROUNDED);
         }
         else {
-            if (this.body.getLinearVelocity().y > 0) // make sure we go to fall when we reset the speed
-                this.jumpState = JUMP_STATE.RISING;
+            if (this.body.getLinearVelocity().y > 0.1 && jumpState != JUMP_STATE.FALLING) // make sure we go to fall when we reset the speed
+                setJumpState(JUMP_STATE.RISING);
             else
-                this.jumpState = JUMP_STATE.FALLING;
+                setJumpState(JUMP_STATE.FALLING);
         }
-
+        gamescreen.addDebugText("\n " + getPlayer().getName() + " JUMP_STATE: " + jumpState);
         switch (awakeState){
             case AWAKE:
-                if (isDead())
+                if (justDied())
                     break;
                 switch (jumpState){
                     case RISING:
@@ -283,7 +308,7 @@ public class Character extends GameObject {
 
                 break;
             case SLEEPING:
-                if (isDead())
+                if (justDied())
                     break;
                 if (current_animation != animSleeping)
                     setAnimation(animSleeping);
@@ -299,21 +324,13 @@ public class Character extends GameObject {
                 if (current_animation != animDying)
                     setAnimation(animDying);
                 awakeStateTimer += deltaTime;
-                if (awakeStateTimer > RESPAWNTIME) {
+                if (awakeStateTimer > respawnTime) {
                     reSpawn();
                 }
                 break;
 
         }
     }
-
-//    public void addToScore(float f){
-//        score += f;
-//    }
-//
-//    public void setScore(float score) {
-//        this.score = score;
-//    }
 
     public boolean hasCarriedObject(){
         return this.carriedObject != null;
@@ -322,30 +339,50 @@ public class Character extends GameObject {
     public boolean hasTheCrown() {return this.crownBody != null;}
 
     public void setCarriedObject(Body b){
-        GameObject gobj = (GameObject) b.getUserData();
-        if (carriedObject != null && !gobj.getClass().equals(Crown.class)){
+        if (b == null){
+            GameObject g = (GameObject) carriedObject.getUserData();
+            g.setCarrier(null);
+            carriedObject = null;
+            moveState = MOVE_STATE.NORMAL;
+//            ContactData d = (ContactData) myLeftHand.getUserData();
+//            d.deepFlush();
+//            d = (ContactData) myRightHand.getUserData();
+//            d.deepFlush();
+            return;
+        }
+        GameObject newItem = (GameObject) b.getUserData();
+        if (carriedObject != null && !newItem.getClass().equals(Crown.class)){ // if you already have an object in hand, you throw the current one and get the new one
             useCarriedBody(45.0f, 50.0f);
             //b.setType(BodyDef.BodyType.KinematicBody);
         }
-        if (gobj.getClass().equals(Character.class)){
-            Character p = (Character) gobj;
-            p.moveState = MOVE_STATE.PICKEDUP;
+        if (newItem.getClass().equals(Character.class)){
+            Character p = (Character) newItem;
+            if(p.awakeState!=AWAKE_STATE.DEAD) {
+                p.moveState = MOVE_STATE.PICKUPCHALLENGED;
+                moveState = MOVE_STATE.PICKUPCHALLENGER;
+            }
+            else{
+                moveState = MOVE_STATE.PICKINGUP;
+                p.moveState = MOVE_STATE.NORMAL;
+            }
             ContactData dd = (ContactData) p.myFeet.getUserData();
             dd.flush();
             carriedObject = b;
             p.setCarrier(this);
-            moveState = MOVE_STATE.PINCKINGUP;
+
+
         }
-        else if (gobj.getClass().equals(Crown.class)){
-            if (gobj.setCarrier(this))
+        else if (newItem.getClass().equals(Crown.class)){
+            if (newItem.setCarrier(this))
                 crownBody = b;
         }
 
-        else {
-            carriedObject = b;
-            gobj.setCarrier(this);
-            moveState = MOVE_STATE.PINCKINGUP;
-        }
+        // we will do: else if ((newItem.getClass().equals(Item.class)
+//        else {
+//            carriedObject = b;
+//            newItem.setCarrier(this);
+//            moveState = MOVE_STATE.PICKINGUP;
+//        }
 
     }
 
@@ -353,19 +390,20 @@ public class Character extends GameObject {
         if (carriedObject != null) {
             GameObject gobj = (GameObject) carriedObject.getUserData();
             gobj.setCarrier(null);
-            carriedObject.applyLinearImpulse(MathUtils.cos(angle) * force,
-                    MathUtils.sin(angle) * force, 0.5f, 0.5f, true);
-            carriedObject = null;
+
             if (gobj.getClass().equals(Character.class)) {
                 Character p = (Character) gobj;
                 p.moveState = MOVE_STATE.THROWED;
             }
+            carriedObject.applyLinearImpulse(MathUtils.cos(angle) * force,
+                    MathUtils.sin(angle) * force, 0.5f, 0.5f, true);
+            carriedObject = null;
         }
         moveState = MOVE_STATE.NORMAL;
-        ContactData d = (ContactData) myLeftHand.getUserData();
-        d.flush();
-        d = (ContactData) myRightHand.getUserData();
-        d.flush();
+        //ContactData d = (ContactData) myLeftHand.getUserData();
+        //d.flush();
+        //d = (ContactData) myRightHand.getUserData();
+        //d.flush();
 //        d = (ContactData) currentHand.getUserData();
 //        d.flush();
 
@@ -389,26 +427,32 @@ public class Character extends GameObject {
             if (attachedObject != null) // kill the other member
                 attachedObject.setLife(-1);
         }
+        GameObject o = this.getCarrier();
+        if(o != null)
+            this.getCarrier().setCarriedObject(null);
+        mainBoxContact.deepFlush();
         this.setPosition(gamescreen.getSpawnPosition());
         awakeState = AWAKE_STATE.AWAKE;
         life = 100.0f;
+        setMarks(0);
         awakeStateTimer = 0;
         body.setTransform(body.getPosition(), 0);
     }
 
-    private boolean isDead() {
-        if (life <= 0){
+    private boolean justDied() {
+        if (life <= 0 ){
             awakeState = AWAKE_STATE.DEAD;
             awakeStateTimer = 0;
+            Gdx.app.debug("Character", "Death Event");
+            respawnTime = RESPAWNTIME + marks*Constants.MARKPENALTY;
             //body.setTransform(body.getPosition(),MathUtils.PI/2.0f);
             //body.setType(K);
             dropObjects();
             for(Fixture fixt : body.getFixtureList()){
                 ContactData data = (ContactData) fixt.getUserData();
                 if(data != null)
-                    data.deepFlush();
+                    data.deepFlush(); // should be in the respawn function!!!
                     //data.flush();
-
             }
             return true;
         }
@@ -433,9 +477,11 @@ public class Character extends GameObject {
     }
 
     public void goToSleepFor(float time){
-        dropObjects();
-        awakeState = Constants.AWAKE_STATE.SLEEPING;
-        addSleepingTime(time);
+        if(awakeState == AWAKE_STATE.AWAKE) {
+            dropObjects();
+            awakeState = Constants.AWAKE_STATE.SLEEPING;
+            addSleepingTime(time);
+        }
     }
 
     @Override
@@ -445,7 +491,7 @@ public class Character extends GameObject {
 
     public float getRespawnTime(){
         if (awakeState == AWAKE_STATE.DEAD)
-            return (Constants.RESPAWNTIME - awakeStateTimer);
+            return (respawnTime - awakeStateTimer);
         else
             return -1;
     }
@@ -463,5 +509,19 @@ public class Character extends GameObject {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public int getMarks() {
+        return marks;
+    }
+
+    public void setMarks(int marks) {
+        this.marks = Math.min(Constants.MAXMARKS, marks);
+    }
+
+    public void addMarks(int marks){
+        this.marks += marks;
+        this.marks = Math.min(Constants.MAXMARKS, this.marks);
+
     }
 }
