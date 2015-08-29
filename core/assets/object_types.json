@@ -34,12 +34,12 @@
   switcher_types:
     {
       invisible: {
-      visible: false,
-      hold: false,
-      bodyType: StaticBody,
-      sensor: true,
-      Mask: "Sensor",
-      Category: "Sensor"
+        visible: false,
+        hold: false,
+        bodyType: StaticBody,
+        sensor: true,
+        Mask: "Sensor",
+        Category: "Sensor"
       },
       totem_switch: {
         hold: true,

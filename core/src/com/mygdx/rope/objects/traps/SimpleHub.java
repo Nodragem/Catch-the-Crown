@@ -1,9 +1,7 @@
 package com.mygdx.rope.objects.traps;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Updatable;
 import com.mygdx.rope.screens.GameScreen;
 
@@ -70,7 +68,7 @@ public class SimpleHub implements HubInterface, Updatable {
     private void notifyTriggerables(boolean set_on) {
         if (set_on){
             for (Triggerable trigerrable : triggerables) {
-                if(!trigerrable.isDefaultON())
+                if(!trigerrable.isActiveByDefault())
                     trigerrable.triggerONActions(this);
                 else
                     trigerrable.triggerOFFActions(this);
@@ -78,7 +76,7 @@ public class SimpleHub implements HubInterface, Updatable {
         }
         else {
             for (Triggerable trigerrable : triggerables) {
-                if(!trigerrable.isDefaultON())
+                if(!trigerrable.isActiveByDefault())
                     trigerrable.triggerOFFActions(this);
                 else
                     trigerrable.triggerONActions(this);

@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.collectable;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -175,6 +176,8 @@ public class Coins extends GameObject implements Triggerable {
 
 
     public void distributeGold(float gold){
+        Sound coinSound = gamescreen.assetManager.getRandom("coin");
+        coinSound.play();
         linkedCrown.addGoldValue(gold * Constants.CROWNGOLDRATE); // the part of gold which is not really to the player
         characterWithCrown.getPlayer().addScore(gold); // we remove the extraScore when he drops it
     }
@@ -207,7 +210,7 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     @Override
-    public boolean isDefaultON() {
+    public boolean isActiveByDefault() {
         return defaultON;
     }
 

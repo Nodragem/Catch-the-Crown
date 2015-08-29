@@ -77,8 +77,11 @@ public class InputContext {
         listeners.remove(listener);
     }
 
-    public int getButtonCode(String state) {
-        return keyStates.get(state);
+    public Integer getButtonCode(String state) {
+        if(keyStates.containsKey(state))
+            return keyStates.get(state);
+        else
+            return null;
     }
 
     public String getName() {

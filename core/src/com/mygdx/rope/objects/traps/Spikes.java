@@ -14,7 +14,7 @@ import com.mygdx.rope.util.Constants;
  * Created by Nodragem on 22/06/2014.
  */
 public class Spikes extends GameObject implements Triggerable {
-    private final float spikesRotation;
+    //private final float spikesRotation;
     private  float intervalOFF;
     private  float intervalON;
     private float timer;
@@ -34,7 +34,7 @@ public class Spikes extends GameObject implements Triggerable {
         this.intervalOFF = intervalOFF;
         this.intervalON = intervalON;
         timer = 0f;
-        spikesRotation = rotation;
+        this.rotation = rotation;
         givenDamage = 110;
     }
 
@@ -90,10 +90,10 @@ public class Spikes extends GameObject implements Triggerable {
             TextureRegion reg = null;
             reg = current_animation.getKeyFrame(stateTime);
             for (int i = 0; i < dimension.x; i++) {
-                batch.draw(reg, position.x + i*MathUtils.cosDeg(spikesRotation), position.y + i*MathUtils.sinDeg(spikesRotation),
+                batch.draw(reg, position.x + i*MathUtils.cosDeg(rotation), position.y + i*MathUtils.sinDeg(rotation),
                         0.0f, 0.0f, // origins
                         1, 1, 1, 1, // dimension and scale
-                        spikesRotation
+                        rotation
                 );
             }
         }
@@ -105,7 +105,7 @@ public class Spikes extends GameObject implements Triggerable {
     }
 
     @Override
-    public boolean isDefaultON() {
+    public boolean isActiveByDefault() {
         return defaultON;
     }
 

@@ -8,14 +8,14 @@ public class Constants {
 	public static final float TILES_SIZE = 32.0f; //  one meter equal 32 pixels
 	public static final float VIEWPORT_GUI_WIDTH = 1920.0f;
 	public static final float VIEWPORT_GUI_HEIGHT = 1080.0f;
-	public static final float CROWNGOLDRATE = 0.5f;
+	public static final float CROWNGOLDRATE = 0.333f;
     public static final float MARKPENALTY = 3f ;
 
     public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
-    public static enum GUI_STATE {DISPLAY_GUI, DISPLAY_END}
+    public static enum GUI_STATE {DISPLAY_GUI, DISPLAY_END, previousGUIState, DISPLAY_PAUSE}
     public static final int MOVESTOFREE = 4;
     public static final int MAXMARKS = 5;
-    public static final float BONUSCROWN = 300;
+    public static final float BONUSCROWN = 0;
     public static final float GOLDENDLEVEL = 3500;//500000;
     public static final float GOLDVALUE = 10;
 	public static final String TEXTURE_ATLAS_OBJECTS = "nothing-yet.pack";

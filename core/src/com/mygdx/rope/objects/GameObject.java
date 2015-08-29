@@ -25,6 +25,7 @@ public class GameObject implements Updatable {
     //public final static TextureAtlas atlas = new TextureAtlas("texture_obj.pack"); // all the game object has access to a class Atlas
     public final static TextureAtlas atlas = new TextureAtlas("texture_obj.atlas"); // all the game object has access to a class Atlas
     public boolean isKillable;
+    public Integer ID = null;
     public Array<Float> color;
     public float currentImmunity;
     public float immunityReset;
@@ -32,6 +33,7 @@ public class GameObject implements Updatable {
     protected float bufferReceivedDamage;
     protected float timeStepDamage;
     public GameScreen gamescreen;
+    public GameObject parent = null;
     public int myRenderID;
     public boolean isVisible;
     public Body body;
@@ -43,10 +45,12 @@ public class GameObject implements Updatable {
     public Animation offset_animation = null;
     public Constants.VIEW_DIRECTION viewDirection;
 	public Vector2 position;
+	public Vector2 rposition; // in polar coordinate
 	public Vector2 dimension;
 	public Vector2 origin;
 	public Vector2 scale;
 	public float rotation;
+    private float rrotation;
 	public float stateTime;
     public float life;
     public Character Carrier = null;
@@ -74,7 +78,9 @@ public class GameObject implements Updatable {
         origin = new Vector2(0,0); // the origin is really at the origin
         scale = new Vector2(1, 1);
         this.position = position; // position and rotation may be not useful and redundant with the body
+        this.rposition = new Vector2(0,0);
         rotation = angle; // in degrees
+        rrotation = 0;
         BodyDef def = new BodyDef();
         this.body = b2world.createBody(def);
         this.body.setTransform(this.position, rotation);
@@ -269,14 +275,31 @@ public class GameObject implements Updatable {
     @Override
 	public boolean update(float deltaTime) {
         stateTime += deltaTime;
+        // we update the position even when the object is not activated
+        if (parent == null || body.getType() == BodyType.DynamicBody) {
+            position.set(body.getPosition());
+            rotation = body.getAngle() * MathUtils.radiansToDegrees;
+        }
+        else{
+            // rposition. x = angle; rposition.y = radius
+            body.setTransform(
+                    parent.position.x + rposition.y*MathUtils.cos(rposition.x + parent.rotation*MathUtils.degreesToRadians),
+                    parent.position.y + rposition.y*MathUtils.sin(rposition.x + parent.rotation*MathUtils.degreesToRadians),
+                    (parent.rotation + rrotation)*MathUtils.degreesToRadians
+            );
+//            body.setTransform(parent.position.x,
+//                    parent.position.y,
+//                    absoluteAngle);
+            position.set(body.getPosition());
+            rotation = body.getAngle() * MathUtils.radiansToDegrees;
+            //this.isVisible = parent.isVisible;
+        }
         switch (activeState){
             case ACTIVATED:
                 if(mainBoxContact.isTouched()){
                     onCollision();
                     //mainBoxContact.flush();
                 }
-                position.set(body.getPosition());
-                rotation = body.getAngle() * MathUtils.radiansToDegrees;
                 checkForDamage(deltaTime);
                 break;
             case ACTIVATION:
@@ -419,16 +442,16 @@ public class GameObject implements Updatable {
     }
 
     protected void setActivate(boolean b){
-            activeState = (b? Constants.ACTIVE_STATE.ACTIVATED: Constants.ACTIVE_STATE.DESACTIVATED);
-            isVisible = b;
-            body.setActive(b); // I think that this things make the projectile remove itself from what it touched
-            if(!b){ // if we desactivate, we need to flush
-                for (Fixture fixture : body.getFixtureList()) { // note that we dont flush properly, we should remove the contact from the contacted fixtures
-                    ContactData d = (ContactData) fixture.getUserData();
-                    if (d != null)
-                        d.flush();
-                }
+        activeState = (b? Constants.ACTIVE_STATE.ACTIVATED: Constants.ACTIVE_STATE.DESACTIVATED);
+        isVisible = b;
+        body.setActive(b); // I think that this things make the projectile remove itself from what it touched
+        if(!b){ // if we desactivate, we need to flush
+            for (Fixture fixture : body.getFixtureList()) { // note that we dont flush properly, we should remove the contact from the contacted fixtures
+                ContactData d = (ContactData) fixture.getUserData();
+                if (d != null)
+                    d.deepFlush();
             }
+        }
     }
 
     public void goToDesactivation(){
@@ -451,7 +474,22 @@ public class GameObject implements Updatable {
             }
     }
 
-
-
-
+    public void setParent(GameObject parent) {
+        this.parent = parent;
+        rposition.set(MathUtils.atan2(position.y-parent.position.y, position.x-parent.position.x)-parent.rotation,
+                        position.dst(parent.position)); // angle, radius
+        rrotation = rotation - parent.rotation;
     }
+
+    public GameObject getParent() {
+        return parent;
+    }
+
+    public void setID(Integer ID) {
+        this.ID = ID;
+    }
+
+    public Integer getID() {
+        return ID;
+    }
+}

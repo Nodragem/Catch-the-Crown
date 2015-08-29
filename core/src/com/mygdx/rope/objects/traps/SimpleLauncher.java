@@ -112,7 +112,7 @@ public class SimpleLauncher extends GameObject implements Triggerable {
     }
 
     @Override
-    public boolean isDefaultON() {
+    public boolean isActiveByDefault() {
         return defaultON;
     }
 

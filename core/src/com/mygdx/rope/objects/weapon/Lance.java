@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.weapon;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -99,6 +100,8 @@ public class Lance extends GameObject {
     }
 
     public void goToPlatformState() {
+        Sound soundLanceHit = gamescreen.assetManager.getRandom("lance_hit");
+        soundLanceHit.play();
         Vector2 worldAnchorPoint = body.getWorldPoint(anchorPoint);
         WeldJointDef wJD = new WeldJointDef();
         Body touchedBody = mainBoxContact.popTouchedFixtures().getBody();
@@ -107,6 +110,8 @@ public class Lance extends GameObject {
             touchedObj.addDamage(givenDamage);
             if(touchedObj instanceof com.mygdx.rope.objects.characters.Character){
                 ((Character) touchedObj).dropObjects();
+                Sound hurtSound = gamescreen.assetManager.getRandom("hurt");
+                hurtSound.play(0.5f);
             }
         }
         wJD.initialize(touchedBody, body, worldAnchorPoint);
@@ -159,6 +164,8 @@ public class Lance extends GameObject {
 
 
     public void throwMe(float angle, float force, float damage){
+        Sound throwSound = gamescreen.assetManager.getRandom("lance_thrown");
+        throwSound.play();
         givenDamage = damage;
         goToWeaponState();
         isVisible = true;

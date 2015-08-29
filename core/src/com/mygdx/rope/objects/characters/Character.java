@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.characters;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -366,14 +367,16 @@ public class Character extends GameObject {
                 p.moveState = MOVE_STATE.NORMAL;
             }
             ContactData dd = (ContactData) p.myFeet.getUserData();
-            dd.flush();
+            dd.deepFlush(); // to deepFlush
             carriedObject = b;
             p.setCarrier(this);
 
 
         }
         else if (newItem.getClass().equals(Crown.class)){
-            if (newItem.setCarrier(this))
+            Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
+            stealCrown.play();
+            if (newItem.setCarrier(this)) // weird way to express it, the boolean if unnecessary
                 crownBody = b;
         }
 
@@ -441,6 +444,8 @@ public class Character extends GameObject {
 
     private boolean justDied() {
         if (life <= 0 ){
+            Sound killSound = gamescreen.assetManager.getRandom("laugh_kill");
+            killSound.play();
             awakeState = AWAKE_STATE.DEAD;
             awakeStateTimer = 0;
             Gdx.app.debug("Character", "Death Event");

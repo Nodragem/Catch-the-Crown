@@ -5,11 +5,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -38,6 +41,7 @@ import com.mygdx.rope.util.InputHandler.InputProfile;
 import com.mygdx.rope.util.InputHandler.InputProfileController;
 import com.mygdx.rope.util.InputHandler.InputProfileKeyboard;
 import com.mygdx.rope.util.Constants.GAME_STATE;
+import com.mygdx.rope.util.assetmanager.Assets;
 
 import java.lang.String;
 import java.util.Iterator;
@@ -46,12 +50,15 @@ public class GameScreen implements Screen {
 	private static final boolean DEBUG_BOX2D = true;
 	private TiledMap map;
     private ArrayMap <String, Player> playersList;
+    public int ipauser = 0; // the player who pressed the pause button and control the pause menu.
 	private OrthogonalTiledMapRenderer map_renderer;
 	private OrthographicCamera camera;
 	private CameraHelper cameraHelper;
     private GUILayer GUIlayer;
+    public GlyphLayout glayout = new GlyphLayout();
     private GameObject cameraTarget;
     private ContactData bufferContactData;
+    public Assets assetManager;
     public Viewport gameViewport;
     public Array <GameObject> objectsToRender;
     public Array <Updatable> objectsToUpdate;
@@ -70,13 +77,22 @@ public class GameScreen implements Screen {
     public float timer; // ms
     private float groupScore;
     private Crown theCrown;
-    private String currentLevel;
+    private int currentLevel;
+    private Array<String> listLevels;
     private GAME_STATE previousStateGame;
     private int victoryThreshold;
 
+    public GameScreen(int currentLevel, Array<String> listLevels){
+        this.currentLevel = currentLevel;
+        this.listLevels = listLevels;
+    }
+
     @Override
     public void show() {
-
+        assetManager = new Assets(); // mainly for the sounds,
+        assetManager.loadGroups("sounds/soundGroups.json"); // will have a file per level
+        assetManager.finishLoading();
+        //Gdx.app.debug("Asset Manager", ""+assetManager.get("jump", 0));
         //enableFullScreen();
         if (gameViewport == null) {
 //        //gameViewport = null;
@@ -92,10 +108,9 @@ public class GameScreen implements Screen {
         victoryTable = null;
         cameraHelper = new CameraHelper();
         cameraHelper.setTarget(cameraTarget);
-        currentLevel = Constants.LEVEL_01;
         GUIlayer = new GUILayer(this); // is empty (no players)
         setDebugText("DEBUG ON");
-        startNewLevel(currentLevel);
+        startNewLevel(listLevels.get(currentLevel));
         if (victoryTable == null){
             victoryTable = new ArrayMap<String, Integer>(4);
             for (int i = 0; i < playersList.size; i++) {
@@ -113,7 +128,7 @@ public class GameScreen implements Screen {
 
     }
 
-    private void startNewLevel(String levelname){
+    public void startNewLevel(String levelname){
         groupScore = 0;
         stateGame = GAME_STATE.PLAYED;
         GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
@@ -161,31 +176,60 @@ public class GameScreen implements Screen {
                 nb_keyboard -= 1;
             }
             else if (nb_controllers > 0){
-                inputProfil = new InputProfileController(Gdx.files.internal("preference/profileController.xml"), XboxControllers.get(nb_controllers-1));
+                inputProfil = new InputProfileController(Gdx.files.internal("preference/profileController.xml"),
+                        XboxControllers.get(nb_controllers-1));
                 nb_controllers -= 1;
             }
             if (inputProfil == null)
                 break;
             inputProfil.setContext("Game");
-            Player player = new Player(item.getString("name", "Player "+(nb_created_player+1)), new Character(this, new Vector2(15,15), item.getString("color", "purple")), inputProfil, this);
+            Player player = new Player(item.getString("name", "Player "+(nb_created_player+1)),
+                    new Character(this, new Vector2(15,15), item.getString("color", "purple")), inputProfil, this);
             playersList.put(player.getName(), player);
             nb_created_player +=1;
         }
 
         for (int i = 0; i < playersList.size; i++) {
-            playersList.getValueAt(i).getCharacter().setPosition(getSpawnPosition()); // spawners are place by the plaObjectsFromMap
+            playersList.getValueAt(i).getCharacter().setPosition(getSpawnPosition()); // spawners are place by the placeObjectsFromMap
         }
     }
 
+    public ArrayMap<String, Player> getPlayersList() {
+        return playersList;
+    }
+
     private void placeObjectsFromMap(TiledMap map) {
+        ObjectMap<GameObject, Integer> toParent = new ObjectMap<GameObject, Integer>();
         BlockFactory mapBodyManager = new BlockFactory(b2world, null, 1); // tiles of 32 pixels/32 = 1 unit
         mapBodyManager.createPhysics(map, "Collision");
 
         TrapFactory trapFactory = new TrapFactory(this);
         MapLayer trapLayer = map.getLayers().get("InteractiveObjects");
         trapFactory.extractLogicNodeFrom(trapLayer);
-        trapFactory.extractInteractiveObjectsFrom(trapLayer);
-        trapFactory.extractInteractiveObjectsFrom(map.getLayers().get("MovingPlatforms"));
+        toParent.putAll(trapFactory.extractInteractiveObjectsFrom(map.getLayers().get("MovingPlatforms")));
+        toParent.putAll(trapFactory.extractInteractiveObjectsFrom(trapLayer));
+
+
+        // create Parent relationships
+        for (ObjectMap.Entry<GameObject, Integer> gameObjectIntegerEntry : toParent) {
+            for (Updatable updatable : this.objectsToUpdate) {
+                Gdx.app.debug("TrapFactory: ", "Add Parent  Step 1.5, Parent ID: " + gameObjectIntegerEntry.value);
+                if (updatable instanceof GameObject) {
+                    GameObject iterObject = (GameObject) updatable;
+                    Gdx.app.debug("TrapFactory: ", "Add Parent  Step 2: " + iterObject + "\n ID: " + iterObject.ID);
+                    if (iterObject.ID != null && iterObject.ID.equals(gameObjectIntegerEntry.value)) {
+                        try {
+                            gameObjectIntegerEntry.key.setParent(iterObject);
+                            Gdx.app.debug("TrapFactory: ", "Add Parent  Step 3");
+                            break;
+                        } catch (Exception e) {
+                            Gdx.app.debug("TrapFactory: ", "Cannot attach an object to its parent...");
+                        }
+                    }
+                }
+            }
+        }
+
 
         // the coins need the factory and its list of Hubs:
         Array<Coins> coingroups = new Array<Coins>(10);
@@ -226,9 +270,7 @@ public class GameScreen implements Screen {
 	public void render(float deltaTime) {
         gameViewport.apply();
         handleDebugInput(deltaTime);
-        if(stateGame == GAME_STATE.PLAYED) {
-            this.update(deltaTime); // never forget!!
-        }
+        this.update(deltaTime); // never forget!!
         Gdx.gl.glClearColor(0x64 / 255.0f, 0x95 / 255.0f, 0xed / 255.0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -243,22 +285,45 @@ public class GameScreen implements Screen {
         map_renderer.render(foregroundLayers);
         if (DEBUG_BOX2D)
             b2debug.render(b2world, camera.combined); // again the same as setProjectionMatrix
-        GUIlayer.renderUI(batch, DEBUG_BOX2D);
+        GUIlayer.renderUI(batch, deltaTime, DEBUG_BOX2D);
 
 	}
 
     public void update(float deltaTime){
-        timer -= deltaTime;
-        setDebugText("");
-		cameraHelper.update(deltaTime);
-		cameraHelper.applyTo(camera);
-        //b2world.step(deltaTime, 8, 3);
+        if(previousStateGame != stateGame){ // on change of state
+            switch (stateGame){
+                case PLAYED:
+                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
+                    break;
+                case PAUSED:
+                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_PAUSE);
+                    break;
+                case ROUND_END:
+                    proceedToEndOfRoundAction();
+                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_END);
+                    break;
+                case TOURNAMENT_END: // we don't know yet
+                    break;
+            }
+        }
         groupScore = 0;
         for (int i = 0; i < playersList.size; i++) {
-       // players update is done after objects update, cause they need to know the state of their character to process the input.
+            // players update is done after objects update, cause they need to know the state of their character to process the input.
             playersList.getValueAt(i).update(deltaTime);
             groupScore += playersList.getValueAt(i).getScore();
         }
+        if (this.stateGame == GAME_STATE.PAUSED){
+            return;
+        }
+        // Check if end of the round:
+        timer -= deltaTime;
+        if (timer < 0)
+            setStateGame(GAME_STATE.ROUND_END);
+        // update the scene and objects:
+        setDebugText("");
+		cameraHelper.update(deltaTime);
+		cameraHelper.applyTo(camera);
+
         if(theCrown.getCarrier() != null){
             groupScore += theCrown.getCrownGoldValue();
         }
@@ -286,12 +351,6 @@ public class GameScreen implements Screen {
             }
         }
         objectsToWipeOut.clear();
-        if (timer < 0){
-            if(setStateGame(GAME_STATE.ROUND_END)){
-                proceedToEndOfRoundAction();
-            }
-        }
-
 
 	}
 
@@ -323,9 +382,8 @@ public class GameScreen implements Screen {
             rankTable.put(OrderedScoreTable.getKeyAt(i), rank);
             score_buffer = OrderedScoreTable.getValueAt(i);
         }
-
         GUIlayer.loadTheScoreTable(previousVictoryTable, OrderedScoreTable, rankTable);
-        GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_END);
+
     }
 
     private void cleanAllFixtureInstances(GameObject obj) {
@@ -463,6 +521,7 @@ public class GameScreen implements Screen {
 		map.dispose();
 		map_renderer.dispose();
         GUIlayer.dispose();
+        assetManager.dispose();
 
 	}
 	
@@ -482,7 +541,7 @@ public class GameScreen implements Screen {
             if (Gdx.input.isKeyPressed(Keys.PAGE_DOWN)) cameraHelper.addZoom(-camZoom);
             if (Gdx.input.isKeyPressed(Keys.END)) cameraHelper.setZoom(1);
             if (Gdx.input.isKeyPressed(Keys.ENTER)) cameraHelper.setTarget(cameraHelper.hasTarget() ? null : cameraTarget);
-            if (Gdx.input.isKeyPressed(Keys.R)) startNewLevel(currentLevel);
+            if (Gdx.input.isKeyPressed(Keys.R)) startNewLevel(listLevels.get(currentLevel));
             if (Gdx.input.isKeyPressed(Keys.F)) enableFullScreen();
             if (Gdx.input.isKeyPressed(Keys.P)) stateGame = (stateGame == GAME_STATE.PAUSED)?GAME_STATE.PLAYED : GAME_STATE.PAUSED;
             if (Gdx.input.isKeyPressed(Keys.T)) this.timer -= 10;
@@ -531,12 +590,17 @@ public class GameScreen implements Screen {
         return stateGame;
     }
 
+    public GAME_STATE getPreviousStateGame() {
+        return previousStateGame;
+    }
+
     public boolean setStateGame(GAME_STATE stateGame) {
         if (this.stateGame != stateGame) {
             this.previousStateGame = this.stateGame;
             this.stateGame = stateGame;
             return true;
         }
+
         return false;
     }
     public int getVictoryThreshold() {
@@ -547,5 +611,20 @@ public class GameScreen implements Screen {
         return camera;
     }
 
+    public void setIndexPauser(String name) {
+        this.ipauser = playersList.indexOfKey(name);
+    }
 
+    public int getIndexPauser() {
+        return ipauser;
+    }
+
+    public Window openPauseWindow(boolean b, String name) {
+        this.ipauser = playersList.indexOfKey(name);
+        return GUIlayer.openPauseWindow(b, ipauser);
+    }
+
+    public String getCurrentLevel() {
+        return listLevels.get(currentLevel);
+    }
 }

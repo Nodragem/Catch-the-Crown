@@ -25,6 +25,8 @@ import com.mygdx.rope.util.TrajectorySolver.MockTrajectory;
 import com.mygdx.rope.util.TrajectorySolver.TrajectoryPolygon;
 import com.mygdx.rope.util.TrajectorySolver.TrajectorySolver;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by Geoffrey on 10/01/2015.
  */
@@ -182,6 +184,10 @@ public class MovingPlatform extends GameObject implements Triggerable {
         super.update(deltaTime);
         position.add(-correctionRadius * MathUtils.cos(body.getAngle() + correctionAngle),
                 -correctionRadius * MathUtils.sin(body.getAngle() + correctionAngle));
+
+        gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(position.x*10.0f)/10.0f) + "; "
+                                            +(float) (Math.round(position.y*10.0f)/10.0f));
+
         return false;
     }
 
@@ -195,7 +201,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     @Override
-    public boolean isDefaultON() {
+    public boolean isActiveByDefault() {
         return defaultON;
     }
 

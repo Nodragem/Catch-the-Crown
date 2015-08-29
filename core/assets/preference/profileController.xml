@@ -41,20 +41,21 @@ AXIS_RIGHT_TRIGGER = 4; //value 0 to -1f
 	</states>
 	
 	<contexts>
-		<context name="MainMenu" >
-			<actions>
-				<action name="NextOption">
+		<context name="Menu" >
+			<states>
+				<state name="Select">
 					<key code="0" />
-				</action>
+				</state>
 				
-				<action name="PreviousOption">
-					<key code="0" />
-				</action>
+				<state name="Back">
+					<key code="1" />
+				</state>
 				
-				<action name="SelectOption">
-					<key code="0" />
-				</action>
-			</actions>
+				<state name="Start">
+					<key code="7" />
+				</state>
+				
+			</states>
 		</context>
 		
 		<context name="Game" >
@@ -77,6 +78,10 @@ AXIS_RIGHT_TRIGGER = 4; //value 0 to -1f
 				
 				<state name="PickUp">
 					<key code="1" />
+				</state>
+				
+				<state name="Start">
+					<key code="7" />
 				</state>
 			</states>
 		</context>

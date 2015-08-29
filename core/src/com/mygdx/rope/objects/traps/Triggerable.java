@@ -5,7 +5,7 @@ package com.mygdx.rope.objects.traps;
  */
 public interface Triggerable {
     public void reset();
-    public  boolean isDefaultON();
+    public  boolean isActiveByDefault();
     public void triggerONActions(HubInterface hub);
     public void triggerOFFActions(HubInterface hub);
 }

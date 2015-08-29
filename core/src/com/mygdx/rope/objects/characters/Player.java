@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.characters;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -10,6 +11,7 @@ import com.mygdx.rope.objects.ControlProcessor;
 import com.mygdx.rope.objects.Updatable;
 import com.mygdx.rope.objects.weapon.LanceManager;
 import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.Window;
 import com.mygdx.rope.util.Constants.JUMP_STATE;
 import com.mygdx.rope.util.Constants.MOVE_STATE;
 import com.mygdx.rope.util.Constants.AWAKE_STATE;
@@ -42,12 +44,19 @@ public class Player implements ControlProcessor, Updatable  {
     private Vector2 currentMovingVector = new Vector2(0,0);
     private int jumpButtonCount;
     private boolean challengePressed = false;
+    private Sound soundJump;
+    private boolean wasPausePressed = false;
+    private Window currentWindow;
+    private Window previousWindow;
+    private float selectionCoolDown;
 
-    public Player(String name, Character character, InputProfile inputProfile, GameScreen gameScreen)  {
-        this.gameScreen =gameScreen;
+    public Player(String name, Character character, InputProfile inputProfile, GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
         this.inputProfile = inputProfile;
         this.name = name;
+        setCurrentWindow(null);
         setCharacter(character);
+        soundJump = gameScreen.assetManager.getRandom("jump");
     }
 
     public void setCharacter(Character character) {
@@ -57,9 +66,16 @@ public class Player implements ControlProcessor, Updatable  {
         character.setPlayer(this);
         weapon = new LanceManager(character.getGamescreen(), character, character.position, character.color_texture); // that weird t have that here! (I agree)
     }
+
+
+
     @Override
     public Character getCharacter() {
         return character;
+    }
+
+    public InputProfile getInputProfile() {
+        return inputProfile;
     }
 
     public String getName() {
@@ -85,23 +101,81 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     public void processInputs(float deltaTime) {
-        if (character.awakeState == AWAKE_STATE.SLEEPING ||
-                character.moveState == MOVE_STATE.THROWED ||
-                character.awakeState == AWAKE_STATE.DEAD  ||
-                character == null)
+        if(gameScreen.getStateGame() == Constants.GAME_STATE.PLAYED &&selectionCoolDown==0) {
+            if (character.awakeState == AWAKE_STATE.SLEEPING ||
+                    character.moveState == MOVE_STATE.THROWED ||
+                    character.awakeState == AWAKE_STATE.DEAD ||
+                    character == null)
+                return;
+            bodyVel = objBody.getLinearVelocity();
+            bodyPos = objBody.getPosition();
+            currentMovingVector = inputProfile.getMovingVector();
+            currentAimingAngle = inputProfile.getAimingAngle(new Vector2(character.position)
+                    .add(character.dimension.x * 0.5f, character.dimension.y * 0.5f)); // try to provide the center of the object
+            boolean playerExplicitAiming = currentAimingAngle != null;
+            processAimingInput();
+            processMovingInput();
+            processJumpInput(inputProfile.getButtonState("Jump"));
+            processLongAttackInput((inputProfile.getButtonState("LongAttack1") || inputProfile.getButtonState("LongAttack2")), playerExplicitAiming, deltaTime);
+            processShortAttackInput((inputProfile.getButtonState("ShortAttack")), playerExplicitAiming, deltaTime);
+            processActionInput(inputProfile.getButtonState("PickUp"));
+            processPauseInput(inputProfile.getButtonState("Start"));
+        }
+        else if (currentWindow != null){
+            currentMovingVector = inputProfile.getMovingVector();
+            processWindowMovingInput();
+            processSelectInput(inputProfile.getButtonState("Select"));
+            processBackInput(inputProfile.getButtonState("Back"));
+            processPauseInput(inputProfile.getButtonState("Start"));
+
+        }
+    }
+
+
+
+    private void processWindowMovingInput() {
+        if (currentMovingVector.y > 0.5 && selectionCoolDown == 0) {
+            selectionCoolDown = 1;
+            currentWindow.selectNextAction();
+            gameScreen.setDebugText("UP");
+        }
+        else if (currentMovingVector.y < -0.5 && selectionCoolDown == 0){
+            selectionCoolDown = 1;
+            currentWindow.selectPreviousAction();
+            gameScreen.setDebugText("DOWN");
+        }
+
+    }
+
+    private void processSelectInput(boolean isPressed){
+        if(isPressed && selectionCoolDown == 0) {
+            currentWindow.executeSelectedAction();
+            selectionCoolDown=1;
+        }
+    }
+
+    private void processBackInput(boolean isPressed) {
+        if (isPressed && selectionCoolDown == 0) {
+            currentWindow.closeWindow();
+            selectionCoolDown=1;
+        }
+    }
+
+
+
+    private void processPauseInput(boolean isPressed) {
+        if (isPressed && !wasPausePressed) {
+            wasPausePressed = true;
+            if(gameScreen.getStateGame() != Constants.GAME_STATE.PAUSED) {
+                gameScreen.openPauseWindow(true, name);
+            } else {
+                gameScreen.openPauseWindow(false, name);
+            }
+        } else if (!isPressed && wasPausePressed) {
+            wasPausePressed = false;
+        } else {
             return;
-        bodyVel = objBody.getLinearVelocity();
-        bodyPos = objBody.getPosition();
-        currentMovingVector = inputProfile.getMovingVector();
-        currentAimingAngle = inputProfile.getAimingAngle(new Vector2(character.position)
-                .add(character.dimension.x * 0.5f, character.dimension.y * 0.5f)); // try to provide the center of the object
-        boolean playerExplicitAiming = currentAimingAngle != null;
-        processAimingInput();
-        processMovingInput();
-        processJumpInput(inputProfile.getButtonState("Jump"));
-        processLongAttackInput((inputProfile.getButtonState("LongAttack1") || inputProfile.getButtonState("LongAttack2")), playerExplicitAiming, deltaTime);
-        processShortAttackInput((inputProfile.getButtonState("ShortAttack") ), playerExplicitAiming, deltaTime);
-        processActionInput(inputProfile.getButtonState("PickUp"));
+        }
     }
 
     private void processAimingInput() {
@@ -210,6 +284,7 @@ public class Player implements ControlProcessor, Updatable  {
                 // (especially useful for jumping immediately after a FALLINGSTATE, the grounded sensor is activated while we are still falling
                 objBody.setLinearVelocity(bodyVel);
                 character.getBody().applyLinearImpulse(new Vector2(0.0f, 116.0f), new Vector2(0,0), true );
+                soundJump.play();
             }
         }
         else { // Jump Button is not Pressed
@@ -237,6 +312,27 @@ public class Player implements ControlProcessor, Updatable  {
     @Override
     public boolean update(float deltaTime) {
         processInputs(deltaTime);
+        if (selectionCoolDown != 0)
+            selectionCoolDown -= deltaTime*3;
+        if (selectionCoolDown <0)
+            selectionCoolDown = 0;
         return false;
+    }
+
+    public void setCurrentWindow(Window currentWindow) {
+        this.previousWindow = this.currentWindow;
+        this.currentWindow = currentWindow;
+    }
+
+    public boolean toPreviousWindow(){
+        currentWindow = previousWindow;
+        if (currentWindow == null)
+            return false;
+        else
+            return true;
+    }
+
+    public void savePreviousWindow(){
+        previousWindow = currentWindow;
     }
 }

@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.weapon;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
@@ -118,11 +119,12 @@ public class LanceManager extends GameObject {
                 else
                     lastTouchedObj = null;
                 if (lastTouchedObj != null) {
-                    if (lastTouchedObj.getClass().equals(Character.class)) { // should go in the Lance
+                    if (lastTouchedObj.getClass().equals(Character.class)) {  // should go in the Lance
                         Character p = (Character) lastTouchedObj;
                         p.addDamage(Constants.SLAPDAMAGE);
                         p.goToSleepFor(givenSleep);
-
+                        Sound slaphit = gamescreen.assetManager.getRandom("slap_hit");
+                        slaphit.play();
                         float ximpulse = 50.0f * ((character.viewDirection == Constants.VIEW_DIRECTION.RIGHT) ? 1 : -1);
                         //p.moveState = Constants.MOVE_STATE.THROWED;
                         //p.getBody().setTransform(p.getBody().getPosition().x, p.getBody().getPosition().y + 0.1f,0);
@@ -131,6 +133,14 @@ public class LanceManager extends GameObject {
                         Gdx.app.debug("LanceManager: ", "Marking -- " + p.getMarks());
                         p.dropObjects();
                     }
+                    else {
+                        Sound slapmiss = gamescreen.assetManager.getRandom("slap_miss");
+                        slapmiss.play();
+                    }
+                }
+                else {
+                        Sound slapmiss = gamescreen.assetManager.getRandom("slap_miss");
+                        slapmiss.play();
                 }
             }
         }

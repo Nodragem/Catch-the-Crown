@@ -1,1 +1,0 @@
-cmd /k "java F:\Dropbox\Dropbox\Jeux-Prog\RopeGame\out\production\desktop\com\mygdx\rope\desktop\DesktopLauncher.class"

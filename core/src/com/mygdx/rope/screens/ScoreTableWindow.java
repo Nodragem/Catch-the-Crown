@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -18,7 +19,7 @@ import com.mygdx.rope.util.Constants;
 /**
  * Created by Geoffrey on 12/04/2015.
  */
-public class ScoreTableWindow {
+public class ScoreTableWindow implements Window {
     private final NinePatch winTexture;
     private final BitmapFont font;
     private final GameScreen gameScreen;
@@ -126,17 +127,16 @@ public class ScoreTableWindow {
 
     }
     
-    
     public void render(SpriteBatch batch){
         timer += Gdx.graphics.getDeltaTime();
         background.draw(batch, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         winTexture.draw(batch, winPos.x, winPos.y, winSize.x, winSize.y);
-        BitmapFont.TextBounds bound = font.getBounds("Score Table");
+        //BitmapFont.TextBounds bound = font.getBounds("Score Table");
         font.setColor(1, 0, 0, 1);
         font.draw(batch, "Score Table", (winSize.x) / 2, winTopLeft.y);
         font.setColor(1, 1, 1, 1);
         font.draw(batch, resultAnnouncement, winTopLeft.x, winTopLeft.y - 110); // 110 if the border size
-        font.setMarkupEnabled(true);
+        font.getData().markupEnabled = true;
 
         for (int i = 0; i < effects.length; i++) {
           if (effects[i] != null) {
@@ -152,11 +152,11 @@ public class ScoreTableWindow {
                 animeWinner(batch, region, i);
             else
                 animeLooser(batch, region, i);
-            bound = font.getBounds("0-" + players.getKeyAt(i));
-            font.drawMultiLine(batch, scoreText.get(i), winTopLeft.x + ((i + 0.5f) * columnDistance - bound.width / 2.0f),
-                    winTopLeft.y - (2.28f/3f)*winSize.y, bound.width, BitmapFont.HAlignment.RIGHT );
+            gameScreen.glayout.setText(font, "0-" + players.getKeyAt(i));
+            font.draw(batch, scoreText.get(i), winTopLeft.x + ((i + 0.5f) * columnDistance - gameScreen.glayout.width / 2.0f),
+                    winTopLeft.y - (2.28f/3f)*winSize.y, gameScreen.glayout.width, Align.right, true );
         }
-        font.setMarkupEnabled(false);
+        font.getData().markupEnabled = false;
 
     }
 
@@ -218,5 +218,44 @@ public class ScoreTableWindow {
                 effect.dispose();
         }
     }
-    
+
+    @Override
+    public void update(float deltaTime) {
+
+    }
+
+    @Override
+    public boolean executeSelectedAction() {
+        return false;
+    }
+
+    @Override
+    public void selectNextAction() {
+
+    }
+
+    @Override
+    public void selectPreviousAction() {
+
+    }
+
+    @Override
+    public void selectAction(int index) {
+
+    }
+
+    @Override
+    public void openWindow(int iplayer) {
+
+    }
+
+    @Override
+    public int getActivePlayer() {
+        return 0;
+    }
+
+    @Override
+    public void closeWindow() {
+
+    }
 }

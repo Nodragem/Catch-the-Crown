@@ -2,11 +2,9 @@ package com.mygdx.rope.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -21,6 +19,8 @@ import com.mygdx.rope.util.Constants;
 public class GUILayer {
 
     private final BitmapFont font_reverse;
+    public PauseWindow pauseWindow;
+    private boolean wasPressedPause;
     private Viewport GUIViewport;
     private Constants.GUI_STATE GUIstate;
     private final NinePatch progressBarEmpty;
@@ -51,6 +51,7 @@ public class GUILayer {
     private float progress_ratio;
     public String debugText;
     private ScoreTableWindow scoreTableWindow;
+    private Constants.GUI_STATE previousGUIState;
 
 
     public GUILayer(GameScreen gameScreen){
@@ -64,9 +65,9 @@ public class GUILayer {
         GUIViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         font = new BitmapFont(Gdx.files.internal("fonts/try64x64.fnt"), false);
-        font.setScale(0.90f);
+        font.getData().setScale(0.90f);
         font_reverse = new BitmapFont(Gdx.files.internal("fonts/try64x64.fnt"), false);
-        font_reverse.setScale(0.90f);
+        font_reverse.getData().setScale(0.90f);
         fontTimer = new BitmapFont(Gdx.files.internal("fonts/fonttimer.fnt"), false);
         playersUIBox = new Array<Vector2>(4);
         middlePanelPosX =  Constants.VIEWPORT_GUI_WIDTH/2-xSizePlayerBox/2;
@@ -86,6 +87,9 @@ public class GUILayer {
         progressBarFull = GameObject.atlas.createPatch("progressbar_small_full");
         progressBarFull.scale(4.0f, 4.0f);
         //updatePlayerList(players);
+        scoreTableWindow = null; // will be created when we know the score!
+        pauseWindow = new PauseWindow(gameScreen, GUIViewport, font, players);
+
     }
 
     public Viewport getGUIViewport() {
@@ -93,21 +97,57 @@ public class GUILayer {
     }
 
     public void setGUIstate(Constants.GUI_STATE GUIstate) {
-        if(this.GUIstate != GUIstate)
+        if(this.GUIstate != GUIstate) {
+            this.previousGUIState = this.GUIstate;
             this.GUIstate = GUIstate;
+        }
     }
 
-    public void renderUI(SpriteBatch batch, boolean DEBUG_MODE) {
+
+    public void renderUI(SpriteBatch batch, float deltaTime, boolean DEBUG_MODE) {
         GUIViewport.apply();
         batch.setProjectionMatrix(cameraUI.combined);
         batch.begin();
         displayHUD(batch);
-        if (GUIstate == GUIstate.DISPLAY_END && scoreTableWindow != null) {
-            displayTheEnd(batch);
+//        if (previousGUIState != GUIstate){ // on change
+//            switch (GUIstate) {
+//                case DISPLAY_PAUSE:
+//                    pauseWindow.openWindow(gameScreen.getIndexPauser());
+//                    break;
+//                case DISPLAY_END:
+//                    if(previousGUIState == Constants.GUI_STATE.DISPLAY_PAUSE)
+//                        pauseWindow.closeWindow();
+//                    break;
+//                case DISPLAY_GUI:
+//                    if(previousGUIState == Constants.GUI_STATE.DISPLAY_PAUSE)
+//                        pauseWindow.closeWindow();
+//                    break;
+//            }
+//        }
+        switch (GUIstate) {
+            case DISPLAY_PAUSE:
+                pauseWindow.update(deltaTime);
+                pauseWindow.render(batch);
+                break;
+            case DISPLAY_END:
+                if (scoreTableWindow != null) {
+                    scoreTableWindow.update(deltaTime);
+                    scoreTableWindow.render(batch);}
+                break;
+            case DISPLAY_GUI:
+                break;
         }
         if(DEBUG_MODE)
             renderDebug(batch);
         batch.end();
+    }
+
+    public Window openPauseWindow(boolean b, int ipauser){
+        if (b)
+            pauseWindow.openWindow(ipauser);
+        else
+            pauseWindow.closeWindow();
+        return pauseWindow;
     }
 
     private void displayHUD(SpriteBatch batch){
@@ -210,6 +250,7 @@ public class GUILayer {
             }
         }
     }
+
     public void addPlayer(Player player, int cornerIndex){
         float x = 10+(Constants.VIEWPORT_GUI_WIDTH-xSizePlayerBox-15)*(cornerIndex%2);
         float y = cornerIndex>=2?-18:(Constants.VIEWPORT_GUI_HEIGHT-ySizePlayerBox+70);
@@ -230,9 +271,6 @@ public class GUILayer {
         return false;
     }
 
-    public void displayTheEnd(SpriteBatch batch) {
-        scoreTableWindow.render(batch);
-    }
     public void resize(int width, int height){
         GUIViewport.update(width, height);
     }
@@ -253,11 +291,12 @@ public class GUILayer {
 
     }
 
-    public void loadTheScoreTable(ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable) {
+    public Window loadTheScoreTable(ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable) {
         scoreTableWindow = new ScoreTableWindow(gameScreen, GUIViewport, font, players, victoryTable, scoreTable, rankTable);
+        return scoreTableWindow;
     }
 
     public void renderDebug(SpriteBatch batch) {
-        font.drawMultiLine(batch, debugText, Constants.VIEWPORT_GUI_WIDTH/2, Constants.VIEWPORT_GUI_HEIGHT/2);
+        font.draw(batch, debugText, Constants.VIEWPORT_GUI_WIDTH / 2, Constants.VIEWPORT_GUI_HEIGHT / 2);
     }
 }
