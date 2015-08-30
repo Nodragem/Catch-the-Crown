@@ -5,8 +5,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.rope.screens.GameScreen;
-import com.mygdx.rope.screens.MainMenuWindow;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 
 
@@ -19,7 +18,7 @@ public class RopeGame extends Game {
 		//setScreen(new MainMenuWindow());
 		Array levels = new Array<String>(1);
 		levels.add(Constants.LEVEL_01);
-		setScreen(new GameScreen(0, levels));
+		setScreen(new GameScreenTournament(levels, true));
 
 	}
 

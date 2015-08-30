@@ -25,7 +25,7 @@ public class GUILayer {
     private Constants.GUI_STATE GUIstate;
     private final NinePatch progressBarEmpty;
     private final NinePatch progressBarFull;
-    private GameScreen gameScreen;
+    private GameScreenTournament gameScreen;
     private ArrayMap<String, Player> players;
     private String timerFormatted;
     private BitmapFont font;
@@ -54,7 +54,7 @@ public class GUILayer {
     private Constants.GUI_STATE previousGUIState;
 
 
-    public GUILayer(GameScreen gameScreen){
+    public GUILayer(GameScreenTournament gameScreen){
         GUIstate = Constants.GUI_STATE.DISPLAY_GUI;
         this.gameScreen = gameScreen;
         players = new ArrayMap <String, Player>(4); //  empty
@@ -126,8 +126,10 @@ public class GUILayer {
 //        }
         switch (GUIstate) {
             case DISPLAY_PAUSE:
-                pauseWindow.update(deltaTime);
-                pauseWindow.render(batch);
+                if (pauseWindow != null) {
+                    pauseWindow.update(deltaTime);
+                    pauseWindow.render(batch);
+                }
                 break;
             case DISPLAY_END:
                 if (scoreTableWindow != null) {

@@ -1,7 +1,5 @@
 package com.mygdx.rope.screens;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 /**
  * Created by Geoffrey on 29/08/2015.
  */

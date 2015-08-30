@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 
 /**
@@ -27,8 +27,8 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
     private Animation animSwitchACTIVATED;
     private boolean isActiveByDefault; // note that this is different from being on or off.
 
-    public SimpleSwitcher(GameScreen game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd, float weight, boolean isEnabledByDefault) {
-       // (GameScreen game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd
+    public SimpleSwitcher(GameScreenTournament game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd, float weight, boolean isEnabledByDefault) {
+       // (GameScreenTournament game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd
         super(game, position, dimension, angle, name_texture, fd);
         Gdx.app.debug("Switcher:", "FixtureDef is: "+ fd );
         this.holding = fd.getBoolean("hold", true);

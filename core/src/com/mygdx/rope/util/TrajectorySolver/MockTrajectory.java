@@ -12,7 +12,7 @@ public class MockTrajectory implements TrajectorySolver{
     }
 
     @Override
-    public Vector2 getSpeedFrom(float deltatime) {
+    public Vector2 getSpeedFrom(float deltatime, float waitingTime) {
         return Speed ;
     }
 }

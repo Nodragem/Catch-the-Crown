@@ -1,6 +1,5 @@
 package com.mygdx.rope.objects.weapon;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.MathUtils;
@@ -8,11 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.objects.characters.*;
 import com.mygdx.rope.objects.characters.Character;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
@@ -30,7 +27,7 @@ public class Lance extends GameObject {
     private Filter handleFilter;
     private Animation animThrowed;
 
-    public Lance(GameScreen game, Vector2 position, float angle, Animation animThrowed) {
+    public Lance(GameScreenTournament game, Vector2 position, float angle, Animation animThrowed) {
         super(game, position, new Vector2(1.5f, 0.25f), angle);
         setOrigin(0.0f, 0.0f);
 //        setTransform(position.x, position.y, angle);
@@ -94,7 +91,7 @@ public class Lance extends GameObject {
         // the origin is really at the origin
         position.set(body.getPosition().sub(origin));
         // /position.set(origin.x - dimension.x/2.0f, origin.y - dimension.y/2.0f); // the origin of the body is on the left bottom corner
-        rotation = body.getAngle() * MathUtils.radiansToDegrees;
+        rotation = body.getAngle(); //* MathUtils.radiansToDegrees;
         mainBoxContact.flush();
         return checkIfToDestroy();
     }

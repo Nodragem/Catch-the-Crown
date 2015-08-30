@@ -1,12 +1,8 @@
 package com.mygdx.rope.util;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.rope.objects.GameObject;
 
 /**
  * Created by Nodragem on 11/05/2014.

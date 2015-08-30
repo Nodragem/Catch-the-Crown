@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Character;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
@@ -23,7 +23,7 @@ public class Crown extends GameObject {
     // a part of the gold goes in the crown pocket, the other part in the player pocket
     // the crown holder score is: crown gold pocket + its own gold.
 
-    public Crown(GameScreen game, Vector2 position, Array<Coins> coinGroups) {
+    public Crown(GameScreenTournament game, Vector2 position, Array<Coins> coinGroups) {
         super(game, position);
         linkedGroupCoins = coinGroups;
         for (Coins linkedGroupCoin : linkedGroupCoins) {
@@ -72,7 +72,7 @@ public class Crown extends GameObject {
             return true;
         }
         else if (this.Carrier == null) {
-            if (neverTaken == true) {
+            if (neverTaken) {
                 character.getPlayer().addScore(Constants.BONUSCROWN);
                 for (Coins coins : linkedGroupCoins) {
                     coins.allowActivation(true);

@@ -3,7 +3,7 @@ package com.mygdx.rope.objects.traps;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.Updatable;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 
 /**
 * Created by Nodragem on 22/06/2014.
@@ -20,9 +20,9 @@ public class SimpleHub implements HubInterface, Updatable {
     protected float myThreshold;
     protected boolean active;
     protected float myCurrentValue;
-    protected GameScreen gameScreen;
+    protected GameScreenTournament gameScreen;
 
-    public SimpleHub(GameScreen game) {
+    public SimpleHub(GameScreenTournament game) {
         gameScreen = game;
         gameScreen.getObjectsToUpdate().add(this);
         myThreshold = 100.0f; // percent

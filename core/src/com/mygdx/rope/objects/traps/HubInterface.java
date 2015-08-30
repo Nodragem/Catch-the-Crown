@@ -1,11 +1,5 @@
 package com.mygdx.rope.objects.traps;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.util.ContactData;
-
 /**
  * Created by Nodragem on 26/06/2014.
  */

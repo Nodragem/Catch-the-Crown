@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.ControlProcessor;
 import com.mygdx.rope.objects.Updatable;
 import com.mygdx.rope.objects.weapon.LanceManager;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.screens.Window;
 import com.mygdx.rope.util.Constants.JUMP_STATE;
 import com.mygdx.rope.util.Constants.MOVE_STATE;
@@ -29,7 +29,7 @@ public class Player implements ControlProcessor, Updatable  {
     public final String TAG = "PlayerController";
     public String name;
     public float score;
-    public GameScreen gameScreen;
+    public GameScreenTournament gameScreen;
 	private Body objBody;
     private Character character; // only character has feetsensor
     private InputProfile inputProfile;
@@ -50,7 +50,7 @@ public class Player implements ControlProcessor, Updatable  {
     private Window previousWindow;
     private float selectionCoolDown;
 
-    public Player(String name, Character character, InputProfile inputProfile, GameScreen gameScreen) {
+    public Player(String name, Character character, InputProfile inputProfile, GameScreenTournament gameScreen) {
         this.gameScreen = gameScreen;
         this.inputProfile = inputProfile;
         this.name = name;

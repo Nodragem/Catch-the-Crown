@@ -22,7 +22,7 @@ import com.mygdx.rope.util.Constants;
 public class ScoreTableWindow implements Window {
     private final NinePatch winTexture;
     private final BitmapFont font;
-    private final GameScreen gameScreen;
+    private final GameScreenTournament gameScreen;
     private final Array<String> scoreText;
     private final float columnStepY;
     private final float columnDistance;
@@ -48,7 +48,7 @@ public class ScoreTableWindow implements Window {
     private Array<Label> scoreLabels = new Array<Label>(4);
     private float jumpY;
 
-    public ScoreTableWindow(GameScreen gameScreen, Viewport viewport, BitmapFont font, ArrayMap<String, Player> players, ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable){
+    public ScoreTableWindow(GameScreenTournament gameScreen, Viewport viewport, BitmapFont font, ArrayMap<String, Player> players, ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable){
         this.font = font;
         this.players = players;
         this.gameScreen = gameScreen;
@@ -102,9 +102,9 @@ public class ScoreTableWindow implements Window {
             scoreText.add("[#9E5D41]" + rankTable.get(playerName) + "-" + String.format(playerName + "\n   [#C4B78F]" + scoreTable.get(playerName) + "\n[]"));
             columns_size.add(100 + victoryTable.getValueAt(i) * columnStepY);
         }
-        if(winnerIndex != -1) {
-            winner_column_size = 100 + ( (victoryTable.getValueAt(winnerIndex) ) / gameScreen.getVictoryThreshold()) * 400f;
-        }
+//        if(winnerIndex != -1) {
+//            winner_column_size = 100 + ( (victoryTable.getValueAt(winnerIndex) ) / gameScreen.getVictoryThreshold()) * winSize.y ;
+//        }
 
         effects = new ParticleEffect[2];
         boolean debug = false;
@@ -114,8 +114,8 @@ public class ScoreTableWindow implements Window {
             effects[0].setPosition(getCharacterPositionX(winnerIndex)+50, getCharacterPositionY(winnerIndex) + 200);
             effects[0].scaleEffect(4f);
             effects[0].start();
-            //int indexGoldSmith = gameScreen.getMaxIndex(gameScreen.finalScoreTable);
-            int indexGoldSmith = 3;
+            int indexGoldSmith = gameScreen.getMaxIndex(gameScreen.finalScoreTable);
+            //int indexGoldSmith = 3;
             if (indexGoldSmith != winnerIndex){
                 effects[1] = new ParticleEffect();
                 effects[1].load(Gdx.files.internal("particles/money.particles"), GameObject.atlas);
@@ -226,6 +226,7 @@ public class ScoreTableWindow implements Window {
 
     @Override
     public boolean executeSelectedAction() {
+
         return false;
     }
 

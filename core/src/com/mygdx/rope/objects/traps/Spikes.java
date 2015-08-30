@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 
 /**
@@ -23,7 +23,7 @@ public class Spikes extends GameObject implements Triggerable {
     private boolean isVertical;
     private boolean defaultON;
 
-    public Spikes(GameScreen game, Vector2 position, Vector2 dimension, float rotation, String name_texture, float intervalON, float intervalOFF, boolean defaultON) {
+    public Spikes(GameScreenTournament game, Vector2 position, Vector2 dimension, float rotation, String name_texture, float intervalON, float intervalOFF, boolean defaultON) {
         // instead of Overriding I could just do a simple GameObject Factory which
         // would use the GameObject constructor to give the Fixture, the filter and the animation definition to GameObject.
         // Further more, the Factory could also set up the Body Type and give an animation of switching off or on.
@@ -90,10 +90,10 @@ public class Spikes extends GameObject implements Triggerable {
             TextureRegion reg = null;
             reg = current_animation.getKeyFrame(stateTime);
             for (int i = 0; i < dimension.x; i++) {
-                batch.draw(reg, position.x + i*MathUtils.cosDeg(rotation), position.y + i*MathUtils.sinDeg(rotation),
+                batch.draw(reg, position.x + i*MathUtils.cos(rotation), position.y + i*MathUtils.sin(rotation),
                         0.0f, 0.0f, // origins
                         1, 1, 1, 1, // dimension and scale
-                        rotation
+                        rotation * MathUtils.radiansToDegrees
                 );
             }
         }

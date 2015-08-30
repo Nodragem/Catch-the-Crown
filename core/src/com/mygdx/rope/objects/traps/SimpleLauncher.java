@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Usable;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 
 /**
@@ -31,9 +31,10 @@ public class SimpleLauncher extends GameObject implements Triggerable {
     private int pool_size;
     private Constants.TRAPSTATE trapstate;
 
-    public SimpleLauncher(GameScreen game, Vector2 position, Vector2 dimension, float rotation, float intervalProjectile, float reloadTime, float impulse, int nb_pool, boolean defaultON, String projectile_type) {
+    public SimpleLauncher(GameScreenTournament game, Vector2 position, Vector2 dimension, float rotation, float intervalProjectile, float reloadTime, float impulse, int nb_pool, boolean defaultON, String projectile_type) {
         super(game, position, dimension, rotation, "launcher");
         /*
+        # rotation is is degree !! but this.rotation is in radians.
         * here, intervalProjectile is the time between delivering a new object,
         * while intervalOFF is how long the delivered object will stay ON.
         **/
@@ -54,18 +55,18 @@ public class SimpleLauncher extends GameObject implements Triggerable {
             Gdx.app.debug("Launcher", "Projectile found?! " + info);
             for (int i = 0; i < pool_size; i++) {
                 if (name_texture != null)
-                    poolObj.add(new Projectile(this.gamescreen, new Vector2(position).add(0,i), new Vector2(dimension), rotation, name_texture, info));
+                    poolObj.add(new Projectile(this.gamescreen, new Vector2(position).add(0,i), new Vector2(dimension), this.rotation, name_texture, info));
             }
         }
         this.intervalProjectile = intervalProjectile;
         this.reloadTime = reloadTime;
-        this.impulse = new Vector2(impulse * MathUtils.cos(rotation) , impulse * MathUtils.sin(rotation));
+        this.impulse = new Vector2(impulse * MathUtils.cos(this.rotation) , impulse * MathUtils.sin(this.rotation));
         //this.impulse = new Vector2(2 , 0);
         Gdx.app.debug("SimpleLauncher: ", "impulse vector: "+this.impulse.x +", "+this.impulse.y);
         Gdx.app.debug("SimpleLauncher: ", "impulse from Tiled: "+impulse);
         float radius = (float) Math.sqrt(Math.pow(1.1f, 2) + Math.pow((1-projectile_sizey)/2,2)); // the start point will be at 1.1 units from the launcher origin on the relative x, and on the y center of the launcher.
         float angle = MathUtils.atan2((1-projectile_sizey)/2, 1.1f);
-        start_point =new Vector2(position.x+radius*MathUtils.cos(rotation + angle), position.y+radius*MathUtils.sin(rotation + angle));
+        start_point =new Vector2(position.x+radius*MathUtils.cos(this.rotation + angle), position.y+radius*MathUtils.sin(this.rotation + angle));
     }
 
     public void initFilter() {
@@ -134,10 +135,10 @@ public class SimpleLauncher extends GameObject implements Triggerable {
             TextureRegion reg = null;
             reg = current_animation.getKeyFrame(stateTime);
             for (int i = 0; i < dimension.x; i++) {
-                batch.draw(reg, position.x + i*MathUtils.cosDeg(rotation), position.y + i*MathUtils.sinDeg(rotation),
+                batch.draw(reg, position.x + i*MathUtils.cos(rotation), position.y + i*MathUtils.sin(rotation),
                         0.0f, 0.0f, // origins
                         1, 1, 1, 1, // dimension and scale
-                        rotation
+                        rotation * MathUtils.radiansToDegrees
                 );
             }
         }

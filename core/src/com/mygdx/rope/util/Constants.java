@@ -25,7 +25,7 @@ public class Constants {
     public static final float RESPAWNTIME = 5.0f;
     public static final float SLAPDAMAGE = 8.4f;
     public static final float COINSTIME = - 20.0f;
-    public static final float STARTTIMER = 10*60; //2*60; // 2*60; // 2 minutes
+    public static final float STARTTIMER = 15; //10*60; //2*60; // 2*60; // 2 minutes
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}

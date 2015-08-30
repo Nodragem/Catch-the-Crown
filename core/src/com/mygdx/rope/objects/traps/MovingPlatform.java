@@ -5,27 +5,21 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.CircleMapObject;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
-import com.mygdx.rope.util.TrajectorySolver.MockTrajectory;
 import com.mygdx.rope.util.TrajectorySolver.TrajectoryPolygon;
 import com.mygdx.rope.util.TrajectorySolver.TrajectorySolver;
-
-import java.text.DecimalFormat;
 
 /**
  * Created by Geoffrey on 10/01/2015.
@@ -39,25 +33,30 @@ public class MovingPlatform extends GameObject implements Triggerable {
     private float correctionAngle;
     private boolean defaultON;
     private boolean stopped;
+    private float waitingTime;
     private boolean platformAlwaysVisible;
     private Array<TextureRegion> platformBlocks;// we could do a static array of arrays, and the class would load oall the type of platform used in the level.
     private int blockFlag;
 
-    public MovingPlatform(GameScreen game, Vector2 position, Vector2 dimension, MapObject path, float angularSpeed, boolean defaultON, boolean alwaysVisible, String nameTexture) {
+    public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, MapObject path,
+                          float angularSpeed, float waitingTime, boolean defaultON, boolean alwaysVisible, String nameTexture) {
         // instead of Overriding I could just do a simple GameObject Factory which
         // would use the GameObject constructor to give the Fixture, the filter and the animation definition to GameObject.
         // Further more, the Factory could also set up the Body Type and give an animation of switching off or on.
         // The only thing missing to GameObject is float "damage", which if it is > 0 is called and removed from the other object --> We tried to do something
-        super(game, position, dimension, 0f, nameTexture);
+        super(game, position, dimension, angle, nameTexture);
 
         this.platformAlwaysVisible = alwaysVisible;
         this.defaultON = defaultON;
+        this.waitingTime = waitingTime;
         body.getFixtureList().get(0).setFriction(1.0f);
         origin.x = dimension.x/2;
         origin.y = dimension.y/2;
-        correctionRadius = (float) Math.sqrt(Math.pow(origin.x, 2) + Math.pow(origin.y, 2)); // the start point will be at 1.1 units from the launcher origin on the relative x, and on the y center of the launcher.
+        correctionRadius = (float) Math.sqrt(Math.pow(origin.x, 2) + Math.pow(origin.y, 2));
         correctionAngle = MathUtils.atan2(origin.y, origin.x);
-        body.setTransform(body.getPosition().x+origin.x, body.getPosition().y+origin.y, 0);
+        origin.x = correctionRadius * MathUtils.cos(this.rotation+correctionAngle);
+        origin.y = correctionRadius * MathUtils.sin(this.rotation+correctionAngle);
+        body.setTransform(body.getPosition().x+origin.x, body.getPosition().y+origin.y, this.rotation);
         Gdx.app.debug("Platform", "Platform in creation!, origin ="+ origin.x + "; "+origin.y);
         body.setType(BodyDef.BodyType.KinematicBody);
         //body.getFixtureList().get(0).setSensor(true);
@@ -170,10 +169,10 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     @Override
-    public boolean update(float deltaTime){
+    public boolean update(float deltaTime){ // try to do one way (single ticket) platforms
         if(!stopped) {
             if(trajResolver != null)
-                speed = trajResolver.getSpeedFrom(deltaTime);
+                speed = trajResolver.getSpeedFrom(deltaTime, waitingTime);
             body.setLinearVelocity(speed);
             body.setAngularVelocity(angularSpeed);
         }
@@ -260,10 +259,10 @@ public class MovingPlatform extends GameObject implements Triggerable {
             TextureRegion reg = null;
             reg = current_animation.getKeyFrame(stateTime);
             for (int i = 0; i < platformBlocks.size; i++) {
-                batch.draw(platformBlocks.get(i), position.x + i*MathUtils.cosDeg(rotation), position.y + i*MathUtils.sinDeg(rotation),
+                batch.draw(platformBlocks.get(i), position.x + i*MathUtils.cos(rotation), position.y + i*MathUtils.sin(rotation),
                         0.0f, 0.0f, // origins
                         1, 1, 1, dimension.y, // dimension and scale
-                        rotation
+                        rotation * MathUtils.radiansToDegrees
                 );
             }
         }

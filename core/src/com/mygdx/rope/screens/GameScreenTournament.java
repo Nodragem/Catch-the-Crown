@@ -5,8 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
@@ -22,6 +20,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -46,8 +45,8 @@ import com.mygdx.rope.util.assetmanager.Assets;
 import java.lang.String;
 import java.util.Iterator;
 
-public class GameScreen implements Screen {
-	private static final boolean DEBUG_BOX2D = true;
+public class GameScreenTournament implements Screen {
+	private static final boolean DEBUG_BOX2D = false;
 	private TiledMap map;
     private ArrayMap <String, Player> playersList;
     public int ipauser = 0; // the player who pressed the pause button and control the pause menu.
@@ -81,9 +80,15 @@ public class GameScreen implements Screen {
     private Array<String> listLevels;
     private GAME_STATE previousStateGame;
     private int victoryThreshold;
+    private boolean randomLevel;
 
-    public GameScreen(int currentLevel, Array<String> listLevels){
-        this.currentLevel = currentLevel;
+    public GameScreenTournament(Array<String> listLevels, boolean randomLevel){
+        victoryThreshold = 2;
+        this.randomLevel = randomLevel;
+        if (randomLevel)
+            this.currentLevel = MathUtils.random(listLevels.size-1);
+        else
+            this.currentLevel = 0;
         this.listLevels = listLevels;
     }
 
@@ -104,7 +109,7 @@ public class GameScreen implements Screen {
             gameViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
 
-        victoryThreshold = 2;
+
         victoryTable = null;
         cameraHelper = new CameraHelper();
         cameraHelper.setTarget(cameraTarget);
@@ -168,7 +173,7 @@ public class GameScreen implements Screen {
         for (JsonValue item:root.get("players")){
             if (nb_created_player >= nb_players)
                 break;
-            Gdx.app.debug("GameScreen", "player: " + item.get("name"));
+            Gdx.app.debug("GameScreenTournament", "player: " + item.get("name"));
             boolean keyboard = item.getString("input", "controller").equals("keyboard");
             InputProfile inputProfil = null;
             if (keyboard & nb_keyboard > 0){
@@ -290,29 +295,13 @@ public class GameScreen implements Screen {
 	}
 
     public void update(float deltaTime){
-        if(previousStateGame != stateGame){ // on change of state
-            switch (stateGame){
-                case PLAYED:
-                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
-                    break;
-                case PAUSED:
-                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_PAUSE);
-                    break;
-                case ROUND_END:
-                    proceedToEndOfRoundAction();
-                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_END);
-                    break;
-                case TOURNAMENT_END: // we don't know yet
-                    break;
-            }
-        }
         groupScore = 0;
         for (int i = 0; i < playersList.size; i++) {
             // players update is done after objects update, cause they need to know the state of their character to process the input.
             playersList.getValueAt(i).update(deltaTime);
             groupScore += playersList.getValueAt(i).getScore();
         }
-        if (this.stateGame == GAME_STATE.PAUSED){
+        if (this.stateGame != GAME_STATE.PLAYED){
             return;
         }
         // Check if end of the round:
@@ -598,6 +587,20 @@ public class GameScreen implements Screen {
         if (this.stateGame != stateGame) {
             this.previousStateGame = this.stateGame;
             this.stateGame = stateGame;
+            switch (this.stateGame){
+                case PLAYED:
+                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
+                    break;
+                case PAUSED:
+                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_PAUSE);
+                    break;
+                case ROUND_END:
+                    proceedToEndOfRoundAction();
+                    GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_END);
+                    break;
+                case TOURNAMENT_END: // we don't know yet
+                    break;
+            }
             return true;
         }
 

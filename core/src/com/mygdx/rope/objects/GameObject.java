@@ -12,14 +12,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.characters.Character;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
-
-import java.util.Locale;
 
 public class GameObject implements Updatable {
     //public final static TextureAtlas atlas = new TextureAtlas("texture_obj.pack"); // all the game object has access to a class Atlas
@@ -32,7 +29,7 @@ public class GameObject implements Updatable {
     protected float givenDamage;
     protected float bufferReceivedDamage;
     protected float timeStepDamage;
-    public GameScreen gamescreen;
+    public GameScreenTournament gamescreen;
     public GameObject parent = null;
     public int myRenderID;
     public boolean isVisible;
@@ -59,7 +56,7 @@ public class GameObject implements Updatable {
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 
-    public GameObject(GameScreen game, Vector2 position, Vector2 dimension, float angle, String name_texture, JsonValue bodyDef, Filter filter){ // angle in radians
+    public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, String name_texture, JsonValue bodyDef, Filter filter){ // angle in radians
         gamescreen = game;
         color = new Array<Float>(new Float[]{1.0f,1.0f,1.0f,1.0f});
         //stateTime = 0;
@@ -79,8 +76,8 @@ public class GameObject implements Updatable {
         scale = new Vector2(1, 1);
         this.position = position; // position and rotation may be not useful and redundant with the body
         this.rposition = new Vector2(0,0);
-        rotation = angle; // in degrees
-        rrotation = 0;
+        rotation = angle * MathUtils.degreesToRadians; // in radians
+        rrotation = 0; // radians
         BodyDef def = new BodyDef();
         this.body = b2world.createBody(def);
         this.body.setTransform(this.position, rotation);
@@ -105,23 +102,23 @@ public class GameObject implements Updatable {
         this.goToActivation();
 
     }
-    public GameObject(GameScreen game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd) {
+    public GameObject(GameScreenTournament game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd) {
         this(game, position, dimension, angle, name_texture, fd, null);
     }
 
-    public GameObject(GameScreen game, Vector2 position,  Vector2 dimension,float angle, String name_texture) {
+    public GameObject(GameScreenTournament game, Vector2 position,  Vector2 dimension,float angle, String name_texture) {
         this(game, position, dimension, angle, name_texture, null, null);
     }
 	
-    public GameObject(GameScreen game, Vector2 position, Vector2 dimension, float angle) {
+    public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle) {
         this(game, position, dimension, angle, null, null, null);
 	}
 
-    public GameObject(GameScreen game, Vector2 position, Vector2 dimension ) {
+    public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension ) {
         this(game, position, dimension, 0, null, null, null);
 	}
 
-    public GameObject(GameScreen game, Vector2 position ) {
+    public GameObject(GameScreenTournament game, Vector2 position ) {
         this(game, position, new Vector2(1, 1.0f), 0, null, null, null);
     }
 
@@ -278,20 +275,20 @@ public class GameObject implements Updatable {
         // we update the position even when the object is not activated
         if (parent == null || body.getType() == BodyType.DynamicBody) {
             position.set(body.getPosition());
-            rotation = body.getAngle() * MathUtils.radiansToDegrees;
+            rotation = body.getAngle(); // * MathUtils.radiansToDegrees;
         }
         else{
             // rposition. x = angle; rposition.y = radius
             body.setTransform(
-                    parent.position.x + rposition.y*MathUtils.cos(rposition.x + parent.rotation*MathUtils.degreesToRadians),
-                    parent.position.y + rposition.y*MathUtils.sin(rposition.x + parent.rotation*MathUtils.degreesToRadians),
-                    (parent.rotation + rrotation)*MathUtils.degreesToRadians
+                    parent.position.x + rposition.y*MathUtils.cos(rposition.x + parent.rotation/* *MathUtils.degreesToRadians*/),
+                    parent.position.y + rposition.y*MathUtils.sin(rposition.x + parent.rotation /* *MathUtils.degreesToRadians */),
+                    (parent.rotation + rrotation) //*MathUtils.degreesToRadians
             );
 //            body.setTransform(parent.position.x,
 //                    parent.position.y,
 //                    absoluteAngle);
             position.set(body.getPosition());
-            rotation = body.getAngle() * MathUtils.radiansToDegrees;
+            rotation = body.getAngle(); //* MathUtils.radiansToDegrees;
             //this.isVisible = parent.isVisible;
         }
         switch (activeState){
@@ -364,7 +361,7 @@ public class GameObject implements Updatable {
                     origin.x, origin.y,
                     dimension.x, dimension.y,
                     1, 1,
-                    rotation,
+                    rotation*MathUtils.radiansToDegrees,
                     reg.getRegionX(), reg.getRegionY(),
                     reg.getRegionWidth(), reg.getRegionHeight(),
                     viewDirection == Constants.VIEW_DIRECTION.LEFT, false);
@@ -420,7 +417,7 @@ public class GameObject implements Updatable {
         return life;
     }
 
-    public GameScreen getGamescreen() {
+    public GameScreenTournament getGamescreen() {
         return gamescreen;
     }
 

@@ -102,7 +102,7 @@ public class InputProfileController implements ControllerListener, InputProfile 
         else {
             angle = null;
         }
-        return angle;
+        return angle; //  in radians
     }
 
     @Override

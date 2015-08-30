@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Array;
@@ -14,15 +13,13 @@ import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Player;
 import com.mygdx.rope.util.Constants;
 
-import java.util.Arrays;
-
 /**
  * Created by Geoffrey on 29/08/2015.
  */
 public class PauseWindow implements Window  {
     private final NinePatch winTexture;
     private final BitmapFont font;
-    private final GameScreen gameScreen;
+    private final GameScreenTournament gameScreen;
     private final Array<String> selectionText;
     private final String mainText;
     public int ipauser;
@@ -37,7 +34,7 @@ public class PauseWindow implements Window  {
     private Animation pauser_anim;
     private NinePatch columnNinePatch;
 
-    public PauseWindow(GameScreen gameScreen, Viewport viewport, BitmapFont font, ArrayMap<String, Player> players) {
+    public PauseWindow(GameScreenTournament gameScreen, Viewport viewport, BitmapFont font, ArrayMap<String, Player> players) {
         this.font = font;
         this.ipauser = -1;
         this.gameScreen = gameScreen;
@@ -71,6 +68,7 @@ public class PauseWindow implements Window  {
 
     public void openWindow(int ipauser) {
         this.ipauser = ipauser;
+        //Gdx.app.debug("PAUSE", "PAUSE");
         gameScreen.setDebugText("");
         Array<TextureAtlas.AtlasRegion> regions = null;
         regions = GameObject.atlas.findRegions("Piaf_" +

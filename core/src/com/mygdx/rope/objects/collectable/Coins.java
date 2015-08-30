@@ -16,9 +16,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.objects.traps.HubInterface;
-import com.mygdx.rope.objects.traps.SimpleHub;
 import com.mygdx.rope.objects.traps.Triggerable;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
@@ -44,7 +43,7 @@ public class Coins extends GameObject implements Triggerable {
     static ArrayMap<String, Animation> animOfCollectables;
 
     // we may want it to be compatible with the trap system
-    public Coins(GameScreen game, Vector2 position, TiledMapTileLayer collectableMap, ArrayMap<String, HubInterface> HubList) {
+    public Coins(GameScreenTournament game, Vector2 position, TiledMapTileLayer collectableMap, ArrayMap<String, HubInterface> HubList) {
         super(game, position, new Vector2(0.5f,0.5f));
         activationAllowed = false;
         coinsRespawnTime = Constants.COINSTIME;
@@ -159,7 +158,7 @@ public class Coins extends GameObject implements Triggerable {
             for (int i = 0; i < respawnTimeCollectables.size; i++) {
                 if (respawnTimeCollectables.get(i) > 0 ) {
                     ContactData data = (ContactData) body.getFixtureList().get(i).getUserData();
-                    if (data.isTouchedBy(characterWithCrown.getBody().getFixtureList().get(0)) == true) {
+                    if (data.isTouchedBy(characterWithCrown.getBody().getFixtureList().get(0))) {
                         respawnTimeCollectables.set(i, coinsRespawnTime);
                         distributeGold(valueCollectables.get(i));
                     }

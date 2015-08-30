@@ -1,30 +1,30 @@
 {
-	nb_players: 4,
-	sound_volume: 100,
-	players: [
+	"nb_players": 4,
+	"sound_volume": 100,
+	"players": [
 		{
-          name: "Geoffrey",
-          color: "green",
-          input: "controller",
-          id_input: 1
+          "name": "Geoffrey",
+          "color": "green",
+          "input": "controller",
+          "id_input": 1
 		},
       {
-          name: "Kacper",
-          color: "yellow",
-          input: "controller",
-          id_input: 2
+          "name": "Kacper",
+          "color": "yellow",
+          "input": "controller",
+          "id_input": 2
       },
       {
-          name: "Robert",
-          color: "blue",
-          input: "controller",
-          id_input: 3
+          "name": "Robert",
+          "color": "blue",
+          "input": "controller",
+          "id_input": 3
       },
       {
-          name: "My Clone",
-          color: "red",
-          input: "controller",
-          id_input: 4
+          "name": "My Clone",
+          "color": "red",
+          "input": "controller",
+          "id_input": 4
       }
 	]
 }

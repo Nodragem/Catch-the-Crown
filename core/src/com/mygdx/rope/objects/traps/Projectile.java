@@ -1,17 +1,13 @@
 package com.mygdx.rope.objects.traps;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Usable;
-import com.mygdx.rope.screens.GameScreen;
-import com.mygdx.rope.util.Constants;
+import com.mygdx.rope.screens.GameScreenTournament;
 
 /**
  * Created by Geoffrey on 15/02/2015.
@@ -22,7 +18,7 @@ public class Projectile extends GameObject implements Usable {
     private float rateOfDeath;
 
 
-    public Projectile(GameScreen game, Vector2 position, Vector2 dimension, float angle, String name_texture, JsonValue info) {
+    public Projectile(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, String name_texture, JsonValue info) {
         super(game, position, dimension, angle, name_texture, info);
         Gdx.app.debug("projectile", "sensor? " + getBody().getFixtureList().get(mainFixtureIndex).isSensor());
         returnedDamage =  info.getFloat("returned", 1f);

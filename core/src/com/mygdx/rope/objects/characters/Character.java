@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.collectable.Crown;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
@@ -49,7 +49,7 @@ public class Character extends GameObject {
     private float respawnTime;
     //private ContactData mainBoxContact;
 
-    public Character(GameScreen game, Vector2 position, String name_texture ){
+    public Character(GameScreenTournament game, Vector2 position, String name_texture ){
         super(game, position, new Vector2(1, 0.9f), 0, name_texture);
         respawnTime = -1;
         color_texture = name_texture;

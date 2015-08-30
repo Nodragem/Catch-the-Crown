@@ -1,6 +1,5 @@
 package com.mygdx.rope.util.assetmanager;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;

@@ -1,6 +1,5 @@
 package com.mygdx.rope.objects.traps;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.MapLayer;
@@ -12,23 +11,21 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.objects.Updatable;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Created by Nodragem on 22/06/2014.
  */
 public class TrapFactory {
-    GameScreen gameScreen;
+    GameScreenTournament gameScreen;
     float units;
     ArrayMap <String, HubInterface> listHubs; // Logic Nodes are called HUBs here
     HubInterface currentHub; // Logic Nodes are called HUBs here
 
-    public TrapFactory(GameScreen gameScreen){
+    public TrapFactory(GameScreenTournament gameScreen){
         this.gameScreen = gameScreen;
         units = Constants.TILES_SIZE;
         listHubs = new ArrayMap<String, HubInterface>();
@@ -87,7 +84,7 @@ public class TrapFactory {
         if (typeObject != null) {
             switch (typeObject) {
                 case SIMPLESWITCH:
-                    float rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class);
+                    float rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class); // degree
 
                     int weight = Integer.parseInt(rectangleObj.getProperties().get("weight", String.class));
                     String SwitcherType = null;
@@ -197,20 +194,26 @@ public class TrapFactory {
                     correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
                     defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
                     newInteractiveObject = new SimpleLauncher(gameScreen,rectangle.getPosition(new Vector2()).add(correctionPos),
-                            rectangle.getSize(new Vector2()) , -rotation*MathUtils.degreesToRadians, intervalShoot, reloadTime, impulse, nbpool, defaultON, type_projectile );
+                            rectangle.getSize(new Vector2()) , -rotation, intervalShoot, reloadTime, impulse, nbpool, defaultON, type_projectile );
                     break;
                 case PLATFORM:
+                    rotation =0;
+                    if (rectangleObj.getProperties().get("rotation", Float.class) != null)
+                        rotation = rectangleObj.getProperties().get("rotation", Float.class);
+                    correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
                     Gdx.app.debug("FactoryTrap", "PLATFORM" );
                     Gdx.app.debug("FactoryTrap", "RotationTiled "+ rectangleObj.getProperties().get("Rotation", String.class)+"; myRotation "+0.0f );
                     String pathID = rectangleObj.getProperties().get("Path", String.class);
                     float rotationSpeed =0;
                     if (rectangleObj.getProperties().get("rotationSpeed", String.class) != null)
                         rotationSpeed = Float.parseFloat(rectangleObj.getProperties().get("rotationSpeed", String.class));
+                    float waitingTime = Float.parseFloat(rectangleObj.getProperties().get("Wait", String.class));
                     MapObject path = mapLayer.getObjects().get(pathID);
                     defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
                     boolean alwaysVisible = Boolean.valueOf(rectangleObj.getProperties().get("alwaysVisible", "true", String.class));
                     String textureName = rectangleObj.getProperties().get("texture", "wood", String.class);
-                    newInteractiveObject = new MovingPlatform(gameScreen, rectangle.getPosition(new Vector2()), rectangle.getSize(new Vector2()), path, rotationSpeed, defaultON, alwaysVisible, textureName);
+                    newInteractiveObject = new MovingPlatform(gameScreen, rectangle.getPosition(new Vector2()).add(correctionPos),
+                            rectangle.getSize(new Vector2()),-rotation, path, rotationSpeed, waitingTime, defaultON, alwaysVisible, textureName);
                     break;
             }
             currentHub = listHubs.get(HubID);

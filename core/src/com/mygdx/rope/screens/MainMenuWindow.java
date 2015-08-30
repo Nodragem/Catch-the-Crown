@@ -1,7 +1,6 @@
 package com.mygdx.rope.screens;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * Created by Geoffrey on 29/08/2015.
@@ -39,7 +38,7 @@ public class MainMenuWindow implements Screen, Window {
 
     @Override
     public void dispose() {
-        //new GameScreen(selectedLevel);
+        //new GameScreenTournament(selectedLevel);
 
     }
 

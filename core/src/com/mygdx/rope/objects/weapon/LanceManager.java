@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Character;
-import com.mygdx.rope.screens.GameScreen;
+import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 
 /**
@@ -21,7 +21,7 @@ public class LanceManager extends GameObject {
     private Character character;
     private float shortAttackTime;
     private Constants.ATTACK_STATE attackState;
-    //private GameScreen myGameScreen;
+    //private GameScreenTournament myGameScreen;
     private float powerLoad;
     private float maxPower;
     private float defaultPower;
@@ -36,7 +36,7 @@ public class LanceManager extends GameObject {
     private GameObject lastTouchedObj;
     private boolean shortAttackPressed;
 
-    public LanceManager(GameScreen gm, Character p, Vector2 pos, String color_texture) {
+    public LanceManager(GameScreenTournament gm, Character p, Vector2 pos, String color_texture) {
         // that actually a close range/ long range manager.
         super(gm, pos.cpy(), new Vector2(1,1), 0, color_texture);
         maxPower = 6.0f;
@@ -183,8 +183,8 @@ public class LanceManager extends GameObject {
     }
 
 
-    private void setCurrentLance(Vector2 pos, float angle) {
-        currentLance = new Lance(getGamescreen(), new Vector2(pos.x + 0.5f, pos.y + 0.5f), angle, animLance); // can't do a true pool cause of Weld join
+    private void setCurrentLance(Vector2 pos, float angle) { // WARNING angle in radians
+        currentLance = new Lance(getGamescreen(), new Vector2(pos.x + 0.5f, pos.y + 0.5f), angle*MathUtils.radiansToDegrees, animLance); // can't do a true pool cause of Weld join
         if (lances.size == 3) {
             lances.get(0).setLife(-10);
             lances.removeIndex(0);
@@ -243,7 +243,7 @@ public class LanceManager extends GameObject {
     @Override
     public boolean update(float deltaTime) {
         stateTime += deltaTime;
-        rotation = body.getAngle() * MathUtils.radiansToDegrees;
+        rotation = body.getAngle(); // * MathUtils.radiansToDegrees;
         position.set(body.getPosition()).sub(origin);
 
         switch(attackState){

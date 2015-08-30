@@ -1,36 +1,36 @@
 {
-  projectile_types:[{
-    fireball: {
-      dimensionx: 1.0,
-      dimensiony: 0.5,
-	  isRotation: true,
-	  bodyType: DynamicBody,
-      texture: "fireball",
-      damage: 35,
-      returned: 200,
-      rateDeath: 10,
-      modifier: "fire",
-      sensor: false
+  "projectile_types":[{
+    "fireball": {
+      "dimensionx": 1.0,
+      "dimensiony": 0.5,
+	  "isRotation": true,
+	  "bodyType": "DynamicBody",
+      "texture": "fireball",
+      "damage": 35,
+      "returned": 200,
+      "rateDeath": 10,
+      "modifier": "fire",
+      "sensor": false
     }},
-    {ball: {
-      dimensionx: 0.5,
-      dimensiony: 0.5,
-	  isRotation: true,
-	  bodyType: DynamicBody,
-      texture: "ball",
-      damage: 20,
-      returned: 101,
-      rateDeath: 0,
-      modifier: "none",
-      sensor: false
+    {"ball": {
+      "dimensionx": 0.5,
+      "dimensiony": 0.5,
+	  "isRotation": true,
+	  "bodyType": "DynamicBody",
+      "texture": "ball",
+      "damage": 20,
+      "returned": 101,
+      "rateDeath": 0,
+      "modifier": "none",
+      "sensor": false
     }}
   ],
-  switcher_types:[
-  {simple: {
-	dimensionx: 1.0,
-	  dimensiony: 0.5,
-	  bodyType: StaticBody,
-	  sensor: true
+  "switcher_types":[
+  {"simple": {
+	"dimensionx": 1.0,
+	  "dimensiony": 0.5,
+	  "bodyType": "StaticBody",
+	  "sensor": true
   }}
   ]
 }
