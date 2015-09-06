@@ -48,7 +48,7 @@ public class Player implements ControlProcessor, Updatable  {
     private boolean wasPausePressed = false;
     private Window currentWindow;
     private Window previousWindow;
-    private float selectionCoolDown;
+    public float inputCoolDown;
 
     public Player(String name, Character character, InputProfile inputProfile, GameScreenTournament gameScreen) {
         this.gameScreen = gameScreen;
@@ -101,7 +101,7 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     public void processInputs(float deltaTime) {
-        if(gameScreen.getStateGame() == Constants.GAME_STATE.PLAYED &&selectionCoolDown==0) {
+        if(gameScreen.getStateGame() == Constants.GAME_STATE.PLAYED && inputCoolDown ==0) {
             if (character.awakeState == AWAKE_STATE.SLEEPING ||
                     character.moveState == MOVE_STATE.THROWED ||
                     character.awakeState == AWAKE_STATE.DEAD ||
@@ -120,44 +120,10 @@ public class Player implements ControlProcessor, Updatable  {
             processShortAttackInput((inputProfile.getButtonState("ShortAttack")), playerExplicitAiming, deltaTime);
             processActionInput(inputProfile.getButtonState("PickUp"));
             processPauseInput(inputProfile.getButtonState("Start"));
-        }
-        else if (currentWindow != null){
-            currentMovingVector = inputProfile.getMovingVector();
-            processWindowMovingInput();
-            processSelectInput(inputProfile.getButtonState("Select"));
-            processBackInput(inputProfile.getButtonState("Back"));
-            processPauseInput(inputProfile.getButtonState("Start"));
-
-        }
-    }
-
-
-
-    private void processWindowMovingInput() {
-        if (currentMovingVector.y > 0.5 && selectionCoolDown == 0) {
-            selectionCoolDown = 1;
-            currentWindow.selectNextAction();
-            gameScreen.setDebugText("UP");
-        }
-        else if (currentMovingVector.y < -0.5 && selectionCoolDown == 0){
-            selectionCoolDown = 1;
-            currentWindow.selectPreviousAction();
-            gameScreen.setDebugText("DOWN");
-        }
-
-    }
-
-    private void processSelectInput(boolean isPressed){
-        if(isPressed && selectionCoolDown == 0) {
-            currentWindow.executeSelectedAction();
-            selectionCoolDown=1;
-        }
-    }
-
-    private void processBackInput(boolean isPressed) {
-        if (isPressed && selectionCoolDown == 0) {
-            currentWindow.closeWindow();
-            selectionCoolDown=1;
+        } else if (inputCoolDown > 0){
+            inputCoolDown -= 3.0*deltaTime;
+        } else if (inputCoolDown < 0){
+            inputCoolDown = 0;
         }
     }
 
@@ -167,14 +133,10 @@ public class Player implements ControlProcessor, Updatable  {
         if (isPressed && !wasPausePressed) {
             wasPausePressed = true;
             if(gameScreen.getStateGame() != Constants.GAME_STATE.PAUSED) {
-                gameScreen.openPauseWindow(true, name);
-            } else {
-                gameScreen.openPauseWindow(false, name);
+                gameScreen.openPauseWindow(name);
             }
         } else if (!isPressed && wasPausePressed) {
             wasPausePressed = false;
-        } else {
-            return;
         }
     }
 
@@ -312,10 +274,10 @@ public class Player implements ControlProcessor, Updatable  {
     @Override
     public boolean update(float deltaTime) {
         processInputs(deltaTime);
-        if (selectionCoolDown != 0)
-            selectionCoolDown -= deltaTime*3;
-        if (selectionCoolDown <0)
-            selectionCoolDown = 0;
+        if (inputCoolDown != 0)
+            inputCoolDown -= deltaTime*3;
+        if (inputCoolDown <0)
+            inputCoolDown = 0;
         return false;
     }
 

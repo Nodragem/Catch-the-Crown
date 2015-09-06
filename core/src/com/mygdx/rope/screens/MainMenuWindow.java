@@ -1,84 +1,57 @@
 package com.mygdx.rope.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.rope.RopeGame;
+import com.mygdx.rope.util.Constants;
 
 /**
  * Created by Geoffrey on 29/08/2015.
  */
-public class MainMenuWindow implements Screen, Window {
-    @Override
-    public void show() {
+public class MainMenuWindow extends DefaultWindow {
 
+    private final MenuScreen menuScreen;
+
+    public MainMenuWindow(MenuScreen menuScreen, SpriteBatch batch, Viewport viewport, BitmapFont font) {
+        super(batch, viewport, font);
+        this.menuScreen = menuScreen;
+        setListActions(new Array(new String[]
+                {"Tournament Mode", "Adventure Mode", "Option","Control", "Quit"}));
+        //this.messageText = "\"Let's have \n a break ...\"";
+        this.titleText = "MENU";
+        //this.timer = 0;
     }
-
-    @Override
-    public void render(float delta) {
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        //new GameScreenTournament(selectedLevel);
-
-    }
-
-    @Override
-    public void update(float deltaTime) {
-
-    }
-
-    @Override
-    public int getActivePlayer() {
-        return 0;
-    }
-
     @Override
     public boolean executeSelectedAction() {
+        switch(selectedAction){
+            case 0:
+                menuScreen.startTournament();
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                requestClosing();
+                menuScreen.dispose();
+                break;
+        }
         return false;
     }
 
-    @Override
-    public void selectNextAction() {
-
-    }
 
     @Override
-    public void selectPreviousAction() {
-
+    public void render(float delta) {
+        super.render(delta);
     }
 
-    @Override
-    public void selectAction(int index) {
 
-    }
-
-    @Override
-    public void openWindow(int iplayer) {
-
-    }
-
-    @Override
-    public void closeWindow() {
-
-    }
 }

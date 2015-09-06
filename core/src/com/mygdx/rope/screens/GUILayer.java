@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Player;
 import com.mygdx.rope.util.Constants;
+import com.mygdx.rope.util.InputHandler.InputProfile;
 
 /**
  * Created by Geoffrey on 30/03/2015.
@@ -52,9 +53,11 @@ public class GUILayer {
     public String debugText;
     private ScoreTableWindow scoreTableWindow;
     private Constants.GUI_STATE previousGUIState;
+    private SpriteBatch batch;
 
 
     public GUILayer(GameScreenTournament gameScreen){
+        batch = gameScreen.getBatch();
         GUIstate = Constants.GUI_STATE.DISPLAY_GUI;
         this.gameScreen = gameScreen;
         players = new ArrayMap <String, Player>(4); //  empty
@@ -88,7 +91,8 @@ public class GUILayer {
         progressBarFull.scale(4.0f, 4.0f);
         //updatePlayerList(players);
         scoreTableWindow = null; // will be created when we know the score!
-        pauseWindow = new PauseWindow(gameScreen, GUIViewport, font, players);
+        pauseWindow = new PauseWindow(gameScreen, GUIViewport, font);
+        scoreTableWindow = new ScoreTableWindow(gameScreen, GUIViewport, font);
 
     }
 
@@ -104,7 +108,7 @@ public class GUILayer {
     }
 
 
-    public void renderUI(SpriteBatch batch, float deltaTime, boolean DEBUG_MODE) {
+    public void renderUI(float deltaTime, boolean DEBUG_MODE) {
         GUIViewport.apply();
         batch.setProjectionMatrix(cameraUI.combined);
         batch.begin();
@@ -127,14 +131,14 @@ public class GUILayer {
         switch (GUIstate) {
             case DISPLAY_PAUSE:
                 if (pauseWindow != null) {
-                    pauseWindow.update(deltaTime);
-                    pauseWindow.render(batch);
+                    //pauseWindow.update(deltaTime);
+                    pauseWindow.render(deltaTime);
                 }
                 break;
             case DISPLAY_END:
                 if (scoreTableWindow != null) {
-                    scoreTableWindow.update(deltaTime);
-                    scoreTableWindow.render(batch);}
+                    //scoreTableWindow.update(deltaTime);
+                    scoreTableWindow.render(deltaTime);}
                 break;
             case DISPLAY_GUI:
                 break;
@@ -144,11 +148,8 @@ public class GUILayer {
         batch.end();
     }
 
-    public Window openPauseWindow(boolean b, int ipauser){
-        if (b)
-            pauseWindow.openWindow(ipauser);
-        else
-            pauseWindow.closeWindow();
+    public Window openPauseWindow(InputProfile inputProfile, int icontroller){
+        pauseWindow.openWindow(inputProfile, gameScreen, icontroller);
         return pauseWindow;
     }
 
@@ -290,11 +291,13 @@ public class GUILayer {
         for (int j = 0; j < players.size; j++) {
             addPlayer(players.getValueAt(j), j);
         }
+        this.scoreTableWindow.setPlayerList(players);
 
     }
 
-    public Window loadTheScoreTable(ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable) {
-        scoreTableWindow = new ScoreTableWindow(gameScreen, GUIViewport, font, players, victoryTable, scoreTable, rankTable);
+    public Window openScoreWindow(ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable) {
+        scoreTableWindow.updateScore(victoryTable, scoreTable, rankTable);
+        scoreTableWindow.openWindow((InputProfile) gameScreen.getWinner().getInputProfile(), gameScreen);
         return scoreTableWindow;
     }
 

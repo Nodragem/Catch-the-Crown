@@ -10,7 +10,6 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -28,6 +27,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.rope.RopeGame;
 import com.mygdx.rope.objects.*;
 import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.objects.characters.Player;
@@ -47,14 +47,14 @@ import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
 	private static final boolean DEBUG_BOX2D = false;
-	private TiledMap map;
+    private final RopeGame game;
+    private TiledMap map;
     private ArrayMap <String, Player> playersList;
     public int ipauser = 0; // the player who pressed the pause button and control the pause menu.
 	private OrthogonalTiledMapRenderer map_renderer;
 	private OrthographicCamera camera;
 	private CameraHelper cameraHelper;
     private GUILayer GUIlayer;
-    public GlyphLayout glayout = new GlyphLayout();
     private GameObject cameraTarget;
     private ContactData bufferContactData;
     public Assets assetManager;
@@ -64,7 +64,7 @@ public class GameScreenTournament implements Screen {
     private Array<Updatable> objectsToWipeOut;
     public Array <Controller> XboxControllers;
     public ArrayMap<String, Integer> victoryTable;
-    public ArrayMap<String, Integer> finalScoreTable;
+    public ArrayMap<String, Integer> totalScoreTable;
 	private World b2world;
     public GAME_STATE stateGame;
 	private Box2DDebugRenderer b2debug;
@@ -82,14 +82,16 @@ public class GameScreenTournament implements Screen {
     private int victoryThreshold;
     private boolean randomLevel;
 
-    public GameScreenTournament(Array<String> listLevels, boolean randomLevel){
+    public GameScreenTournament(RopeGame ropeGame){
+        this.game = ropeGame;
+        batch = ropeGame.getBatch();
         victoryThreshold = 2;
-        this.randomLevel = randomLevel;
+        this.listLevels = ropeGame.getLevels();
+        this.randomLevel = ropeGame.isRandomSelectionLevel();
         if (randomLevel)
             this.currentLevel = MathUtils.random(listLevels.size-1);
         else
             this.currentLevel = 0;
-        this.listLevels = listLevels;
     }
 
     @Override
@@ -109,7 +111,6 @@ public class GameScreenTournament implements Screen {
             gameViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
 
-
         victoryTable = null;
         cameraHelper = new CameraHelper();
         cameraHelper.setTarget(cameraTarget);
@@ -122,10 +123,10 @@ public class GameScreenTournament implements Screen {
                 victoryTable.put(playersList.getKeyAt(i), 0);
             }
         }
-        if(finalScoreTable == null){
-            finalScoreTable = new ArrayMap<String, Integer>(4);
+        if(totalScoreTable == null){
+            totalScoreTable = new ArrayMap<String, Integer>(4);
             for (int i = 0; i < playersList.size; i++) {
-                finalScoreTable.put(playersList.getKeyAt(i), 0);
+                totalScoreTable.put(playersList.getKeyAt(i), 0);
             }
         }
 
@@ -142,7 +143,7 @@ public class GameScreenTournament implements Screen {
         objectsToUpdate = new Array<Updatable>();
         objectsToWipeOut = new Array<Updatable>();
         playerSpawners = new Array<Vector2>();
-        batch = new SpriteBatch();
+
         b2debug = new Box2DDebugRenderer();
 
         b2world = new World(new Vector2(0, -9.81f), true);
@@ -157,46 +158,26 @@ public class GameScreenTournament implements Screen {
 
     }
 
-    private void createPlayers(){
-        JsonReader jsonreader = new JsonReader();
-        FileHandle handle = Gdx.files.local("preferences.json");
-        if (!handle.exists())
-            handle = Gdx.files.internal("preference/preferences.json");
-        JsonValue root = jsonreader.parse(handle);
-        int nb_players = root.getInt("nb_players", 4);
-        XboxControllers = Controllers.getControllers();
-        int nb_controllers = XboxControllers.size;
-        int nb_keyboard = 1;
-        playersList = new ArrayMap<String, Player>(XboxControllers.size);
-        // loop over player list:
-        int nb_created_player = 0;
-        for (JsonValue item:root.get("players")){
-            if (nb_created_player >= nb_players)
-                break;
-            Gdx.app.debug("GameScreenTournament", "player: " + item.get("name"));
-            boolean keyboard = item.getString("input", "controller").equals("keyboard");
-            InputProfile inputProfil = null;
-            if (keyboard & nb_keyboard > 0){
-                inputProfil = new InputProfileKeyboard(Gdx.files.internal("preference/profileKeyboard.xml"), camera);
-                nb_keyboard -= 1;
-            }
-            else if (nb_controllers > 0){
-                inputProfil = new InputProfileController(Gdx.files.internal("preference/profileController.xml"),
-                        XboxControllers.get(nb_controllers-1));
-                nb_controllers -= 1;
-            }
-            if (inputProfil == null)
-                break;
-            inputProfil.setContext("Game");
-            Player player = new Player(item.getString("name", "Player "+(nb_created_player+1)),
-                    new Character(this, new Vector2(15,15), item.getString("color", "purple")), inputProfil, this);
+    private void createPlayers() {
+        ArrayMap<String, InputProfile> inputProfiles = game.getInputProfiles();
+        ArrayMap<String, String> colorProfiles = game.getColorProfiles();
+        playersList = new ArrayMap<String, Player>(colorProfiles.size);
+        for (int i = 0; i < inputProfiles.size; i++) {
+            Player player = new Player(inputProfiles.getKeyAt(i),
+                    new Character(this, new Vector2(15,15), colorProfiles.getValueAt(i)),
+                    inputProfiles.getValueAt(i), this);
+            player.getCharacter().setPosition(getSpawnPosition()); // spawners are place by the placeObjectsFromMap
             playersList.put(player.getName(), player);
-            nb_created_player +=1;
         }
+    }
 
-        for (int i = 0; i < playersList.size; i++) {
-            playersList.getValueAt(i).getCharacter().setPosition(getSpawnPosition()); // spawners are place by the placeObjectsFromMap
-        }
+
+    public void toNextLevel(){
+        if (randomLevel)
+            this.currentLevel = MathUtils.random(listLevels.size-1);
+        else
+            this.currentLevel += 1;
+        startNewLevel(listLevels.get(currentLevel));
     }
 
     public ArrayMap<String, Player> getPlayersList() {
@@ -290,7 +271,7 @@ public class GameScreenTournament implements Screen {
         map_renderer.render(foregroundLayers);
         if (DEBUG_BOX2D)
             b2debug.render(b2world, camera.combined); // again the same as setProjectionMatrix
-        GUIlayer.renderUI(batch, deltaTime, DEBUG_BOX2D);
+        GUIlayer.renderUI(deltaTime, DEBUG_BOX2D);
 
 	}
 
@@ -346,12 +327,12 @@ public class GameScreenTournament implements Screen {
     private void proceedToEndOfRoundAction() {
     // we dont want to get the score table in order highest score to lowest score, we want to keep it in player order.
 //        ArrayMap<String, Integer> UnorderedScoreTable = getScoreTableOfCurrentRound(false);
-//        for (int i = 0; i < finalScoreTable.size; i++) {
-//            finalScoreTable.setValue(i, finalScoreTable.getValueAt(i)+UnorderedScoreTable.getValueAt(i));
+//        for (int i = 0; i < totalScoreTable.size; i++) {
+//            totalScoreTable.setValue(i, totalScoreTable.getValueAt(i)+UnorderedScoreTable.getValueAt(i));
 //        }
         ArrayMap<String, Integer> OrderedScoreTable = getScoreTableOfCurrentRound(true);
         for (ObjectMap.Entry<String, Integer> entry : OrderedScoreTable) {
-            finalScoreTable.put(entry.key, finalScoreTable.get(entry.key) + entry.value);
+            totalScoreTable.put(entry.key, totalScoreTable.get(entry.key) + entry.value);
         }
 
         ArrayMap<String, Integer> previousVictoryTable = new ArrayMap<String, Integer>(victoryTable);
@@ -371,7 +352,7 @@ public class GameScreenTournament implements Screen {
             rankTable.put(OrderedScoreTable.getKeyAt(i), rank);
             score_buffer = OrderedScoreTable.getValueAt(i);
         }
-        GUIlayer.loadTheScoreTable(previousVictoryTable, OrderedScoreTable, rankTable);
+        GUIlayer.openScoreWindow(previousVictoryTable, OrderedScoreTable, rankTable);
 
     }
 
@@ -590,6 +571,9 @@ public class GameScreenTournament implements Screen {
             switch (this.stateGame){
                 case PLAYED:
                     GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
+                    for (ObjectMap.Entry<String, Player> stringPlayerEntry : playersList) {
+                        stringPlayerEntry.value.inputCoolDown = 1f;
+                    }
                     break;
                 case PAUSED:
                     GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_PAUSE);
@@ -622,12 +606,15 @@ public class GameScreenTournament implements Screen {
         return ipauser;
     }
 
-    public Window openPauseWindow(boolean b, String name) {
-        this.ipauser = playersList.indexOfKey(name);
-        return GUIlayer.openPauseWindow(b, ipauser);
+    public Window openPauseWindow(String name) {
+        return GUIlayer.openPauseWindow(playersList.get(name).getInputProfile(), playersList.indexOfKey(name));
     }
 
     public String getCurrentLevel() {
         return listLevels.get(currentLevel);
+    }
+
+    public SpriteBatch getBatch() {
+        return batch;
     }
 }

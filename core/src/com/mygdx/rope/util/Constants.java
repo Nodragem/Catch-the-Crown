@@ -11,7 +11,9 @@ public class Constants {
 	public static final float CROWNGOLDRATE = 0.333f;
     public static final float MARKPENALTY = 3f ;
 
+
     public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
+    public static enum MENU_STATE {MAIN_MENU, STORY_MENU, TOURNAMENT_MENU, OPTION_MENU, CONTROL_MENU, QUIT_REQUEST}
     public static enum GUI_STATE {DISPLAY_GUI, DISPLAY_END, previousGUIState, DISPLAY_PAUSE}
     public static final int MOVESTOFREE = 4;
     public static final int MAXMARKS = 5;
@@ -25,7 +27,7 @@ public class Constants {
     public static final float RESPAWNTIME = 5.0f;
     public static final float SLAPDAMAGE = 8.4f;
     public static final float COINSTIME = - 20.0f;
-    public static final float STARTTIMER = 15; //10*60; //2*60; // 2*60; // 2 minutes
+    public static final float STARTTIMER = 2; //10*60; //2*60; // 2*60; // 2 minutes
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}
