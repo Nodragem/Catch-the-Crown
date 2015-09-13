@@ -85,7 +85,7 @@ public class GameScreenTournament implements Screen {
     public GameScreenTournament(RopeGame ropeGame){
         this.game = ropeGame;
         batch = ropeGame.getBatch();
-        victoryThreshold = 2;
+        victoryThreshold = 3;
         this.listLevels = ropeGame.getLevels();
         this.randomLevel = ropeGame.isRandomSelectionLevel();
         if (randomLevel)
@@ -111,32 +111,18 @@ public class GameScreenTournament implements Screen {
             gameViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
 
-        victoryTable = null;
         cameraHelper = new CameraHelper();
         cameraHelper.setTarget(cameraTarget);
         GUIlayer = new GUILayer(this); // is empty (no players)
         setDebugText("DEBUG ON");
         startNewLevel(listLevels.get(currentLevel));
-        if (victoryTable == null){
-            victoryTable = new ArrayMap<String, Integer>(4);
-            for (int i = 0; i < playersList.size; i++) {
-                victoryTable.put(playersList.getKeyAt(i), 0);
-            }
-        }
-        if(totalScoreTable == null){
-            totalScoreTable = new ArrayMap<String, Integer>(4);
-            for (int i = 0; i < playersList.size; i++) {
-                totalScoreTable.put(playersList.getKeyAt(i), 0);
-            }
-        }
-
-
+        initScore();
 
     }
 
     public void startNewLevel(String levelname){
         groupScore = 0;
-        stateGame = GAME_STATE.PLAYED;
+
         GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
         timer = Constants.STARTTIMER;
         objectsToRender = new Array<GameObject>();
@@ -155,7 +141,20 @@ public class GameScreenTournament implements Screen {
         placeObjectsFromMap(map);
         createPlayers();
         GUIlayer.updatePlayerList(playersList);
+        setStateGame(GAME_STATE.PLAYED);
 
+    }
+
+    public void initScore(){
+        victoryTable = new ArrayMap<String, Integer>(4);
+        for (int i = 0; i < playersList.size; i++) {
+            victoryTable.put(playersList.getKeyAt(i), 0);
+        }
+
+        totalScoreTable = new ArrayMap<String, Integer>(4);
+        for (int i = 0; i < playersList.size; i++) {
+            totalScoreTable.put(playersList.getKeyAt(i), 0);
+        }
     }
 
     private void createPlayers() {
@@ -173,10 +172,14 @@ public class GameScreenTournament implements Screen {
 
 
     public void toNextLevel(){
+        if (stateGame == GAME_STATE.TOURNAMENT_END){
+            initScore();
+            this.currentLevel = 0;
+        }
         if (randomLevel)
             this.currentLevel = MathUtils.random(listLevels.size-1);
         else
-            this.currentLevel += 1;
+            this.currentLevel = (currentLevel + 1) % listLevels.size;
         startNewLevel(listLevels.get(currentLevel));
     }
 
@@ -573,6 +576,7 @@ public class GameScreenTournament implements Screen {
                     GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
                     for (ObjectMap.Entry<String, Player> stringPlayerEntry : playersList) {
                         stringPlayerEntry.value.inputCoolDown = 1f;
+                        stringPlayerEntry.value.getInputProfile().setContext("Game");
                     }
                     break;
                 case PAUSED:
@@ -616,5 +620,9 @@ public class GameScreenTournament implements Screen {
 
     public SpriteBatch getBatch() {
         return batch;
+    }
+
+    public void toMainMenu() {
+        game.toMainMenu();
     }
 }

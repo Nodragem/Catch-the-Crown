@@ -19,7 +19,7 @@ import com.mygdx.rope.util.InputHandler.InputProfile;
  */
 public class PauseWindow extends DefaultWindow {
     private final String messageText;
-    private GameScreenTournament gameScreen;
+    //private GameScreenTournament gameScreen;
     private float timer;
 
     public PauseWindow(GameScreenTournament gameScreen, Viewport viewport, BitmapFont font) {
@@ -67,6 +67,9 @@ public class PauseWindow extends DefaultWindow {
             case 2:
                 break;
             case 3:
+                gameScreen.toMainMenu();
+                gameScreen = null;
+                requestClosing();
                 break;
         }
         return false;

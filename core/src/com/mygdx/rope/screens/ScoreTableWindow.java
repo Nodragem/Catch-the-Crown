@@ -18,7 +18,7 @@ import com.mygdx.rope.util.Constants;
  */
 public class ScoreTableWindow extends DefaultWindow {
 
-    private final GameScreenTournament gameScreen;
+    //private GameScreenTournament gameScreen;
     private Array<String> scoreText;
     private float columnStepY;
     private float columnDistance;
@@ -37,7 +37,7 @@ public class ScoreTableWindow extends DefaultWindow {
     private float jumpY;
 
     public ScoreTableWindow(GameScreenTournament gameScreen, Viewport viewport, BitmapFont font) {
-        super(gameScreen.getBatch(), viewport, font, new String[] {"Stop Tournament","Next Turn"});
+        super(gameScreen.getBatch(), viewport, font, new String[] {"Stop Tournament","Start new Round"});
         Yspread = 0;
         Xspread = 1;
         Xspacing = 200f;
@@ -50,19 +50,26 @@ public class ScoreTableWindow extends DefaultWindow {
 
         titleYOffset = 110;
         colorTitle = "[RED]";
-        columns_size = new Array<Float>();
+        ymargin = -600;
         columnDistance = (1f / 2f) * (winSize.x - 2 * 110f); // default value
         winnerIndex = -1;
         timer = 0;
         players = new ArrayMap<String, Player>(0);
 
+
     }
 
     public void updateScore(ArrayMap<String, Integer> victoryTable, ArrayMap<String, Integer> scoreTable, ArrayMap<String, Integer> rankTable) {
         this.selectedAction =1;
+        if(gameScreen.getStateGame() == Constants.GAME_STATE.TOURNAMENT_END)
+            listActions.set(1, "Start a New Tournament");
+        else
+            listActions.set(1, "Start new Round");
+        timer = 0;
         initWinLoseAnimation(scoreTable);
-        scoreText = new Array<String>(4);
         columnStepY = (400.0f / gameScreen.getVictoryThreshold());
+        scoreText = new Array<String>(4);
+        columns_size = new Array<Float>(4);
         for (int i = 0; i < players.size; i++) {
             String playerName = players.getKeyAt(i);
             scoreText.add("[#9E5D41]" + rankTable.get(playerName) + "-" + String.format(playerName + "\n   [#C4B78F]" + scoreTable.get(playerName) + "\n[]"));
@@ -114,12 +121,12 @@ public class ScoreTableWindow extends DefaultWindow {
         TextureRegion region = null;
         for (int i = 0; i < players.size; i++) {
             if (i == winnerIndex)
-                animeWinner(batch, region, i);
+                animeWinner(batch, region, i, 60);
             else
-                animeLooser(batch, region, i);
+                animeLooser(batch, region, i, 60);
             gLayout.setText(font, "0-" + players.getKeyAt(i));
             font.draw(batch, scoreText.get(i), winTopLeft.x + ((i + 0.5f) * columnDistance - gLayout.width / 2.0f),
-                    winTopLeft.y - (2.28f / 3f) * winSize.y, gLayout.width, Align.right, true);
+                    winTopLeft.y - (2.28f / 3f) * winSize.y+60, gLayout.width, Align.right, true);
         }
         font.getData().markupEnabled = false;
 
@@ -127,23 +134,23 @@ public class ScoreTableWindow extends DefaultWindow {
     }
 
 
-    private void animeLooser(SpriteBatch batch, TextureRegion region, int looserIndex) {
+    private void animeLooser(SpriteBatch batch, TextureRegion region, int looserIndex, float ylocalmargin) {
         columnNinePatch.draw(batch, getColumnPositionX(looserIndex),
-                getColumnPositionY(), 150, columns_size.get(looserIndex));
+                getColumnPositionY()+ylocalmargin, 150, columns_size.get(looserIndex));
 
         region = loser_anim.get(looserIndex).getKeyFrame(timer);
         batch.draw(region, getCharacterPositionX(looserIndex),
-                getCharacterPositionY(looserIndex), 150, 150);
+                getCharacterPositionY(looserIndex)+ylocalmargin, 150, 150);
     }
 
-    private void animeWinner(SpriteBatch batch, TextureRegion region, int winnerIndex) {
+    private void animeWinner(SpriteBatch batch, TextureRegion region, int winnerIndex, float ylocalmargin) {
         float increase = (Math.min(3, timer) / 3) * columnStepY; // increase of one step in 3 seconds
         float jumpDuration = 1.5f;
         float timeJump = timer % jumpDuration; // repeat
         float timeInAir = jumpDuration - win_post_anim.getAnimationDuration() - win_pre_anim.getAnimationDuration();
 
         columnNinePatch.draw(batch, getColumnPositionX(winnerIndex),
-                getColumnPositionY(), 150, columns_size.get(winnerIndex) + increase);
+                getColumnPositionY()+ylocalmargin, 150, columns_size.get(winnerIndex) + increase);
 
         if (!win_pre_anim.isAnimationFinished(timeJump)) {
             jumpY = 0;
@@ -157,7 +164,7 @@ public class ScoreTableWindow extends DefaultWindow {
             region = win_post_anim.getKeyFrame(jumpDuration - timeJump);
         }
         batch.draw(region, getCharacterPositionX(winnerIndex),
-                getCharacterPositionY(winnerIndex) + increase + jumpY, 150, 150);
+                getCharacterPositionY(winnerIndex)+ylocalmargin + increase + jumpY, 150, 150);
 
     }
 
@@ -221,6 +228,8 @@ public class ScoreTableWindow extends DefaultWindow {
     public boolean executeSelectedAction() {
         switch(selectedAction){
             case 0:
+                gameScreen.toMainMenu();
+                gameScreen = null;
                 requestClosing();
                 break;
             case 1:
@@ -230,6 +239,17 @@ public class ScoreTableWindow extends DefaultWindow {
         }
         return false;
     }
+
+    @Override
+    protected void processPauseInput(boolean isPressed) {
+
+    }
+
+//    @Override
+//    protected void closeWindow() {
+//        inputProfile = null;
+//        this.closed = true;
+//    }
 
 
 }

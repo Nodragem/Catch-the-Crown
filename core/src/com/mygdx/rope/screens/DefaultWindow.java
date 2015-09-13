@@ -10,11 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.rope.objects.GameObject;
-import com.mygdx.rope.objects.characters.Player;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.InputHandler.InputProfile;
-
-import java.awt.geom.Point2D;
 
 /**
  * Created by Geoffrey on 31/08/2015.
@@ -41,7 +38,7 @@ public class DefaultWindow implements Window {
     protected NinePatch columnNinePatch;
     protected Window previousWindow;
     protected boolean closed;
-    protected float margin;
+    protected float xmargin;
     protected String colorTitle;
     protected String colorSelected;
     protected float Xspread; // 0 or 1
@@ -51,9 +48,10 @@ public class DefaultWindow implements Window {
     private Array<Float> cumulatedTextWidth;
     private Vector2 currentMovingVector;
     private float selectionCoolDown;
-    private InputProfile inputProfile;
-    private GameScreenTournament gameScreen;
+    protected InputProfile inputProfile;
+    protected GameScreenTournament gameScreen;
     protected boolean closingRequested;
+    protected float ymargin;
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font) {
         this.batch = batch;
@@ -87,7 +85,8 @@ public class DefaultWindow implements Window {
         winCenter = new Vector2(winPos.x+ winSize.x/2.0f, winPos.y + winSize.y/2.0f);
         winTexture = GameObject.atlas.createPatch("paper_lance");
         winTexture.scale(4.0f, 4.0f);
-        margin = 30;
+        xmargin = 30;
+        ymargin = 0;
         this.listActions = new Array<String>(1);
         this.listActions.add("Exit");
         this.selectedAction = 0;
@@ -175,15 +174,15 @@ public class DefaultWindow implements Window {
             if (i == selectedAction) {
                 gLayout.setText(font, colorSelected+listActions.get(i)+"[]");
                 font.draw(batch, gLayout,
-                        winTopLeft.x + 0.5f + margin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 - ((textHeight + Yspacing) * i * Yspread));
-                cursor.draw(batch, winTopLeft.x - 5f - textHeight + margin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 - ((textHeight + Yspacing) * i * Yspread) - textHeight, textHeight, textHeight);
+                        winTopLeft.x + 0.5f + xmargin + cumulatedTextWidth.get(i) * Xspread,
+                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
+                cursor.draw(batch, winTopLeft.x - 5f - textHeight + xmargin + cumulatedTextWidth.get(i) * Xspread,
+                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread) - textHeight, textHeight, textHeight);
             } else {
                 gLayout.setText(font, "[WHITE]"+listActions.get(i)+"[]");
                 font.draw(batch, gLayout,
-                        winTopLeft.x +  0.5f + margin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 - ((textHeight + Yspacing) * i * Yspread));
+                        winTopLeft.x +  0.5f + xmargin + cumulatedTextWidth.get(i) * Xspread,
+                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
             }
 
         }
@@ -254,7 +253,7 @@ public class DefaultWindow implements Window {
 
     protected void closeWindow() {
         if (previousWindow == null) { // if there is no previous window:
-            inputProfile.setContext("Game");
+            //inputProfile.setContext("Game");
             if(gameScreen!=null){ // that was the gamescreen which opens it
                 gameScreen.setStateGame(gameScreen.getPreviousStateGame());
             }
@@ -289,20 +288,20 @@ public class DefaultWindow implements Window {
 
     }
 
-    private void processSelectInput(boolean isPressed){
+    protected void processSelectInput(boolean isPressed){
         if(isPressed && selectionCoolDown == 0) {
             this.executeSelectedAction();
             selectionCoolDown=1;
         }
     }
 
-    private void processBackInput(boolean isPressed) {
+    protected void processBackInput(boolean isPressed) {
         if (isPressed && selectionCoolDown == 0) {
             this.closeWindow();
             selectionCoolDown=1;
         }
     }
-    private void processPauseInput(boolean isPressed) {
+    protected void processPauseInput(boolean isPressed) {
         if (isPressed && selectionCoolDown == 0) {
             selectionCoolDown = 1;
             requestClosing();

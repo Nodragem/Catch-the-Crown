@@ -12,10 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.rope.objects.characters.*;
 import com.mygdx.rope.screens.DefaultWindow;
@@ -44,12 +41,29 @@ public class RopeGame extends Game {
 		batch = new SpriteBatch();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		levels = new Array<String>(1);
-		levels.add(Constants.LEVEL_01);
-		randomSelectionLevel = true;
+		//levels.add(Constants.LEVEL_01);
+        Array<Boolean> selectionLevels = new Array<Boolean>(2);
+        selectionLevels.add(true); selectionLevels.add(true);
+		retrieveLevelFrom(Constants.TOURNAMENT_LEVEL_PATH, selectionLevels);
+		randomSelectionLevel = false;
 		createProfiles();
 		menuScreen = new MenuScreen(this);
 		setScreen(menuScreen);
 
+	}
+
+	private void retrieveLevelFrom(String levelPath, Array<Boolean> selected) {
+		JsonReader reader = new JsonReader();
+		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/progressionLevels.json") );
+        Gdx.app.debug("", ""+root);
+        String[] levelNames = root.get("levels").asStringArray();
+        boolean[] levelBlocked = root.get("unblocked").asBooleanArray();
+        if (levelNames != null  && levelBlocked != null && levelBlocked.length == levelNames.length && levelNames.length == selected.size){
+            for (int i = 0; i < selected.size; i++) {
+                if (selected.get(i) && levelBlocked[i])
+                    levels.add(levelPath+"/"+levelNames[i]+".tmx");
+            }
+        }
 	}
 
 	public void startTournament() {
@@ -149,5 +163,9 @@ public class RopeGame extends Game {
 	}
 
 
+	public void toMainMenu() {
 
+		setScreen(menuScreen);
+
+	}
 }

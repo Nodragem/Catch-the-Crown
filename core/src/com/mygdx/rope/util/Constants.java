@@ -22,6 +22,7 @@ public class Constants {
     public static final float GOLDVALUE = 10;
 	public static final String TEXTURE_ATLAS_OBJECTS = "nothing-yet.pack";
 	public static final String LEVEL_01= "tournament_levels/level_jungle01.tmx";
+	public static final String TOURNAMENT_LEVEL_PATH= "tournament_levels";
 	public static final String FEET_TAG= "feet";
     public static final float TIMEATTACK1 = 0.5f;
     public static final float RESPAWNTIME = 5.0f;
