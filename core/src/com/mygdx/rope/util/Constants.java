@@ -28,13 +28,14 @@ public class Constants {
     public static final float RESPAWNTIME = 5.0f;
     public static final float SLAPDAMAGE = 8.4f;
     public static final float COINSTIME = - 20.0f;
-    public static final float STARTTIMER = 2; //10*60; //2*60; // 2*60; // 2 minutes
+    public static final float STARTTIMER = 10*60; //10*60; //2*60; // 2*60; // 2 minutes
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}
     public static enum TRAPSTATE {ON, OFF, RELOADING}
     public static enum SWITCHSTATE {ON, OFF, ACTIVATED}
     public static enum VIEW_DIRECTION { LEFT, RIGHT, UP, DOWN}
+    public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
     public static enum JUMP_STATE {IDLE, GROUNDED, FALLING, RISING}
     public static enum MOVE_STATE {PICKINGUP, PICKUPCHALLENGED, PICKUPCHALLENGER, THROWED, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.

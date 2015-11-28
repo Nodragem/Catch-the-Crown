@@ -15,4 +15,9 @@ public class MockTrajectory implements TrajectorySolver{
     public Vector2 getSpeedFrom(float deltatime, float waitingTime) {
         return Speed ;
     }
+
+    @Override
+    public void initCoolDown(float waitingTime) {
+
+    }
 }

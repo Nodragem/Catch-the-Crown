@@ -43,7 +43,7 @@ public class RopeGame extends Game {
 		levels = new Array<String>(1);
 		//levels.add(Constants.LEVEL_01);
         Array<Boolean> selectionLevels = new Array<Boolean>(2);
-        selectionLevels.add(true); selectionLevels.add(true);
+        selectionLevels.add(true); //selectionLevels.add(true);selectionLevels.add(true);
 		retrieveLevelFrom(Constants.TOURNAMENT_LEVEL_PATH, selectionLevels);
 		randomSelectionLevel = false;
 		createProfiles();
@@ -54,7 +54,8 @@ public class RopeGame extends Game {
 
 	private void retrieveLevelFrom(String levelPath, Array<Boolean> selected) {
 		JsonReader reader = new JsonReader();
-		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/progressionLevels.json") );
+//		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/progressionLevels.json") );
+		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/testLevels.json") );
         Gdx.app.debug("", ""+root);
         String[] levelNames = root.get("levels").asStringArray();
         boolean[] levelBlocked = root.get("unblocked").asBooleanArray();
@@ -62,6 +63,7 @@ public class RopeGame extends Game {
             for (int i = 0; i < selected.size; i++) {
                 if (selected.get(i) && levelBlocked[i])
                     levels.add(levelPath+"/"+levelNames[i]+".tmx");
+				Gdx.app.debug("888", levelPath+"/"+levelNames[i]+".tmx");
             }
         }
 	}

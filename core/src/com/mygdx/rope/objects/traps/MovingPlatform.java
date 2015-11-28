@@ -70,6 +70,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
             PolylineMapObject polygonPath = (PolylineMapObject) path;
             Polyline polyline = polygonPath.getPolyline();
             trajResolver = new TrajectoryPolygon(polyline, 1.0f);
+            trajResolver.initCoolDown(waitingTime);
         }
         else if (path instanceof CircleMapObject){
 
@@ -169,7 +170,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     @Override
-    public boolean update(float deltaTime){ // try to do one way (single ticket) platforms
+    public boolean update(float deltaTime){
         if(!stopped) {
             if(trajResolver != null)
                 speed = trajResolver.getSpeedFrom(deltaTime, waitingTime);

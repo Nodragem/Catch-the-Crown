@@ -7,4 +7,5 @@ import com.badlogic.gdx.math.Vector2;
  */
 public interface TrajectorySolver {
     public Vector2 getSpeedFrom(float deltatime, float waitingTime);
+    void initCoolDown(float waitingTime);
 }
