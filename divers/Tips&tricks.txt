@@ -1,0 +1,8 @@
+Tiled command:
+
+cmd /k "java F:\Dropbox\Dropbox\Jeux-Prog\RopeGame\out\production\desktop\com\mygdx\rope\desktop\DesktopLauncher.class"
+
+
+If the platform's friction coefficient is one, the player should not be able to have a relative velocity to it's velocity. So just set 1f as the friction field of the moving platform FixtureDef.
+
+If this doesn't work, make sure you didn't pass 0 as the density when creating the player fixture def, because kinematic friction is calculated as: friction=(friction coefficient)*(normal force) then a body without mass (density = 0), in most of the cases (Your is included in "most"), will have no friction.

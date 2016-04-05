@@ -1,0 +1,24 @@
+Sound to be made:
+
+Object sound:
+[x] Jump
+[x] Grounding
+[x] Lance Thowing
+[x] Lance Hurting
+[x] Slap miss
+[x] Slap hit
+[-+] Switcher
+- Fireball launche
+- Spikes?
+
+Character sound:
+[x] Hurt
+- Killed
+[x] Has taken the crown
+[x] Has killed
+[x] Has slapped the crown owner?
+
+Small music:
+- Winning small music,
+- No winner small music,
+
