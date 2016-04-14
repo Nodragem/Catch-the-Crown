@@ -1,1 +1,4 @@
-{"levels": ["test_platform"], "unblocked": [true]}
+{
+  "levels": ["test_platform"],
+  "unblocked": [true]
+}
