@@ -13,6 +13,8 @@ divers/backup_img
 divers/screen_shots
 *.uxf
 *.mdj
+*.kra
+*.gdoc
 
 ## GWT
 war/

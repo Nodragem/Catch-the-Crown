@@ -1,0 +1,95 @@
+﻿Today TODO-list:
+
+## To-Do:
+
+[ ] the spire of the prabit does not follow spire-switches once it hits them (when they move) 
+[ ] try make it work on HTML5
+[ ] try to do one way (single ticket) platforms,
+[ ] the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
+[ ] if a character pass the threshold at which he will win even without the crown, he get a golden glare. (that may cancel the previous point: add something on the wealthest character to recognize it quickly)
+[-] sound effects: see other file for details,
+[-] make the competition system for throwing each other when someone is picked up,
+        [x] system made,
+        [ ] add graphical feedback,
+[ ] boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+[x] Menu - restart/resume/quit/preference,
+[ ] make background for the level,
+[ ] Gold distribution: you see the money going from the place it's picked up to the chest of the player,
+[ ] keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
+[ ] marking exchange system idea: when slap you get rid of one mark and give one to the opponent,
+[ ] marks could be stars, and when you get five of them they rotate around you head.
+
+
+
+
+## Bug list:
+
+[ ] bug: Atanaska succeeded to replicate the bug of the flying prabbit: jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
+[ ] bug: controller don't work after fullscreen
+[ ] bug: when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
+[x] bug: the spire-switches are not at the good location when they are upward/downward
+[x] bug: the moving platform trajectory solver are still doing shit. The platforms dont always start at the same place.
+	it seems to be ok, now. Although I don't remember correcting it.
+[x] bug: switcher lance, make switchers for lances working (bug)
+[x] bug: lance angle when connect/weldJoint on a rotated/rotating object was wrong,
+[x] bug: fireball are doing weird thing when colliding an other fireball, (it seems that body.setActive(False) call endContact() of the contact listener, and then remove the fixture of the contactdata of the other fireball)
+[x] bug: improve Fixture ContactData --> reference to their fixture and deepFlush (clean Flush)
+[!] bug: sometimes the player revive with automatic damage per second. In an attempt to debug, we replace flush() with the deepFlush() function in the isDead() function. We can't test if it is effective.
+        [!] I think that it is actually better to flush in the respawn function!!
+[x] bug: moving platform are pickable by the player!!
+[x] bug: revive in the arm of a player if picked up...
+[x] bug: respawn is cleaner now / less buggy:
+        - throwing challenge was ON with dead character. This was causing bug.
+[x] bug: sometimes the slap was giving a strong impulse.
+[x] bug: we were able to attack when carrying someone
+[x] bug: can't import group of sounds with the cookbook improved AssetManager:
+        - comes from that JsonValue.toString() need to be replaced by JsonValue.PrettyPrint, at 2 places in the code,
+        - '"parameters": {}' was not well interpreted by the parameters loader. 
+
+Note: that the crown doesnt use the mainBoxContact, I dont know why
+
+Note: I remove the flush after throwing (useCarriedBody and setCarriedBody(null)), this is better to allow throwing someone just after having throwed someone. However, it happened twice that a character reappear in my hands while taking the crown. Didn't succed to replicate.
+
+## Done
+
+[x] selection of list of Levels in a folder,
+[x] new Level,
+[x] bug: the Pause window was not showing anymore,
+[x] bug: disable the Pause button in ScoreTable, it was doing weird stuff,
+[x] Menu: Score Table: Next Round / Start a new Tournament button,
+[x] Menu: Score Table: Back to Menu (Stop Tournament) button,
+[x] better rotation initialization from Tiled,
+[x] simplify rotations: all in radians and transform in degrees for rendering,
+[x] bug: when the reward Window comes the game didn't pause,
+	[x] bug: reward Window, the top columns is too high! 
+	|->(was actually caused by the fact the game didn't pause)
+[x] moving platform can stop at different check points define by vertex in Tiledmap,
+[x] make switches triggerable, such that a switch can enable a new switch,
+	[?] this, for now causes a bug because parented switches are not desactivated with their parent,
+[x] balance the crown rate to 0.333
+[x] spiking moving platform --> parent system, switch will also be able to follow a platform (attachable interface),
+        [x] create the Parenting System (managed from Tiled),
+[x] bugs: parent-children rotations,
+	- the bug comes from the desactivation of the spikes. We may want to try to change the fixture filter t0 0x000 instead of
+	desactivating the body...
+[x] replace flush with deepFlush when it seemed needed, I flagged the change, normally...
+[x] debug text system,
+[x] jump system, add this limitation: can't automatically re-jump if RISING 
+        [x] we tried to do it, with saving previous state, we get a bug when on moving         ascending platform...
+         - the bug comes from a y_vel > 0.1 detected before the ground contact has been detected.
+         - the solution to avoid complex solution was to forbid FALLING --> RISING (which will allow forbid double-jump).
+[x] marking system, to slap give a mark to the slapped character, a top of 5 marks, 1 mark add 3 seconds to next death (an usual death is 5 seconds),
+[x] separate short and long attack, for more control,
+[x] add texture for platform, |--o--|
+[x] slapping and attack has been improve! 
+        - slapping box is wider/inside player (of course, it ignores the slapper player)
+        - can't attack during animation (consequently, that decreases the shooting rate)
+        - increase impulse distance when slapped.
+        - 3 lances to kill,
+        - 12 slaps to kill,
+[x] Tournament Mode,
+[x] Diamond and Ruby addition,
+[x] different coins distribution which can be activated by a triggerable,
+[x] aiming arrow change: always displayed when aiming + charge more visible,
+[x] switcher assets have been integrated,
+[x] display background on the background,
