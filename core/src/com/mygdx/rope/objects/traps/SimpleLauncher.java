@@ -21,9 +21,12 @@ import com.mygdx.rope.util.Constants;
  */
 public class SimpleLauncher extends GameObject implements Triggerable {
     private final boolean defaultON;
+    private final float radiusToStartPoint;
+    private final float angleToStartPoint;
     private float intervalProjectile;
     private float reloadTime;
     private float timer;
+    public float undirectional_impulse;
     public Vector2 impulse;
     public Vector2 start_point;
     private Array <Usable> poolObj;
@@ -31,8 +34,10 @@ public class SimpleLauncher extends GameObject implements Triggerable {
     private int pool_size;
     private Constants.TRAPSTATE trapstate;
 
-    public SimpleLauncher(GameScreenTournament game, Vector2 position, Vector2 dimension, float rotation, float intervalProjectile, float reloadTime, float impulse, int nb_pool, boolean defaultON, String projectile_type) {
-        super(game, position, dimension, rotation, "launcher");
+    public SimpleLauncher(GameScreenTournament game, Vector2 position, Vector2 dimension, float rotation,
+                          float intervalProjectile, float reloadTime, float impulse, int nb_pool, boolean defaultON,
+                          String projectile_type) {
+        super(game, position, dimension, rotation, "launcher"); // there is only one type of launcher for now...
         /*
         # rotation is is degree !! but this.rotation is in radians.
         * here, intervalProjectile is the time between delivering a new object,
@@ -41,15 +46,16 @@ public class SimpleLauncher extends GameObject implements Triggerable {
         body.setType(BodyDef.BodyType.StaticBody);
         timer = intervalProjectile+1;
         this.defaultON = defaultON;
+        this.trapstate = Constants.TRAPSTATE.ON;
         pool_size = nb_pool;
         poolObj = new Array<Usable>(nb_pool);
         JsonReader jsonreader = new JsonReader();
-        FileHandle handle = Gdx.files.internal("object_types.json");
+        FileHandle handle = Gdx.files.internal("object_types.json"); // should be move to the Factory
         JsonValue info = jsonreader.parse(handle);
         info = info.get("projectile_types");
         info = info.get(projectile_type);
         String name_texture = info.getString("texture", null);
-        float projectile_sizey = info.getFloat("dimensiony", 0.5f);
+
         Gdx.app.debug("SimpleLauncher", "name_texture from projectile: "+name_texture);
         if (info != null) {
             Gdx.app.debug("Launcher", "Projectile found?! " + info);
@@ -60,13 +66,15 @@ public class SimpleLauncher extends GameObject implements Triggerable {
         }
         this.intervalProjectile = intervalProjectile;
         this.reloadTime = reloadTime;
-        this.impulse = new Vector2(impulse * MathUtils.cos(this.rotation) , impulse * MathUtils.sin(this.rotation));
+        this.undirectional_impulse = impulse;
         //this.impulse = new Vector2(2 , 0);
-        Gdx.app.debug("SimpleLauncher: ", "impulse vector: "+this.impulse.x +", "+this.impulse.y);
+        float projectile_sizey = info.getFloat("dimensiony", 0.5f);
+        radiusToStartPoint = (float) Math.sqrt(Math.pow(1.1f, 2) + Math.pow((1-projectile_sizey)/2,2)); // the start point will be at 1.1 units from the launcher origin on the relative x, and on the y center of the launcher.
+        angleToStartPoint = MathUtils.atan2((1-projectile_sizey)/2, 1.1f);
+        updateProjectileStartPoint();
+        //Gdx.app.debug("SimpleLauncher: ", "impulse vector: "+this.impulse.x +", "+this.impulse.y);
         Gdx.app.debug("SimpleLauncher: ", "impulse from Tiled: "+impulse);
-        float radius = (float) Math.sqrt(Math.pow(1.1f, 2) + Math.pow((1-projectile_sizey)/2,2)); // the start point will be at 1.1 units from the launcher origin on the relative x, and on the y center of the launcher.
-        float angle = MathUtils.atan2((1-projectile_sizey)/2, 1.1f);
-        start_point =new Vector2(position.x+radius*MathUtils.cos(this.rotation + angle), position.y+radius*MathUtils.sin(this.rotation + angle));
+
     }
 
     public void initFilter() {
@@ -92,7 +100,15 @@ public class SimpleLauncher extends GameObject implements Triggerable {
                 trapstate = Constants.TRAPSTATE.ON;
             }
         }
+        updateProjectileStartPoint();
         return false;
+
+    }
+
+    private void updateProjectileStartPoint(){
+        start_point = new Vector2(position.x+radiusToStartPoint*MathUtils.cos(this.rotation + angleToStartPoint),
+                position.y+radiusToStartPoint*MathUtils.sin(this.rotation + angleToStartPoint));
+        impulse = new Vector2(undirectional_impulse * MathUtils.cos(this.rotation) , undirectional_impulse * MathUtils.sin(this.rotation));
     }
 
     public void deliver() {
