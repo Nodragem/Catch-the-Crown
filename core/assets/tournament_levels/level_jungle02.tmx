@@ -5,7 +5,7 @@
   <property name="GoldRespawn" value="OnTrigger"/>
   <property name="Timer" value="2"/>
  </properties>
- <tileset firstgid="1" name="jungle_tiles" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="jungle_tiles" tilewidth="32" tileheight="32" tilecount="128" columns="16">
   <image source="../jungle_tiles.png" width="512" height="256"/>
   <tile id="72">
    <properties>
@@ -100,8 +100,8 @@
  </objectgroup>
  <objectgroup color="#00ff00" name="Entities">
   <object id="26" name="Crown" x="512" y="952" width="33" height="31"/>
-  <object id="27" name="Spawner" x="480" y="544" width="36" height="35"/>
-  <object id="61" name="Spawner" x="544" y="544" width="36" height="35"/>
+  <object id="27" name="Spawner" x="416" y="544" width="36" height="35"/>
+  <object id="61" name="Spawner" x="608" y="544" width="36" height="35"/>
  </objectgroup>
  <objectgroup color="#a40505" name="InteractiveObjects">
   <object id="32" name="Switcher" type="Integrator" x="672" y="768" width="32" height="32" rotation="-270">
@@ -339,14 +339,13 @@
    </properties>
   </object>
   <object id="71" name="4" type="Path" x="544" y="640">
-   <polyline points="0,0 0,320"/>
+   <polyline points="-16,256 -16,0"/>
   </object>
   <object id="80" name="5" type="Path" x="624" y="928">
    <polyline points="0,0 0,-64"/>
   </object>
   <object id="90" name="Platform" type="Triggerable" x="672" y="640" width="32" height="32">
    <properties>
-    <property name="Hub_in" value="HUB01"/>
     <property name="Object" value="Platform"/>
     <property name="Path" value="6"/>
     <property name="Speed" value="1"/>
@@ -365,7 +364,6 @@
   </object>
   <object id="98" name="Platform" type="Triggerable" x="960" y="896" width="32" height="32">
    <properties>
-    <property name="Hub_in" value="HUB01"/>
     <property name="Object" value="Platform"/>
     <property name="Path" value="8"/>
     <property name="Speed" value="1"/>
@@ -378,7 +376,6 @@
   </object>
   <object id="99" name="Platform" type="Triggerable" x="64" y="640" width="32" height="32">
    <properties>
-    <property name="Hub_in" value="HUB01"/>
     <property name="Object" value="Platform"/>
     <property name="Path" value="1"/>
     <property name="Speed" value="1"/>
@@ -391,7 +388,6 @@
   </object>
   <object id="101" name="Platform" type="Triggerable" x="352" y="896" width="32" height="32">
    <properties>
-    <property name="Hub_in" value="HUB01"/>
     <property name="Object" value="Platform"/>
     <property name="Path" value="3"/>
     <property name="Speed" value="1"/>
