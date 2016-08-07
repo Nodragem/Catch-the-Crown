@@ -85,31 +85,32 @@ public class TrapFactory {
             switch (typeObject) {
                 case SIMPLESWITCH:
                     float rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class); // degree
-
-                    int weight = Integer.parseInt(rectangleObj.getProperties().get("weight", String.class));
-                    String SwitcherType = null;
-                    if (rectangleObj.getProperties().get("SwitcherType", String.class) != null)
-                        SwitcherType = rectangleObj.getProperties().get("SwitcherType", String.class);
+                    int weight = Integer.parseInt(rectangleObj.getProperties().get("weight", String.class)); // all custom properties are strings in TileMap Editor
+                    String SwitcherType = rectangleObj.getProperties().get("SwitcherType", "0", String.class);
                     boolean isEnabledByDefault = rectangleObj.getProperties().get("isEnabledByDefault", true, Boolean.class);
 
                     JsonReader jsonreader = new JsonReader();
                     FileHandle handle = Gdx.files.internal("object_types.json");
-                    JsonValue info = jsonreader.parse(handle);
-                    info = info.get("switcher_types");
-                    Gdx.app.debug("TrapFactory", "Check of switcher_type: "+ info);
+                    JsonValue info_type = jsonreader.parse(handle);
+                    info_type = info_type.get("switcher_types");
+                    Gdx.app.debug("TrapFactory", "Check of switcher_type: "+ info_type);
                     if (SwitcherType != null)
-                        info = info.get(SwitcherType);
+                        info_type = info_type.get(SwitcherType);
                     else
-                        info = info.get("totem_switch");
-                    float offset_y_all = info.getFloat("offsety_all", 0);
-                    //correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
-                    Vector2 correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation - 90) + offset_y_all * MathUtils.sinDeg(-rotation),
-                            1 + MathUtils.sinDeg(-rotation-90) + offset_y_all * MathUtils.cosDeg(-rotation));
-                    String texture_name = info.getString("texture", null);
-                    Gdx.app.debug("TrapFactory", "Check of switcher_type.simple: "+ info);
+                        info_type = info_type.get("totem_switch");
+
+                    float offset_y_all = info_type.getFloat("offsety_all", 0);
+                    Vector2 correctionPos = new Vector2(
+                            //  usual correction as see below in SPIKES || correction for the offset
+                            // -----------------------------------||-------------------------------------------|
+                            0 + MathUtils.cosDeg(-rotation - 90) + offset_y_all * MathUtils.sinDeg(-rotation),
+                            1 + MathUtils.sinDeg(-rotation-90) - offset_y_all * MathUtils.cosDeg(-rotation)
+                    );
+
+                    Gdx.app.debug("TrapFactory", "Check of switcher_type.simple: "+ info_type);
                     newInteractiveObject = new SimpleSwitcher(gameScreen,
                             rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()),
-                            -rotation, texture_name, info, weight, isEnabledByDefault);
+                            -rotation, info_type, weight, isEnabledByDefault);
 //                    newInteractiveObject = new SimpleSwitcher(gameScreen,
 //                            rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()),
 //                            -rotation*MathUtils.degreesToRadians, texture_name, info, weight, isEnabledByDefault);
@@ -172,9 +173,7 @@ public class TrapFactory {
                     newInteractiveObject = new Spikes(gameScreen, rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()) , -rotation, "spikes", intervalON, intervalOFF, defaultON);
                     break;
                 case LAUNCHER:
-                    rotation =0;
-                    if (rectangleObj.getProperties().get("rotation", Float.class) != null)
-                        rotation = rectangleObj.getProperties().get("rotation", Float.class);
+                    rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class);
                     float intervalShoot =0;
                     if (rectangleObj.getProperties().get("intervalShoot", String.class) != null)
                         intervalShoot = Float.parseFloat(rectangleObj.getProperties().get("intervalShoot", String.class));
