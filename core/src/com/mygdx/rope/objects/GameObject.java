@@ -443,7 +443,7 @@ public class GameObject implements Updatable {
         isVisible = b;
         body.setActive(b); // I think that this things make the projectile remove itself from what it touched
         if(!b){ // if we desactivate, we need to flush
-            for (Fixture fixture : body.getFixtureList()) { // note that we dont flush properly, we should remove the contact from the contacted fixtures
+            for (Fixture fixture : body.getFixtureList()) { // FIXME note that we dont flush properly, we should remove the contact from the contacted fixtures
                 ContactData d = (ContactData) fixture.getUserData();
                 if (d != null)
                     d.deepFlush();

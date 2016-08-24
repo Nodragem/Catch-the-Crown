@@ -153,7 +153,7 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     public boolean update(float deltaTime){
-        characterWithCrown = linkedCrown.getCarrier();
+        characterWithCrown = linkedCrown.getCarrier(); // FIXME:: not needed
         if ( characterWithCrown!= null) {
             for (int i = 0; i < respawnTimeCollectables.size; i++) {
                 if (respawnTimeCollectables.get(i) > 0 ) {

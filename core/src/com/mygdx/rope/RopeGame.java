@@ -56,7 +56,7 @@ public class RopeGame extends Game {
 		JsonReader reader = new JsonReader();
 //		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/progressionLevels.json") );
 		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/testLevels.json") );
-        Gdx.app.debug("", ""+root);
+        Gdx.app.debug("Path to level: ", ""+levelPath + "/testLevels.json");
         String[] levelNames = root.get("levels").asStringArray();
         boolean[] levelBlocked = root.get("unblocked").asBooleanArray();
         if (levelNames != null  && levelBlocked != null && levelBlocked.length == levelNames.length && levelNames.length == selected.size){

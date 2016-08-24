@@ -48,113 +48,98 @@ Règle de partie perdue  (recommence leniveau) :
 
 ## Bugs:
 
-### wip
 - [ ] check all the list of bugs
-### high priority
-- [ ] **[A]** bug: sometimes the player revive with automatic damage per second. 
 
+- [ ] **[A]** fireball can stop and/or slow down...? probably a problem with collision
+- [ ] **[A]** bug: sometimes the player revive with automatic damage per second. 
       > In an attempt to debug, we replace flush() with the deepFlush() function in the isDead() function. 
       > We can't test if it is effective.
       > I think that it is actually better to flush in the respawn function!!
+- [ ] **[A]** controller don't work after fullscreen
 
-- [ ] **[A]** try make it work on HTML5
-- [ ] bug: controller don't work after fullscreen
+- [ ] **[B]** when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
 
-### low priority
-- [ ] bug: when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
-
-### to review
-- [ ] bug: Atanaska succeeded to replicate the bug of the flying prabbit: jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
-
-- [ ] Automatically die after respawn, after spike death,
-
-- [ ] Apparently we can pick up moving platform ... which is not good,
-
-- [ ] bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
-
-- [ ] Lance can kill fireball,
-
-      > should we keep and improve thar possibility?
-
-
-- [ ] bug: the moving platform trajectory solver are still doing shit. The platforms dont always start at the same place.
+- [ ] **[TR]** Atanaska succeeded to replicate the bug of the flying prabbit: jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
+- [ ] **[TR]** Automatically die after respawn, after spike death,
+- [ ] **[TR]** Apparently we can pick up moving platform ... which is not good,
+- [ ] **[TR]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
+- [ ] **[TR]** Lance can kill fireball,
+      > should we keep and improve that possibility?
+- [ ] **[TR]** bug: the moving platform trajectory solver are still doing shit. The platforms dont always start at the same place.
 
 
 ## General Improvements:
 ### wip
-- [ ] make the competition system for throwing each other when someone is picked up,
+- [ ] **[A]** **[wip]** make the competition system for throwing each other when someone is picked up,
       - [x] system made,
-
-            > check whether we did the following:
-            >
-            > make projection action more difficult (5 press) like that it is a competition between the two players
-            >
-
-      - [ ] add graphical feedback and GUI,
-
-            ​
-
-### high priority
-- [ ] the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
-- [ ] if a character passes the threshold at which he will win even without the crown, he get a golden glare. (that may cancel the previous point: add something on the wealthest character to recognize it quickly)
+           > check whether we did the following:
+           >
+           > make projection action more difficult (5 press) like that it is a competition between the two players
+      - [ ] add graphical feedback and GUI,  
+- [ ] **[A]** if a character passes the threshold at which he will win even without the crown, he get a golden glare. (that may cancel the previous point: add something on the wealthest character to recognize it quickly)
 - [x] Menu - restart/resume/quit/preference,
-- [ ] level menu
-- [ ] option menu
-- [ ] sounds
+- [ ] **[A]** deactivate lances when the platform supporting them disappears.
+- [ ] **[A]** Sounds:
+    - [ ] fireball death sound and animation
+    - [ ] sound for switcher
+    - [ ] sound for end of jumping
+    - [ ] **[wip]** Switcher 
+    - [ ] Fireball launcher
+    - [ ] Spikes?
+- [ ] **[A]** the lance should deactivate the launcher
 
-### low priority
-- [ ] make background for the level,
-- [ ] Gold distribution: you see the money going from the place it's picked up to the chest of the player,
-- [ ] keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
+- [ ] **[B]** level menu
+- [ ] **[B]** option menu
+- [ ] **[B]** the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
+- [ ] **[B]** make background for the level,
+- [ ] **[B]** Gold distribution: you see the money going from the place it's picked up to the chest of the player,
+- [ ] **[B]** keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
 
-### maybe
-- [ ] try to do one way (single ticket) platforms,
-
-
-### to review
-- [ ] limit the firing rate of lance,
-
-      > is it OK like that?
-
-- [ ] jump automatism only when falling
-
-      > is it already done?
-
-- [ ] we can use the Lance Charge time to limits intensive use of Lance without lacking of reactivity (to repetitively press the button will throw Lances, yes, but at 1 meter from you)
-
-      > check if it is done
-
-## Sounds
-
-Object sound:
-
-- [x] Jump
-- [x] Grounding
-- [x] Lance Thowing
-- [x] Lance Hurting
-- [x] Slap miss
-- [x] Slap hit
-- [ ] Switcher **[wip]**
-- [ ] Fireball launche
-- [ ] Spikes?
-
-Character sound:
-
-- [x] Hurt
-
-- Killed
-  - [x] Has taken the crown
-  - [x] Has killed
-  - [x] Has slapped the crown owner?
-
-Small music:
-- [ ] Winning small music,
-- [ ] No winner small music,
-
-      ​
+- [ ] **[C]** try to do one way (single ticket) platforms,
+- [ ] **[C]** could we add blood?
+- [ ] **[C]** Small music:
+    - [ ] Winning small music,
+    - [ ] No winner small music,
+- [ ] **[C]** try make it work on HTML5
 
 
-# Ideas
+## Gameplay Ideas
+
+- **[A]** player with crown can not attack (except slaps)
+- **[A]** crown carrier can't attack,
+- **[A]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
+- **[A]** double jump?
+- **[A]** slow down character who carry something,
+    > should we slow down the crown carrier?
+- **[A]** dodging system?
+    > every 3 seconds
+- **[A]** lost of money when die/ revive? 15% of money to revive,
+- **[A]** collect a ruby give you 1 second of invicibility?
+- **[B]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+- **[B]** Usable/throwable object system (use the LanceManager, make it an ItemManager)
+- **[B]** Modifier Object system (transient/constant?)
+- **[B]** lance locking system ?
+    > useful for puzzles where we need to keep our lance on a switch
+- **[C]** lance are locked when touched the other player,
+    > why? what does that add to the gameplay?
+- **[C]** do bridges with the Lances??
+- **[C]** marking exchange system idea: when slap you get rid of one mark and give one to the opponent,
+    > does not seem a good idea, but we do need something to get rid of the fatigue marks.
+    >
+    > maybe an object could give temporarily the above effect to a player.
+
+
+# Further Ideas
+## Moves Ideas:
+
+- Combination down+B to take/drop an object (make things more difficult to project someone)
+- Combination down+B to pick downward if lance is the current object?
+- we could lock our lances (not come back to the magic pool)
+- can lock the lastly used Lance, (can lock more than one Lance)
+- can hang to a wall with a Lance,
+- can pick the Lance on the ground and stand on it (in balance)
+- sprint button
+- dash/dodge
 
 ## Level design idea:
 
@@ -182,65 +167,9 @@ Small music:
 - **frogs:** jump off the screen, then you see its shadows coming and it falls where the shadows appeared, with range damage.
 
 
-## Moves Ideas:
-
-- Combination down+B to take/drop an object (make things more difficult to project someone)
-- Combination down+B to pick downward if lance is the current object?
-- we could lock our lances (not come back to the magic pool)
-- can lock the lastly used Lance, (can lock more than one Lance)
-- can hang to a wall with a Lance,
-- can pick the Lance on the ground and stand on it (in balance)
-- sprint button
-- dash/dodge
 
 
-## Gameplay Ideas
-
-- **[A]** player with crown can not attack (except slaps)
-
-- **[C]** lance are locked when touched the other player,
-
-  > why? what does that add to the gameplay?
-
-- **[A]** slow down character who carry something,
-
-  > should we slow down the crown carrier?
-
-- **[B]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
-
-- **[B]** Usable/throwable object system (use the LanceManager, make it an ItemManager)
-
-- **[B]** Modifier Object system (transient/constant?)
-  ​
-
-- **[A]** crown carrier can't attack,
-
-- **[A]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
-
-- **[A]** double jump?
-
-- **[C]** do bridges with the Lances??
-
-- **[A]** lost of money when die/ revive? 15% of money to revive,
-
-- **[C]** marking exchange system idea: when slap you get rid of one mark and give one to the opponent,
-
-  > does not seem a good idea, but we do need something to get rid of the fatigue marks.
-  >
-  > maybe an object could give temporarily the above effect to a player.
-
-- **[A]** dodging system?
-
-  > every 3 seconds
-
-- **[A]** collect a ruby give you 1 second of invicibility?
-
-- **[B]** lance locking system ?
-
-  > useful for puzzles where we need to keep our lance on a switch
-
-
-
+  
 ## Bonus/Object Idea:
 
 - **Divine Resurection** -- after you died a column appear on the screen to control where you want to respawn, you will be send off the sky to the first platform above, making a huge and destrutive impact while ressurecting.
