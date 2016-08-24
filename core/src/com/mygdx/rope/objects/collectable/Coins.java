@@ -48,9 +48,9 @@ public class Coins extends GameObject implements Triggerable {
         activationAllowed = false;
         coinsRespawnTime = Constants.COINSTIME;
         defaultON = Boolean.valueOf(collectableMap.getProperties().get("defaultON", "true", String.class));
-        if (HubList != null && collectableMap.getProperties().get("Parent", null, String.class) != null){
+        if (HubList != null && collectableMap.getProperties().get("Hub_in", null, String.class) != null){
             Gdx.app.debug("Coin Debug: ", "HubList: " + HubList);
-            HubInterface hub = HubList.get(collectableMap.getProperties().get("Parent", null, String.class));
+            HubInterface hub = HubList.get(collectableMap.getProperties().get("Hub_in", null, String.class));
             if (hub != null) {
                 hub.addTriggerable(this);
                 Gdx.app.debug("Coin Debug: ", "Coin Layer added to Hub: ");
@@ -153,6 +153,8 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     public boolean update(float deltaTime){
+        // FIXME:: this loop is running even when the coins are deactivated
+        // that is confusing and not optimal
         characterWithCrown = linkedCrown.getCarrier(); // FIXME:: not needed
         if ( characterWithCrown!= null) {
             for (int i = 0; i < respawnTimeCollectables.size; i++) {
