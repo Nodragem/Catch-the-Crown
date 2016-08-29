@@ -6,7 +6,6 @@
 hs_err_pid*
 
 ## Asset
-raw-asset/
 divers/*.csv
 divers/*.ods
 divers/backup_img
