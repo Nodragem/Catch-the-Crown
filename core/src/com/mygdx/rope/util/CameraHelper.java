@@ -20,7 +20,7 @@ public class CameraHelper {
 	private GameObject target;
 
 	public CameraHelper () {
-		position = new Vector2(Constants.VIEW_PORT_WIDTH/2.0f, Constants.VIEW_PORT_HEIGHT/2.0f);
+		position = new Vector2(Constants.VIEWPORT_WIDTH /2.0f, Constants.VIEWPORT_HEIGHT /2.0f);
 		zoom = 1.0f;
 	}
 
@@ -29,7 +29,7 @@ public class CameraHelper {
 		//if (Math.abs(position.x - target.origin.x) > 0.25f) // the origin is the center
 		position.x = target.origin.x;
 		position.y = target.origin.y;
-		position.y = Math.max(Constants.VIEW_PORT_HEIGHT/2.0f, position.y);
+		position.y = Math.max(Constants.VIEWPORT_HEIGHT /2.0f, position.y);
 	}
 
 	public void setPosition (float x, float y) {

@@ -26,11 +26,11 @@ public class MenuScreen implements Screen {
         this.menuState = Constants.MENU_STATE.MAIN_MENU;
         this.game = game;
         this.batch = game.getBatch();
+        this.camera = game.camera;
     }
 
     @Override
     public void show() {
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         camera.update();
         viewport = new FitViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT, camera);

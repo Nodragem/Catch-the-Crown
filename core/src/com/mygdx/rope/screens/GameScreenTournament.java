@@ -6,8 +6,6 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -37,8 +35,6 @@ import com.mygdx.rope.objects.stationary.BlockFactory;
 import com.mygdx.rope.objects.traps.TrapFactory;
 import com.mygdx.rope.util.*;
 import com.mygdx.rope.util.InputHandler.InputProfile;
-import com.mygdx.rope.util.InputHandler.InputProfileController;
-import com.mygdx.rope.util.InputHandler.InputProfileKeyboard;
 import com.mygdx.rope.util.Constants.GAME_STATE;
 import com.mygdx.rope.util.assetmanager.Assets;
 
@@ -92,6 +88,7 @@ public class GameScreenTournament implements Screen {
             this.currentLevel = MathUtils.random(listLevels.size-1);
         else
             this.currentLevel = 0;
+        this.camera = ropeGame.camera;
     }
 
     @Override
@@ -103,10 +100,9 @@ public class GameScreenTournament implements Screen {
         //enableFullScreen();
         if (gameViewport == null) {
 //        //gameViewport = null;
-            camera = new OrthographicCamera();
-            camera.position.set(Constants.VIEW_PORT_WIDTH/2, Constants.VIEW_PORT_HEIGHT/2,0);
+            camera.setToOrtho(false, Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
             camera.update();
-            gameViewport = new FitViewport(Constants.VIEW_PORT_WIDTH, Constants.VIEW_PORT_HEIGHT, camera);
+            gameViewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
             //gameViewport.update(gameViewport.getScreenWidth(), gameViewport.getScreenHeight());
             gameViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }

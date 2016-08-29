@@ -3,8 +3,8 @@ package com.mygdx.rope.util;
 import com.badlogic.gdx.utils.ArrayMap;
 
 public class Constants {
-	public static final float VIEW_PORT_WIDTH = 32.0f;
-	public static final float VIEW_PORT_HEIGHT = 17.0f;
+	public static final float VIEWPORT_WIDTH = 32.0f;
+	public static final float VIEWPORT_HEIGHT = 17.0f;
 	public static final float TILES_SIZE = 32.0f; //  one meter equal 32 pixels
 	public static final float VIEWPORT_GUI_WIDTH = 1920.0f;
 	public static final float VIEWPORT_GUI_HEIGHT = 1080.0f;

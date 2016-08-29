@@ -30,6 +30,7 @@ public class RopeGame extends Game {
 	private MenuScreen menuScreen;
 	private SpriteBatch batch;
 	public Array<String> levels;
+	public OrthographicCamera camera;
 	public boolean randomSelectionLevel;
 	private ArrayMap<String, InputProfile> inputProfiles;
 	private Array<Controller> XboxControllers;
@@ -46,9 +47,11 @@ public class RopeGame extends Game {
         selectionLevels.add(true); //selectionLevels.add(true);selectionLevels.add(true);
 		retrieveLevelFrom(Constants.TOURNAMENT_LEVEL_PATH, selectionLevels);
 		randomSelectionLevel = false;
+        camera = new OrthographicCamera();
 		createProfiles();
 		menuScreen = new MenuScreen(this);
 		setScreen(menuScreen);
+
 
 	}
 
@@ -93,7 +96,7 @@ public class RopeGame extends Game {
 			boolean keyboard = item.getString("input", "controller").equals("keyboard");
 			InputProfile inputProfil = null;
 			if (keyboard & nb_keyboard > 0){
-				inputProfil = new InputProfileKeyboard(Gdx.files.internal("preference/profileKeyboard.xml"), null);
+				inputProfil = new InputProfileKeyboard(Gdx.files.internal("preference/profileKeyboard.xml"), camera);
 				nb_keyboard -= 1;
 			}
 			else if (nb_controllers > 0){

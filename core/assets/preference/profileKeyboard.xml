@@ -20,20 +20,21 @@ Default Profile for Keyboard
 	</states>
 	
 	<contexts>
-		<context name="MainMenu" >
-			<actions>
-				<action name="NextOption">
-					<key code="0" />
-				</action>
-				
-				<action name="PreviousOption">
-					<key code="0" />
-				</action>
-				
-				<action name="SelectOption">
-					<key code="0" />
-				</action>
-			</actions>
+		<context name="Menu" >
+			<states>
+				<state name="Select">
+					<key code="62" />
+				</state>
+
+				<state name="Back">
+					<key code="1" />
+				</state>
+
+				<state name="Start">
+					<key code="56" />
+				</state>
+
+			</states>
 		</context>
 		
 		<context name="Game" >
