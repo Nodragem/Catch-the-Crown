@@ -58,6 +58,7 @@ Règle de partie perdue (recommence leniveau) :
 - [ ] **[TR]** Apparently we can pick up moving platform ... which is not good,
 
 - [ ] **[TR]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
+
 - [ ] **[TR]** Lance can kill fireball,
 
   > should we keep and improve that possibility?
@@ -110,11 +111,10 @@ Règle de partie perdue (recommence leniveau) :
 - [ ] **[A]** Sounds:
 
   - [ ] fireball death sound and animation
-  - [ ] sound for switcher
   - [ ] sound for end of jumping
   - [ ] **[wip]** Switcher
   - [ ] Fireball launcher
-  - [ ] Spikes?
+  - [ ] Spikes
 
 - [ ] **[B]** level menu
 
@@ -156,6 +156,7 @@ Règle de partie perdue (recommence leniveau) :
 - **[A]** collect a ruby give you 1 second of invicibility?
 
 - **[B]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+
 - **[B]** Usable/throwable object system (use the LanceManager, make it an ItemManager)
 - **[B]** Modifier Object system (transient/constant?)
 - **[B]** lance locking system ?
