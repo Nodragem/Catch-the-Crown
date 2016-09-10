@@ -141,7 +141,7 @@ public class Lance extends GameObject {
     }
 
     @Override
-    public void initFilter() {
+    public void initCollisionMask() {
         handleFilter = new Filter();
         pickFilter = new Filter();
         goToGhostState();

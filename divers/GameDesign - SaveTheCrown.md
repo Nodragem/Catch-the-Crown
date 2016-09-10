@@ -73,11 +73,11 @@ Règle de partie perdue (recommence leniveau) :
 
 - [ ] **[A]** Animations:
 
-  - [x] Lances could have another appearance when fully loaded
+  - [xx] Lances could have another appearance when fully loaded
 
-  - [x] Fireball explosion
+  - [xx] Fireball explosion
 
-  - [x] Picking up / Projecting character:
+  - [xx] Picking up / Projecting character:
 
     1. [x] the lifted prabbit should be panicked
     2. [x] the lifting prabbit should have his arm up?
@@ -87,7 +87,7 @@ Règle de partie perdue (recommence leniveau) :
 
     4. [x] Projection animation
 
-  - [x] Golden Prabbit animations:
+  - [xx] Golden Prabbit animations:
 
     > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
     > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
@@ -99,7 +99,7 @@ Règle de partie perdue (recommence leniveau) :
     - [ ] add a layer in character class to add effects (here it will be a golden aura)
     - [ ] animate the golden aura
 
-  - [ ] Animate the flowers?
+  - [xx] Animate the flowers?
 
   - [ ] Animate the coins going to your wallet
 
@@ -110,11 +110,15 @@ Règle de partie perdue (recommence leniveau) :
 
 - [ ] **[A]** Sounds:
 
-  - [ ] fireball death sound and animation
-  - [ ] sound for end of jumping
-  - [ ] **[wip]** Switcher
-  - [ ] Fireball launcher
-  - [ ] Spikes
+  - [x] fireball death sound and animation
+  - [x] sound for end of jumping
+  - [x] Switcher On/Off
+  - [x] Fireball launcher
+  - [-] Spikes
+    > not sure what it should sound like...
+
+  - [x] **[wip]** List the sounds to remove from the game
+    > (I put a X at the end of the file in D:\Google Drive\Art and Creation\Jeux-Prog\SoundEffect\OldSounds)
 
 - [ ] **[B]** level menu
 

@@ -82,7 +82,7 @@ public class Coins extends GameObject implements Triggerable {
         }
     }
 
-    public void initFilter() {
+    public void initCollisionMask() {
         coinFilter = new Filter();
         coinFilter.categoryBits = Constants.CATEGORY.get("Collectable");
         coinFilter.maskBits = Constants.MASK.get("Collectable");
@@ -112,6 +112,7 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     public void initAnimation() {
+//        we actually create only one animation object shared between all of the coins, see above
     }
 
     public void addCoin(int x, int y, String typeName){

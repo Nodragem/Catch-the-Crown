@@ -1,12 +1,18 @@
 {
-  "projectile_types":
+  "game_objects":
   {
-    "fireball": {
+    "character": {
+      "texture_name": "Piaf",
+      "animation_names": ["Standing", "Walking", "Rising", "Falling",  "Death", "Sleeping"],
+      "animation_loops": ["LOOP", "LOOP", "LOOP", "LOOP", "NORMAL", "LOOP"],
+      "animation_spf": [0.5, 0.25, 0.25, 0.25, 0.25, 0.25]
+    },
+    "fire_ball": {
       "dimensionx": 1.0,
       "dimensiony": 0.5,
       "isRotation": true,
       "bodyType": "DynamicBody",
-      "texture": "fireball",
+      "texture_name": "fireball",
       "damage": 35,
       "returned": 200,
       "rateDeath": 0,
@@ -15,12 +21,12 @@
       "Mask": "Weapon",
       "Category": "Weapon"
     },
-    "ball": {
+    "simple_ball": {
       "dimensionx": 0.5,
       "dimensiony": 0.5,
       "isRotation": true,
       "bodyType": "DynamicBody",
-      "texture": "ball",
+      "texture_name": "ball",
       "damage": 20,
       "returned": 101,
       "rateDeath": 0,
@@ -28,79 +34,92 @@
       "sensor": false,
       "Mask": "Weapon",
       "Category": "Weapon"
+    },
+
+    "invisible_switch": {
+      "visible": false,
+      "hold": false,
+      "bodyType": "StaticBody",
+      "sensor": true,
+      "Mask": "Sensor",
+      "Category": "Sensor"
+    },
+    "totem_switch": {
+      "hold": true,
+      "texture_name": "totem",
+      "scalex": 0.33,
+      "scaley": 0.13 ,
+      "offsetx": 0.5,
+      "offsety": 0.25,
+      "bodyType": "StaticBody",
+      "sensor": true,
+      "Mask": "Sensor",
+      "Category": "Sensor"
+    },
+    "stone_switch": {
+      "hold": true,
+      "texture_name": "stone",
+      "scalex": 0.33,
+      "scaley": 0.13 ,
+      "offsetx": 0.5,
+      "offsety": 0.25,
+      "bodyType": "StaticBody",
+      "sensor": true,
+      "Mask": "Sensor",
+      "Category": "Sensor"
+    },
+    "lance_switch": {
+      "hold": true,
+      "texture_name": "slance",
+      "scalex": 0.6,
+      "scaley": 0.2 ,
+      "offsetx": 0.5,
+      "offsety": 0.4,
+      "offsety_all": 0.4,
+      "bodyType": "StaticBody",
+      "sensor": true,
+      "CustomMask": ["Weapon"],
+      "Category": "Sensor"
+    },
+    "simple_launcher": {
+      "texture_name": "launcher"
+    },
+    "lance": {
+      "texture_name": "Lance",
+      "animation_names": ["Burning", "Moving", "Charging", "Ready",  "Aiming"],
+      "animation_loops": ["LOOP", "LOOP", "NORMAL", "LOOP", "NORMAL"],
+      "animation_spf": [0.2, 0.5, 0.16, 0.20, 0.16]
+
+    },
+    "arms": {
+      "texture_name": "Arms",
+      "animation_names": ["Lance", "Slapping", "Carrying"],
+      "animation_loops": ["NORMAL", "NORMAL", "LOOP"],
+      "animation_spf": [0.1, 0.1, 0.25]
+
+    }
+  },
+  "collectable_type":
+  {
+    "coin":{
+      "size": 0.5,
+      "offsetx": 0.25,
+      "offsety": 0.25,
+      "value": 10
+    },
+    "ruby":{
+      "size":0.5,
+      "offsetx": 0.25,
+      "offsety": 0.25,
+      "value": 50
+    },
+    "diamond":{
+      "offsetx": 0.0,
+      "offsety": 0.0,
+      "scalex": 1,
+      "scaley": 1,
+      "value": 200
     }
   }
-  ,
-  "switcher_types":
-    {
-      "invisible": {
-        "visible": false,
-        "hold": false,
-        "bodyType": "StaticBody",
-        "sensor": true,
-        "Mask": "Sensor",
-        "Category": "Sensor"
-      },
-      "totem_switch": {
-        "hold": true,
-        "texture": "totem",
-        "scalex": 0.33,
-        "scaley": 0.13 ,
-        "offsetx": 0.5,
-        "offsety": 0.25,
-        "bodyType": "StaticBody",
-        "sensor": true,
-        "Mask": "Sensor",
-        "Category": "Sensor"
-      },
-      "stone_switch": {
-        "hold": true,
-        "texture": "stone",
-        "scalex": 0.33,
-        "scaley": 0.13 ,
-        "offsetx": 0.5,
-        "offsety": 0.25,
-        "bodyType": "StaticBody",
-        "sensor": true,
-        "Mask": "Sensor",
-        "Category": "Sensor"
-      },
-      "lance_switch": {
-        "hold": true,
-        "texture": "slance",
-        "scalex": 0.6,
-        "scaley": 0.2 ,
-        "offsetx": 0.5,
-        "offsety": 0.4,
-        "offsety_all": 0.4,
-        "bodyType": "StaticBody",
-        "sensor": true,
-        "CustomMask": ["Weapon"],
-        "Category": "Sensor"
-      }
-    },
-	"collectable_type":
-    {
-	  "coin":{
-        "size": 0.5,
-        "offsetx": 0.25,
-        "offsety": 0.25,
-        "value": 10
-      },
-      "ruby":{
-        "size":0.5,
-        "offsetx": 0.25,
-        "offsety": 0.25,
-        "value": 50
-      },
-      "diamond":{
-        "offsetx": 0.0,
-        "offsety": 0.0,
-        "scalex": 1,
-        "scaley": 1,
-        "value": 200
-
-      }
-	}
 
 }

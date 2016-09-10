@@ -84,7 +84,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     @Override
-    public void initFilter() {
+    public void initCollisionMask() {
         Filter defaultFilter = new Filter();
         defaultFilter.categoryBits = Constants.CATEGORY.get("Scenery");
         defaultFilter.maskBits = Constants.MASK.get("Scenery");

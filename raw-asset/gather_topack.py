@@ -6,11 +6,12 @@ Created on Sat Mar 21 16:38:07 2015
 """
 
 import os, shutil, glob
+from PIL import Image
 
 print "start from", os.getcwd()
 
 root_path = os.getcwd()
-toavoid = ["topack", "level_tiles"]
+toavoid = ["topack", "level_tiles", "inspiration", "output"]
 
 ## clean up
 filelist = glob.glob(root_path+"\\topack\\*.png")
@@ -34,4 +35,13 @@ for (path, dirs, files) in os.walk(root_path):
     print "----"
     for srcfile in filtered_files:
         shutil.copy("\\".join([path,srcfile]), root_path+"\\topack")
-    
+
+## crop the images
+filelist = glob.glob(root_path+"\\topack\\*.png")
+for f in filelist:
+    image = Image.open(f)
+    image.load()
+    imageSize = image.size
+    imageBox = image.getbbox()
+    cropped = image.crop(imageBox)
+    cropped.save(f)

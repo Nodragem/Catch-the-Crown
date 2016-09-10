@@ -6,6 +6,7 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -77,6 +78,7 @@ public class GameScreenTournament implements Screen {
     private GAME_STATE previousStateGame;
     private int victoryThreshold;
     private boolean randomLevel;
+    public JsonValue objectDataBase;
 
     public GameScreenTournament(RopeGame ropeGame){
         this.game = ropeGame;
@@ -89,6 +91,7 @@ public class GameScreenTournament implements Screen {
         else
             this.currentLevel = 0;
         this.camera = ropeGame.camera;
+        objectDataBase = new JsonReader().parse(Gdx.files.internal("object_types.json"));
     }
 
     @Override
@@ -159,7 +162,7 @@ public class GameScreenTournament implements Screen {
         playersList = new ArrayMap<String, Player>(colorProfiles.size);
         for (int i = 0; i < inputProfiles.size; i++) {
             Player player = new Player(inputProfiles.getKeyAt(i),
-                    new Character(this, new Vector2(15,15), colorProfiles.getValueAt(i)),
+                    new Character(this, new Vector2(15,15), "Piaf", colorProfiles.getValueAt(i)),
                     inputProfiles.getValueAt(i), this);
             player.getCharacter().setPosition(getSpawnPosition()); // spawners are place by the placeObjectsFromMap
             playersList.put(player.getName(), player);
@@ -620,5 +623,9 @@ public class GameScreenTournament implements Screen {
 
     public void toMainMenu() {
         game.toMainMenu();
+    }
+
+    public JsonValue getObjectDataBase() {
+        return objectDataBase;
     }
 }

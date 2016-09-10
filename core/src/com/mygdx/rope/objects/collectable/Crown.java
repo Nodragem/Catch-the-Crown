@@ -32,7 +32,7 @@ public class Crown extends GameObject {
     }
 
     @Override
-    public void initFilter() {
+    public void initCollisionMask() {
         Filter filter = new Filter();
         filter.categoryBits = Constants.CATEGORY.get("Object");
         filter.maskBits = Constants.MASK.get("Object");

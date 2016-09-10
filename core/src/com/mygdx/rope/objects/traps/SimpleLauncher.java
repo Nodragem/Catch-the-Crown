@@ -36,8 +36,8 @@ public class SimpleLauncher extends GameObject implements Triggerable {
 
     public SimpleLauncher(GameScreenTournament game, Vector2 position, Vector2 dimension, float rotation,
                           float intervalProjectile, float reloadTime, float impulse, int nb_pool, boolean defaultON,
-                          String projectile_type) {
-        super(game, position, dimension, rotation, "launcher"); // there is only one type of launcher for now...
+                          String objectDataIDOfProjectile) {
+        super(game, position, dimension, rotation, "simple_launcher"); // there is only one type of launcher for now...
         /*
         # rotation is is degree !! but this.rotation is in radians.
         * here, intervalProjectile is the time between delivering a new object,
@@ -49,26 +49,21 @@ public class SimpleLauncher extends GameObject implements Triggerable {
         this.trapstate = Constants.TRAPSTATE.ON;
         pool_size = nb_pool;
         poolObj = new Array<Usable>(nb_pool);
-        JsonReader jsonreader = new JsonReader();
-        FileHandle handle = Gdx.files.internal("object_types.json"); // should be move to the Factory
-        JsonValue info = jsonreader.parse(handle);
-        info = info.get("projectile_types");
-        info = info.get(projectile_type);
-        String name_texture = info.getString("texture", null);
 
-        Gdx.app.debug("SimpleLauncher", "name_texture from projectile: "+name_texture);
-        if (info != null) {
-            Gdx.app.debug("Launcher", "Projectile found?! " + info);
+        JsonValue infoProjectile = game.getObjectDataBase().get(objectDataIDOfProjectile);
+        Gdx.app.debug("SimpleLauncher", "name_texture from projectile: "+infoProjectile);
+        if (infoProjectile != null) {
             for (int i = 0; i < pool_size; i++) {
-                if (name_texture != null)
-                    poolObj.add(new Projectile(this.gamescreen, new Vector2(position).add(0,i), new Vector2(dimension), this.rotation, name_texture, info));
+                    poolObj.add(new Projectile(this.gamescreen,
+                            new Vector2(position).add(0,i), new Vector2(dimension),
+                            this.rotation, objectDataIDOfProjectile));
             }
         }
         this.intervalProjectile = intervalProjectile;
         this.reloadTime = reloadTime;
         this.undirectional_impulse = impulse;
         //this.impulse = new Vector2(2 , 0);
-        float projectile_sizey = info.getFloat("dimensiony", 0.5f);
+        float projectile_sizey = infoProjectile.getFloat("dimensiony", 0.5f);
         radiusToStartPoint = (float) Math.sqrt(Math.pow(1.1f, 2) + Math.pow((1-projectile_sizey)/2,2)); // the start point will be at 1.1 units from the launcher origin on the relative x, and on the y center of the launcher.
         angleToStartPoint = MathUtils.atan2((1-projectile_sizey)/2, 1.1f);
         updateProjectileStartPoint();
@@ -77,7 +72,7 @@ public class SimpleLauncher extends GameObject implements Triggerable {
 
     }
 
-    public void initFilter() {
+    public void initCollisionMask() {
         Filter defaultFilter = new Filter();
         defaultFilter.categoryBits = Constants.CATEGORY.get("Scenery");
         defaultFilter.maskBits = Constants.MASK.get("Scenery");

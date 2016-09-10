@@ -18,14 +18,15 @@ public class Projectile extends GameObject implements Usable {
     private float rateOfDeath;
 
 
-    public Projectile(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, String name_texture, JsonValue info) {
-        super(game, position, dimension, angle, name_texture, info);
+    public Projectile(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, String objectDataID) {
+        super(game, position, dimension, angle, objectDataID);
+        JsonValue objectInfo = game.getObjectDataBase().get(objectDataID);
         Gdx.app.debug("projectile", "sensor? " + getBody().getFixtureList().get(mainFixtureIndex).isSensor());
-        returnedDamage =  info.getFloat("returned", 1f);
-        givenDamage = info.getFloat("damage", 101f);
+        returnedDamage =  objectInfo.getFloat("returned", 1f);
+        givenDamage = objectInfo.getFloat("damage", 101f);
         life = 100;
-        rateOfDeath = info.getFloat("rateDeath", 0); // note that in any case the launcher will kill and call them back after reloading time.
-        body.setGravityScale(info.getFloat("gravity", 0));
+        rateOfDeath = objectInfo.getFloat("rateDeath", 0); // note that in any case the launcher will kill and call them back after reloading time.
+        body.setGravityScale(objectInfo.getFloat("gravity", 0));
         isKillable = true;
         setActivate(false);
 
@@ -33,7 +34,7 @@ public class Projectile extends GameObject implements Usable {
     }
 
 //    @Override
-//    public void initFilter() {
+//    public void initCollisionMask() {
 //        Filter defaultFilter = new Filter();
 //        defaultFilter.categoryBits = Constants.CATEGORY.get("Weapon");
 //        defaultFilter.maskBits = Constants.MASK.get("Weapon");

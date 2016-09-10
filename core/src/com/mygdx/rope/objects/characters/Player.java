@@ -64,7 +64,8 @@ public class Player implements ControlProcessor, Updatable  {
 		this.character = character;
         this.objBody = character.body;
         character.setPlayer(this);
-        weapon = new LanceManager(character.getGamescreen(), character, character.position, character.color_texture); // that weird t have that here! (I agree)
+        weapon = new LanceManager(character.getGamescreen(),
+                character, character.position, "Lance", character.color_texture); // that weird t have that here! (I agree)
     }
 
 

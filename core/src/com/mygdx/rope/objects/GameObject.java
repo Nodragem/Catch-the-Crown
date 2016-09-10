@@ -12,7 +12,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
@@ -37,9 +39,10 @@ public class GameObject implements Updatable {
     public ContactData mainBoxContact;
     protected int mainFixtureIndex;
 	public Animation current_animation;
-    public Animation main_animation;
-    public Animation onset_animation = null;
-    public Animation offset_animation = null;
+//    public Animation main_animation;
+//    public Animation onset_animation = null;
+//    public Animation offset_animation = null;
+    protected ObjectMap<String, Animation> animations;
     public Constants.VIEW_DIRECTION viewDirection;
 	public Vector2 position;
 	public Vector2 rposition; // in polar coordinate
@@ -56,7 +59,8 @@ public class GameObject implements Updatable {
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 
-    public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, String name_texture, JsonValue bodyDef, Filter filter){ // angle in radians
+    public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension,
+                      float angle, String objectDataID, Filter filter){ // angle in radians
         gamescreen = game;
         color = new Array<Float>(new Float[]{1.0f,1.0f,1.0f,1.0f});
         //stateTime = 0;
@@ -87,43 +91,44 @@ public class GameObject implements Updatable {
         gamescreen.getObjectsToRender().add(this);
         gamescreen.getObjectsToUpdate().add(this);
         Gdx.app.debug("GameObject", this.getClass() + " created with ID " +myRenderID);
-        if(name_texture == null) initAnimation();
-        else initAnimation(name_texture);
 
+        animations = new ObjectMap<String, Animation>(3);
         mainFixtureIndex = 0;
-        if(bodyDef == null) initFixture();
-        else initFixture(bodyDef);
+        if(objectDataID == null) {
+            initAnimation();
+            initFixture();
+            initCollisionMask();
+        } else if (!objectDataID.equals("NoInit")){
+            initAnimation(objectDataID, "");
+            initFixture(objectDataID);
+            initCollisionMask(objectDataID);
+        }
+        // FIXME: why do we give a contact box only to objects that have several fixtures?
         if (this.body.getFixtureList().size >0) { // > mainFixtureIndex
             mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
         }
-        if(bodyDef == null) initFilter();
-        else initFilter(bodyDef);
 
         this.goToActivation();
 
     }
-    public GameObject(GameScreenTournament game, Vector2 position,  Vector2 dimension, float angle, String name_texture, JsonValue fd) {
-        this(game, position, dimension, angle, name_texture, fd, null);
-    }
-
-    public GameObject(GameScreenTournament game, Vector2 position,  Vector2 dimension,float angle, String name_texture) {
-        this(game, position, dimension, angle, name_texture, null, null);
+    public GameObject(GameScreenTournament game, Vector2 position,  Vector2 dimension, float angle, String objectDataID) {
+        this(game, position, dimension, angle, objectDataID, null);
     }
 	
     public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle) {
-        this(game, position, dimension, angle, null, null, null);
+        this(game, position, dimension, angle, null, null);
 	}
 
     public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension ) {
-        this(game, position, dimension, 0, null, null, null);
+        this(game, position, dimension, 0, null, null);
 	}
 
     public GameObject(GameScreenTournament game, Vector2 position ) {
-        this(game, position, new Vector2(1, 1.0f), 0, null, null, null);
+        this(game, position, new Vector2(1, 1.0f), 0, null, null);
     }
 
 
-    public void initFilter() {
+    public void initCollisionMask() {
             Filter defaultFilter = new Filter();
             defaultFilter.categoryBits = Constants.CATEGORY.get("Object");
             defaultFilter.maskBits = Constants.MASK.get("Object");
@@ -143,13 +148,14 @@ public class GameObject implements Updatable {
             p.dispose();
     }
 
-    public void initFixture(JsonValue fixtureInfo) {
-        if (fixtureInfo.isArray()) {
-            for (JsonValue info : fixtureInfo) {
-                createFixtureFromJson(info);
+    public void initFixture(String objectDataID) {
+        JsonValue objectInfo = gamescreen.getObjectDataBase().get(objectDataID);
+        if (objectInfo.isArray()) {
+            for (JsonValue fixtureInfo : objectInfo) {
+                createFixtureFromJson(fixtureInfo);
             }
         } else {
-            createFixtureFromJson(fixtureInfo);
+            createFixtureFromJson(objectInfo);
         }
     }
 
@@ -178,20 +184,21 @@ public class GameObject implements Updatable {
         p.dispose();
     }
 
-    public void initFilter(JsonValue infoFilters) {
-        if (infoFilters.isArray()) {
+    public void initCollisionMask(String objectDataID) {
+        JsonValue objectInfo = gamescreen.getObjectDataBase().get(objectDataID);
+        if (objectInfo.isArray()) {
             int i = 0;
-            for (JsonValue info : infoFilters) {
-                createFilterFromJson(info, i);
+            for (JsonValue info : objectInfo) {
+                createCollisionMaskFromJson(info, i);
                 i++;
             }
         } else {
-            createFilterFromJson(infoFilters, mainFixtureIndex);
+            createCollisionMaskFromJson(objectInfo, mainFixtureIndex);
         }
 
     }
 
-    private void createFilterFromJson(JsonValue info, int fixtureIndex){
+    private void createCollisionMaskFromJson(JsonValue info, int fixtureIndex){
         Filter defaultFilter = new Filter();
 //        defaultFilter.categoryBits = Constants.CATEGORY.get("Sensor");
 //        defaultFilter.maskBits = Constants.MASK.get("Sensor"); // make that data driven
@@ -225,8 +232,8 @@ public class GameObject implements Updatable {
             Pixmap pixmap = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
             pixmap.setColor(1, 1, 0, 0.5f);
             pixmap.fillCircle(32, 32, 32);
-            main_animation = new Animation(1 / 6.0f, new TextureRegion(new Texture(pixmap)));
-            setAnimation(main_animation);
+            animations.put("Main", new Animation(1 / 6.0f, new TextureRegion(new Texture(pixmap))) );
+            setAnimation("Main");
             pixmap.dispose();
             stateTime = 0;
     }
@@ -235,37 +242,74 @@ public class GameObject implements Updatable {
         Pixmap pixmap = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
         pixmap.setColor(r, g, b, a);
         pixmap.fillRectangle(0, 0, 64, 64);
-        main_animation = new Animation(1 / 6.0f, new TextureRegion(new Texture(pixmap)));
-        setAnimation(main_animation);
+        animations.put("Main",
+                new Animation(1 / 6.0f, new TextureRegion(new Texture(pixmap))));
+        setAnimation("Main");
         pixmap.dispose();
         stateTime = 0;
     }
 
-    public void initAnimation(String name_texture) {
+    public void initAnimation(String objectDataID, String color_texture) {
+        JsonValue objectInfo = gamescreen.getObjectDataBase().get(objectDataID);
+        if(objectInfo == null) Gdx.app.error("GameObject",
+                "Object ID not found in the json DataBase");
+        String texture_name = objectInfo.getString("texture_name");
+        if (texture_name == null)
+            Gdx.app.error("GameObject", "No Texture Name found in the json DataBase");
+
+        Array<String> animation_names;
+        if (objectInfo.has("animation_names")) {
+            animation_names = new Array<String>(
+                    objectInfo.get("animation_names").asStringArray());
+        } else {
+            animation_names = new Array<String>(
+                    new String[]{"Main", "Onset", "Offset"});
+        }
+        Array<String> animation_loops;
+        if (objectInfo.has("animation_loops")) {
+            animation_loops = new Array<String>(
+                    objectInfo.get("animation_loops").asStringArray());
+        } else {
+            animation_loops = new Array<String>(
+                    new String[]{"LOOP", "NORMAL", "NORMAL"});
+        }
+        FloatArray animation_spf;
+        if (objectInfo.has("animation_spf")) {
+            animation_spf = new FloatArray(
+                    objectInfo.get("animation_spf").asFloatArray());
+                    // --> spf: second per frame
+        } else {
+            animation_spf = new FloatArray (
+                    new float[]{0.2f, 0.2f, 0.2f});
+        }
+
+        if(color_texture.equals(""))
+            color_texture = "_"+color_texture;
+
         Array<TextureAtlas.AtlasRegion> regions = null;
-        // anim normal:
-        regions = atlas.findRegions(name_texture+"_main");
-        if (regions.size >0)
-            main_animation = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
-        setAnimation(main_animation);
+        for (int i = 0; i < animation_names.size; i++) {
+            regions = atlas.findRegions(texture_name + color_texture + "_" + animation_names.get(i));
+            if (regions.size >0)
+                animations.put(animation_names.get(i),
+                        new Animation(animation_spf.get(i), regions,
+                                Animation.PlayMode.valueOf(animation_loops.get(i))
+                        )
+                );
+            else
+                Gdx.app.error("GameObject", animation_names.get(i)+
+                        " could not be created from the texture atlas!");
+        }
+        setAnimation("Main");
 
-        regions = atlas.findRegions(name_texture+"_onset");
-        if (regions.size >0)
-            onset_animation = new Animation(1.0f/4.0f, regions, Animation.PlayMode.NORMAL);
-
-        regions = atlas.findRegions(name_texture+"_offset");
-        Gdx.app.debug("GameObject", "texture regions: "+regions);
-        if (regions.size >0)
-            offset_animation = new Animation(1.0f/4.0f, regions, Animation.PlayMode.NORMAL);
-        Gdx.app.debug("GameObject", "texture offset: "+offset_animation);
     }
+
 
     public Animation getMain_animation() {
-        return main_animation;
+        return animations.get("Main");
     }
 
-    public void setAnimation(Animation animation){
-		current_animation = animation;
+    public void setAnimation(String animation_name){
+	    current_animation = animations.get(animation_name);
 		stateTime = 0;
 	}
 
@@ -301,21 +345,21 @@ public class GameObject implements Updatable {
                 break;
             case ACTIVATION:
                 if (previousActiveState != Constants.ACTIVE_STATE.ACTIVATION)
-                    setAnimation(onset_animation);
+                    setAnimation("Onset");
                 if(current_animation.isAnimationFinished(stateTime)) {
                     Gdx.app.debug("GameObject", "activated!");
                     //activationActions();
                     this.setActivate(true);
-                    setAnimation(main_animation);
+                    setAnimation("Main");
                 }
                 break;
             case DESACTIVATION:
                 if (previousActiveState != Constants.ACTIVE_STATE.DESACTIVATION)
-                    setAnimation(offset_animation);
+                    setAnimation("Offset");
                 if(current_animation.isAnimationFinished(stateTime)) {
                     //desactivationActions();
                     this.setActivate(false);
-                    setAnimation(main_animation);
+                    setAnimation("Main");
                 }
                 break;
         }
@@ -452,7 +496,9 @@ public class GameObject implements Updatable {
     }
 
     public void goToDesactivation(){
-            if (offset_animation != null){ // allows a delayed desactivation after playing a last animation (like an explosion)
+            if (animations.get("Offset") != null){
+                // allows a delayed desactivation after playing a last animation
+                // (like an explosion)
                 activeState = Constants.ACTIVE_STATE.DESACTIVATION;
             }
             else {
@@ -461,9 +507,8 @@ public class GameObject implements Updatable {
     }
 
     public void goToActivation(){
-            if (onset_animation != null){
+            if (animations.get("Onset") != null){
                 isVisible = true;
-                Gdx.app.debug("GameObject", "onset_anim not null");
                 activeState = Constants.ACTIVE_STATE.ACTIVATION;
             }
             else {

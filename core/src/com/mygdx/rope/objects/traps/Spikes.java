@@ -39,7 +39,7 @@ public class Spikes extends GameObject implements Triggerable {
     }
 
     @Override
-    public void initFilter() {
+    public void initCollisionMask() {
         Filter defaultFilter = new Filter();
         defaultFilter.categoryBits = Constants.CATEGORY.get("Weapon");
         defaultFilter.maskBits = Constants.MASK.get("Weapon");

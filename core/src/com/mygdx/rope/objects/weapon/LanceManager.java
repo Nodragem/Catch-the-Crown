@@ -12,6 +12,7 @@ import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
+import com.mygdx.rope.util.ContactData;
 
 /**
  * Created by Nodragem on 15/06/2014.
@@ -36,9 +37,15 @@ public class LanceManager extends GameObject {
     private GameObject lastTouchedObj;
     private boolean shortAttackPressed;
 
-    public LanceManager(GameScreenTournament gm, Character p, Vector2 pos, String color_texture) {
+    public LanceManager(GameScreenTournament gm, Character p, Vector2 pos,
+                        String objectDataID, String color_texture) {
         // that actually a close range/ long range manager.
-        super(gm, pos.cpy(), new Vector2(1,1), 0, color_texture);
+        super(gm, pos.cpy(), new Vector2(1,1), 0, "NoInit");
+        initAnimation(objectDataID, color_texture);
+        initFixture(objectDataID);
+        mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
+        initCollisionMask(objectDataID);
+
         maxPower = 6.0f;
         defaultPower = 2.5f;
         powerLoad = defaultPower;
@@ -55,7 +62,7 @@ public class LanceManager extends GameObject {
     }
 
     @Override
-    public void initFilter() {
+    public void initCollisionMask() {
         Filter filter = new Filter();
         filter.categoryBits = Constants.CATEGORY.get("Sensor");
         filter.maskBits = (short) (Constants.CATEGORY.get("Scenery") | Constants.CATEGORY.get("Player"));
@@ -82,14 +89,14 @@ public class LanceManager extends GameObject {
     }
 
     @Override
-    public void initAnimation(String texture_name) {
+    public void initAnimation(String objectDataID, String color_texture) {
         //TextureAtlas atlas = new TextureAtlas("texture_obj.atlas");
         Array<TextureAtlas.AtlasRegion> regions = null;
         // anim normal:
-        regions = atlas.findRegions("Lance_"+texture_name+"_short"); // weapon specific, should go in Lance
+        regions = atlas.findRegions("Lance_"+"_"+color_texture+"_"); // weapon specific, should go in Lance
         animShortAttack = new Animation(1.0f/12.0f, regions, Animation.PlayMode.NORMAL);
         // anim walk:
-        regions = atlas.findRegions("Lance_"+texture_name+"_long");
+        regions = atlas.findRegions("Lance_"+"_"+color_texture+"_");
         animLongAttack = new Animation(1.0f/12.0f, regions, Animation.PlayMode.NORMAL);
         // anim lance:
         regions = atlas.findRegions("lance");
@@ -103,7 +110,7 @@ public class LanceManager extends GameObject {
 
         this.setAnimation(animShortAttack);
         isVisible = false;
-        stateTime = 0;
+
     }
 
     public void shortDistanceAttack(boolean isPressed, float deltaTime) {
@@ -194,51 +201,6 @@ public class LanceManager extends GameObject {
             lances.add(currentLance);
         }
     }
-
-//    public void setAttack(boolean isPressed, Vector2 pos, float angle, boolean isAiming, float deltaTime){
-//        body.setTransform(pos.x+0.5f, pos.y+0.5f, angle); // look at that, how it is uggly :P see the comments in Player::processInputs, and in PlayerController about Child system
-//        //if (sensorData.isTouched() && attackState != Constants.ATTACK_STATE.AIMING) {
-//        //Gdx.app.debug("LanceSensor", "setAttack");
-//        if (mainBoxContact.isTouched()) {
-//            //&& attackState == Constants.ATTACK_STATE.NOTATTACKING
-//            GameObject lastTouchedObj = (GameObject) mainBoxContact.peekTouchedFixtures().getBody().getUserData();
-//            switch (attackState){
-//                case NOTATTACKING:
-//                    //Gdx.app.debug("LanceSensor", "touched and ready to slap");
-//                    shortDistanceAttack(isPressed, lastTouchedObj, deltaTime);
-//                    break;
-//                case AIMING:
-//                    shortDistanceAttack(isPressed, lastTouchedObj, deltaTime);
-//                    break;
-//                case CHARGING:
-//                    shortDistanceAttack(isPressed, lastTouchedObj, deltaTime);
-//                    break;
-//                case SHORTATTACK:
-//                    break;
-//                case LONGATTACK:
-//                    break;
-//            }
-//            //sensorBuffer.flush();
-//        } else {
-//            //if(attackState != Constants.ATTACK_STATE.SHORTATTACK)
-//            //    longDistanceAttack(isPressed, pos, angle, isAiming, deltaTime);
-//            switch (attackState) {
-//                case NOTATTACKING:
-//                    longDistanceAttack(isPressed, pos, angle, isAiming, deltaTime);
-//                    break;
-//                case AIMING:
-//                    longDistanceAttack(isPressed, pos, angle, isAiming, deltaTime);
-//                    break;
-//                case CHARGING:
-//                    longDistanceAttack(isPressed, pos, angle, isAiming, deltaTime);
-//                    break;
-//                case SHORTATTACK:
-//                    break;
-//                case LONGATTACK:
-//                    break;
-//            }
-//        }
-//    }
 
     @Override
     public boolean update(float deltaTime) {

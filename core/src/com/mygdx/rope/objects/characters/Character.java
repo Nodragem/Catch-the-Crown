@@ -11,6 +11,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.collectable.Crown;
 import com.mygdx.rope.screens.GameScreenTournament;
@@ -21,43 +24,43 @@ import static com.mygdx.rope.util.Constants.*;
 
 public class Character extends GameObject {
     private float sleepingTime;
-    public Player player;
-    public Animation animWalk;
-	//private Animation animNormal;
-	private Animation animJump;
-	private Animation animFalling;
+    private float awakeStateTimer; // a player can be Knock out and lose control of his character
+    private float respawnTime;
     public int marks;
+    public Player player;
+//    public Animation animWalk;
+//	private Animation animJump;
+//	private Animation animFalling;
+//    private Animation animDying;
+//    private Animation animSleeping;
+
     public JUMP_STATE previousJumpState;
     public JUMP_STATE jumpState;
     public MOVE_STATE moveState;
     public AWAKE_STATE awakeState;
+    private Body carriedObject;
+    private Body crownBody;
+    public Body lastGroundedBody;
     public Fixture myFeet;
     public Fixture myBodyFixture;
     public Fixture currentHand;
     private Fixture myLeftHand;
     private Fixture myRightHand;
-    private Body carriedObject;
-    private Body crownBody;
     public String name;
-//    public float score;
-    private float awakeStateTimer; // a player can be Knock out and lose control of his character
-    private Animation animSleeping;
-    private Animation animDying;
-    public Body lastGroundedBody;
     public String color_texture;
     private Texture MarkTexture;
-    private float respawnTime;
-    //private ContactData mainBoxContact;
 
-    public Character(GameScreenTournament game, Vector2 position, String name_texture ){
-        super(game, position, new Vector2(1, 0.9f), 0, name_texture);
+    public Character(GameScreenTournament game, Vector2 position, String objectDataID, String color_texture){
+        super(game, position, new Vector2(1, 0.9f), 0, "NoInit");
+        initAnimation(objectDataID, color_texture);
+        initFixture(objectDataID);
+        mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
+        initCollisionMask(objectDataID);
         respawnTime = -1;
-        color_texture = name_texture;
         marks = 0;
         player = null;
         lastGroundedBody = null;
         isKillable = true;
-        this.name = name;
         previousJumpState = JUMP_STATE.FALLING;
         jumpState = JUMP_STATE.FALLING;
         moveState = MOVE_STATE.NORMAL;
@@ -69,7 +72,7 @@ public class Character extends GameObject {
 	}
 
     @Override
-    public void initFilter() {
+    public void initCollisionMask() {
         Filter filter = new Filter();
         filter.categoryBits = CATEGORY.get("Player");
         filter.maskBits = MASK.get("Player");
@@ -100,42 +103,14 @@ public class Character extends GameObject {
     }
 
     @Override
-    public void initAnimation(String name_texture) {
+    public void initAnimation(String objectDataID, String color_texture) {
+        super.initAnimation(objectDataID, this.color_texture);
         // -- Marks:
         Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
         pixmap.setColor(1f, 1f, 1f, 1.0f);
         pixmap.fillRectangle(0, 0, 1, 2);
         MarkTexture =  new Texture(pixmap);
-        // -- Texture:
-        Array<AtlasRegion> regions = null;
-        // anim normal:
-        regions = atlas.findRegions("Piaf_"+name_texture+"_stand");
-        if (regions != null)
-            main_animation = new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP);
-            //animNormal = new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP);
 
-        regions = atlas.findRegions("Piaf_" + name_texture + "_walk");
-        if (regions != null)
-            animWalk = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
-
-        regions = atlas.findRegions("Piaf_"+name_texture+"_rise");
-        if (regions != null)
-            animJump = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
-
-        regions = atlas.findRegions("Piaf_"+name_texture+"_fall");
-        if (regions != null)
-            animFalling = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
-
-        regions = atlas.findRegions("Piaf_"+name_texture+"_dead");
-        if (regions != null)
-            animDying = new Animation(1.0f/4.0f, regions, Animation.PlayMode.NORMAL);
-
-        regions = atlas.findRegions("Piaf_" + name_texture + "_sleeping");
-        if (regions != null)
-            animSleeping = new Animation(1.0f/4.0f, regions, Animation.PlayMode.LOOP);
-
-        this.setAnimation(animFalling);
-        stateTime = 0;
     }
 
     @Override
@@ -278,29 +253,29 @@ public class Character extends GameObject {
                     break;
                 switch (jumpState){
                     case RISING:
-                        if (current_animation != animJump) {
-                            setAnimation(animJump);
+                        if (current_animation != animations.get("Falling")) {
+                            setAnimation("Jumping");
                             myBodyFixture.setFriction(0);
                             Gdx.app.debug("Player", "RISING, Friction: " + myBodyFixture.getFriction());
                         }
                         break;
                     case FALLING:
-                        if(current_animation != animFalling) {
-                            setAnimation(animFalling);
+                        if(current_animation != animations.get("Falling")) {
+                            setAnimation("Falling");
                             myBodyFixture.setFriction(0);
                             Gdx.app.debug("Player", "FALLING, Friction:  " + myBodyFixture.getFriction());
                         }
                         break;
                     case GROUNDED:
-                        if(current_animation!= animWalk) {
-                            setAnimation(animWalk);
+                        if(current_animation!= animations.get("Walking")) {
+                            setAnimation("Walking");
                             myBodyFixture.setFriction(0.01f);
                             Gdx.app.debug("Player", "GROUNDED, Friction: " + myBodyFixture.getFriction());
                         }
                         break;
                     case IDLE:
-                        if(current_animation!= main_animation){
-                            setAnimation(main_animation);
+                        if(current_animation!= animations.get("Standing")){
+                            setAnimation("Standing");
                             myBodyFixture.setFriction(1.0f);
                             Gdx.app.debug("Player", "IDLE, Friction: " + myBodyFixture.getFriction());
                         }
@@ -311,8 +286,8 @@ public class Character extends GameObject {
             case SLEEPING:
                 if (justDied())
                     break;
-                if (current_animation != animSleeping)
-                    setAnimation(animSleeping);
+                if (current_animation != animations.get("Sleeping"))
+                    setAnimation("Sleeping");
 
                 awakeStateTimer += deltaTime;
                 if (awakeStateTimer > sleepingTime) {
@@ -322,8 +297,8 @@ public class Character extends GameObject {
                 }
                 break;
             case DEAD:
-                if (current_animation != animDying)
-                    setAnimation(animDying);
+                if (current_animation != animations.get("Death"))
+                    setAnimation("Death");
                 awakeStateTimer += deltaTime;
                 if (awakeStateTimer > respawnTime) {
                     reSpawn();
