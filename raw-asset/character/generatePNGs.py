@@ -25,20 +25,20 @@ for i, pallette in enumerate(pallettes):
 
 ## export the Lance/Slapping/Carrying layers:
 layers = ["Carrying", "Slapping", "Throwing_Lance"]
-layers_name = ["Carrying", "Slapping", "Lance"]
+layers_name = ["Carrying", "Slapping", "Throwing"]
 for j, layer in enumerate(layers):
     for i, pallette in enumerate(pallettes):
         command = [aseprite, "-b",
                         "Piaf_animation03_"+colours[i]+"toExport.ase",
                         "--layer", layer,
                         "--frame-tag", "Walking",
-                        "--filename-format", '{path}/{title}_{tag}_{tagframe01}.{extension}',
-                        "--save-as", output_path+"\\Arms_"+layers_name[j]+"_"+colours[i]+".png"]
+                        "--filename-format", '{path}/{title}_{tag}{tagframe01}.{extension}',
+                        "--save-as", output_path+"\\Attack_"+colours[i]+"_"+layers_name[j]+".png"]
         sp.call(command)
         command[0] = 'aseprite'
         print ' '.join(command) + '\n'
 
-[os.remove(f) for f in glob.glob(output_path+"/Arms_*") if Image.open(f).getcolors(1) is not None]
-[os.rename(s, s.replace("Walking", "")) for s in glob.glob(output_path+"/Arms_*") if "Walking" in s]
+[os.remove(f) for f in glob.glob(output_path+"/Attack_*") if Image.open(f).getcolors(1) is not None]
+[os.rename(s, s.replace("Walking", "")) for s in glob.glob(output_path+"/Attack_*") if "Walking" in s]
 
 ## export the Golden Halo FX:

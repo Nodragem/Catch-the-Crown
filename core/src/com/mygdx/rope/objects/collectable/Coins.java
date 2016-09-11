@@ -47,6 +47,7 @@ public class Coins extends GameObject implements Triggerable {
         super(game, position, new Vector2(0.5f,0.5f));
         activationAllowed = false;
         coinsRespawnTime = Constants.COINSTIME;
+        // note that the HUB resets the coins so that they go to their default ON value
         defaultON = Boolean.valueOf(collectableMap.getProperties().get("defaultON", "true", String.class));
         if (HubList != null && collectableMap.getProperties().get("Hub_in", null, String.class) != null){
             Gdx.app.debug("Coin Debug: ", "HubList: " + HubList);
@@ -61,13 +62,13 @@ public class Coins extends GameObject implements Triggerable {
             animOfCollectables = new ArrayMap<String, Animation>();
             Array<TextureAtlas.AtlasRegion> regions = null;
             for (JsonValue collectable : collectableInfo) {
-                Gdx.app.debug("Coins Class:", "collectable.name():  " + collectable.name());
+//                Gdx.app.debug("Coins Class:", "collectable.name():  " + collectable.name());
                 regions = atlas.findRegions(collectable.name()+"_main");
                 animOfCollectables.put(collectable.name(), new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP));
             }
         } else {
-            Gdx.app.debug("Coin Debug: ", ""+animOfCollectables);
-            Gdx.app.debug("Coin Debug: ", ""+collectableInfo);
+//            Gdx.app.debug("Coin Debug: ", ""+animOfCollectables);
+//            Gdx.app.debug("Coin Debug: ", ""+collectableInfo);
         }
         Gdx.app.debug("Coin Debug: ", "  DefaultON: " + defaultON);
         stateTime = 0;
@@ -117,7 +118,7 @@ public class Coins extends GameObject implements Triggerable {
 
     public void addCoin(int x, int y, String typeName){
         JsonValue infoType = collectableInfo.get(typeName);
-        Gdx.app.debug("addCoin: ", "infoType: "+ infoType);
+//        Gdx.app.debug("addCoin: ", "infoType: "+ infoType);
         float size = infoType.getFloat("scalex", 0.5f);
         float corrected_x = x + (1 - size)/2f;
         float corrected_y = y + (1 - size)/2f;
@@ -185,7 +186,7 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     public void render(SpriteBatch batch) {
-        if(isVisible) {
+        if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             for (int i = 0; i < positionCollectables.size; i++) {
                 if (respawnTimeCollectables.get(i) > 0) {
                     TextureRegion reg = null;

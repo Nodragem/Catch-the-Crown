@@ -32,7 +32,7 @@ public class GameObject implements Updatable {
     protected float bufferReceivedDamage;
     protected float timeStepDamage;
     public GameScreenTournament gamescreen;
-    public GameObject parent = null;
+    public Body parentBody = null;
     public int myRenderID;
     public boolean isVisible;
     public Body body;
@@ -98,7 +98,7 @@ public class GameObject implements Updatable {
             initAnimation();
             initFixture();
             initCollisionMask();
-        } else if (!objectDataID.equals("NoInit")){
+        } else if (!objectDataID.equals("No Init")){
             initAnimation(objectDataID, "");
             initFixture(objectDataID);
             initCollisionMask(objectDataID);
@@ -252,8 +252,9 @@ public class GameObject implements Updatable {
     public void initAnimation(String objectDataID, String color_texture) {
         JsonValue objectInfo = gamescreen.getObjectDataBase().get(objectDataID);
         if(objectInfo == null) Gdx.app.error("GameObject",
-                "Object ID not found in the json DataBase");
-        String texture_name = objectInfo.getString("texture_name");
+                        "Object ID:"+objectDataID+
+                        " not found in the json DataBase");
+        String texture_name = objectInfo.getString("texture_name", null);
         if (texture_name == null)
             Gdx.app.error("GameObject", "No Texture Name found in the json DataBase");
 
@@ -283,33 +284,57 @@ public class GameObject implements Updatable {
                     new float[]{0.2f, 0.2f, 0.2f});
         }
 
-        if(color_texture.equals(""))
+        if(!color_texture.equals(""))
             color_texture = "_"+color_texture;
+
 
         Array<TextureAtlas.AtlasRegion> regions = null;
         for (int i = 0; i < animation_names.size; i++) {
+            Gdx.app.debug("Search Atlas", texture_name + color_texture + "_" + animation_names.get(i));
             regions = atlas.findRegions(texture_name + color_texture + "_" + animation_names.get(i));
-            if (regions.size >0)
+            Gdx.app.debug("Search Atlas", " " + regions);
+            if (regions.size >0) {
+                Gdx.app.debug("Search Atlas", " " + animation_names.get(i) +
+                        " will play as "+animation_loops.get(i));
                 animations.put(animation_names.get(i),
                         new Animation(animation_spf.get(i), regions,
                                 Animation.PlayMode.valueOf(animation_loops.get(i))
                         )
                 );
-            else
-                Gdx.app.error("GameObject", animation_names.get(i)+
+            }
+            else { // create a place holder in case no texture is found:
+                // FIXME: we may want to change the place holder
+                Pixmap pixmap1 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
+                pixmap1.setColor(1, 0, 0, 1.0f);
+                pixmap1.fillRectangle(0, 0, 32, 32);
+                Pixmap pixmap2 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
+                pixmap2.setColor(0, 0, 1, 1.0f);
+                pixmap2.fillRectangle(0, 0, 32, 32);
+                Array <TextureRegion> placeHolder = new Array<TextureRegion>(
+                        new TextureRegion[]{  new TextureRegion(new Texture(pixmap1)), new TextureRegion(new Texture(pixmap2)) }
+                );
+                Gdx.app.error("GameObject", animation_names.get(i) +
                         " could not be created from the texture atlas!");
+                animations.put(animation_names.get(i),
+                        new Animation(animation_spf.get(i), placeHolder)
+                );
+
+            }
+
         }
         setAnimation("Main");
 
     }
 
 
-    public Animation getMain_animation() {
-        return animations.get("Main");
+    public Animation getAnimation(String animName) {
+        return animations.get(animName);
     }
 
     public void setAnimation(String animation_name){
-	    current_animation = animations.get(animation_name);
+        current_animation = animations.get(animation_name);
+        if (current_animation == null)
+            Gdx.app.error("GameObject.setAnimation()", "can't find animation "+animation_name);
 		stateTime = 0;
 	}
 
@@ -317,24 +342,25 @@ public class GameObject implements Updatable {
 	public boolean update(float deltaTime) {
         stateTime += deltaTime;
         // we update the position even when the object is not activated
-        if (parent == null || body.getType() == BodyType.DynamicBody) {
+        if (parentBody == null || body.getType() == BodyType.DynamicBody) {
             position.set(body.getPosition());
             rotation = body.getAngle(); // * MathUtils.radiansToDegrees;
         }
         else{
             // rposition. x = angle; rposition.y = radius
             body.setTransform(
-                    parent.position.x + rposition.y*MathUtils.cos(rposition.x + parent.rotation/* *MathUtils.degreesToRadians*/),
-                    parent.position.y + rposition.y*MathUtils.sin(rposition.x + parent.rotation /* *MathUtils.degreesToRadians */),
-                    (parent.rotation + rrotation) //*MathUtils.degreesToRadians
+                    parentBody.getPosition().x + rposition.y*MathUtils.cos(rposition.x + parentBody.getAngle() /* *MathUtils.degreesToRadians*/),
+                    parentBody.getPosition().y + rposition.y*MathUtils.sin(rposition.x + parentBody.getAngle() /* *MathUtils.degreesToRadians */),
+                    (parentBody.getAngle() + rrotation) //*MathUtils.degreesToRadians
             );
-//            body.setTransform(parent.position.x,
-//                    parent.position.y,
+//            body.setTransform(parentBody.position.x,
+//                    parentBody.position.y,
 //                    absoluteAngle);
-            position.set(body.getPosition());
             rotation = body.getAngle(); //* MathUtils.radiansToDegrees;
-            //this.isVisible = parent.isVisible;
+            position.set(body.getPosition());
+            //this.isVisible = parentBody.isVisible;
         }
+
         switch (activeState){
             case ACTIVATED:
                 if(mainBoxContact.isTouched()){
@@ -396,7 +422,7 @@ public class GameObject implements Updatable {
     private void activationActions() { }
 
     public void render(SpriteBatch batch) {
-        if(isVisible) {
+        if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             TextureRegion reg = null;
             batch.setColor(color.get(0), color.get(1), color.get(2), color.get(3));
             reg = current_animation.getKeyFrame(stateTime);
@@ -484,10 +510,11 @@ public class GameObject implements Updatable {
 
     protected void setActivate(boolean b){
         activeState = (b? Constants.ACTIVE_STATE.ACTIVATED: Constants.ACTIVE_STATE.DESACTIVATED);
-        isVisible = b;
-        body.setActive(b); // I think that this things make the projectile remove itself from what it touched
+        body.setActive(b); // FIXME
+        // |--> I think that this things make the projectile remove itself from what it touched
         if(!b){ // if we desactivate, we need to flush
-            for (Fixture fixture : body.getFixtureList()) { // FIXME note that we dont flush properly, we should remove the contact from the contacted fixtures
+            for (Fixture fixture : body.getFixtureList()) {
+                // FIXME note that we dont flush properly, we should remove the contact from the contacted fixtures
                 ContactData d = (ContactData) fixture.getUserData();
                 if (d != null)
                     d.deepFlush();
@@ -508,7 +535,6 @@ public class GameObject implements Updatable {
 
     public void goToActivation(){
             if (animations.get("Onset") != null){
-                isVisible = true;
                 activeState = Constants.ACTIVE_STATE.ACTIVATION;
             }
             else {
@@ -516,15 +542,15 @@ public class GameObject implements Updatable {
             }
     }
 
-    public void setParent(GameObject parent) {
-        this.parent = parent;
-        rposition.set(MathUtils.atan2(position.y-parent.position.y, position.x-parent.position.x)-parent.rotation,
-                        position.dst(parent.position)); // angle, radius
-        rrotation = rotation - parent.rotation;
+    public void setParentBody(Body parentBody) {
+        this.parentBody = parentBody;
+        rposition.set(MathUtils.atan2(position.y- parentBody.getPosition().y, position.x- parentBody.getPosition().x)- parentBody.getAngle(),
+                        position.dst(parentBody.getPosition())); // angle, radius
+        rrotation = rotation - parentBody.getAngle();
     }
 
-    public GameObject getParent() {
-        return parent;
+    public Body getParentBody() {
+        return parentBody;
     }
 
     public void setID(Integer ID) {

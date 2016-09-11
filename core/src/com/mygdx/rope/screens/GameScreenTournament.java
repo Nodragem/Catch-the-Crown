@@ -6,7 +6,6 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -43,7 +42,7 @@ import java.lang.String;
 import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
-	private static final boolean DEBUG_BOX2D = false;
+	private static final boolean DEBUG_BOX2D = true;
     private final RopeGame game;
     private TiledMap map;
     private ArrayMap <String, Player> playersList;
@@ -162,7 +161,7 @@ public class GameScreenTournament implements Screen {
         playersList = new ArrayMap<String, Player>(colorProfiles.size);
         for (int i = 0; i < inputProfiles.size; i++) {
             Player player = new Player(inputProfiles.getKeyAt(i),
-                    new Character(this, new Vector2(15,15), "Piaf", colorProfiles.getValueAt(i)),
+                    new Character(this, new Vector2(15,15), "character", colorProfiles.getValueAt(i)),
                     inputProfiles.getValueAt(i), this);
             player.getCharacter().setPosition(getSpawnPosition()); // spawners are place by the placeObjectsFromMap
             playersList.put(player.getName(), player);
@@ -207,11 +206,11 @@ public class GameScreenTournament implements Screen {
                     Gdx.app.debug("TrapFactory: ", "Add Parent  Step 2: " + iterObject + "\n ID: " + iterObject.ID);
                     if (iterObject.ID != null && iterObject.ID.equals(gameObjectIntegerEntry.value)) {
                         try {
-                            gameObjectIntegerEntry.key.setParent(iterObject);
+                            gameObjectIntegerEntry.key.setParentBody(iterObject.getBody());
                             Gdx.app.debug("TrapFactory: ", "Add Parent  Step 3");
                             break;
                         } catch (Exception e) {
-                            Gdx.app.debug("TrapFactory: ", "Cannot attach an object to its parent...");
+                            Gdx.app.debug("TrapFactory: ", "Cannot attach an object to its parentBody...");
                         }
                     }
                 }
@@ -626,6 +625,6 @@ public class GameScreenTournament implements Screen {
     }
 
     public JsonValue getObjectDataBase() {
-        return objectDataBase;
+        return objectDataBase.get("game_objects");
     }
 }

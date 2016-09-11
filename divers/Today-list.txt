@@ -65,11 +65,11 @@ Note: I remove the flush after throwing (useCarriedBody and setCarriedBody(null)
 	|->(was actually caused by the fact the game didn't pause)
 [x] moving platform can stop at different check points define by vertex in Tiledmap,
 [x] make switches triggerable, such that a switch can enable a new switch,
-	[?] this, for now causes a bug because parented switches are not desactivated with their parent,
+	[?] this, for now causes a bug because parented switches are not desactivated with their parentBody,
 [x] balance the crown rate to 0.333
-[x] spiking moving platform --> parent system, switch will also be able to follow a platform (attachable interface),
+[x] spiking moving platform --> parentBody system, switch will also be able to follow a platform (attachable interface),
         [x] create the Parenting System (managed from Tiled),
-[x] bugs: parent-children rotations,
+[x] bugs: parentBody-children rotations,
 	- the bug comes from the desactivation of the spikes. We may want to try to change the fixture filter t0 0x000 instead of
 	desactivating the body...
 [x] replace flush with deepFlush when it seemed needed, I flagged the change, normally...

@@ -86,20 +86,16 @@ public class TrapFactory {
                 case SIMPLESWITCH:
                     float rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class); // degree
                     int weight = Integer.parseInt(rectangleObj.getProperties().get("weight", String.class)); // all custom properties are strings in TileMap Editor
-                    String SwitcherType = rectangleObj.getProperties().get("SwitcherType", "0", String.class);
+                    String objectDataID = rectangleObj.getProperties().get("SwitcherType", "0", String.class);
                     boolean isEnabledByDefault = rectangleObj.getProperties().get("isEnabledByDefault", true, Boolean.class);
 
-                    JsonReader jsonreader = new JsonReader();
-                    FileHandle handle = Gdx.files.internal("object_types.json");
-                    JsonValue info_type = jsonreader.parse(handle);
-                    info_type = info_type.get("switcher_types");
-                    Gdx.app.debug("TrapFactory", "Check of switcher_type: "+ info_type);
-                    if (SwitcherType != null)
-                        info_type = info_type.get(SwitcherType);
+                    JsonValue objectInfo = null;
+                    if (objectDataID != null && gameScreen.getObjectDataBase().has(objectDataID))
+                        objectInfo = gameScreen.getObjectDataBase().get(objectDataID);
                     else
-                        info_type = info_type.get("totem_switch");
+                        objectInfo = gameScreen.getObjectDataBase().get("totem_switch");
 
-                    float offset_y_all = info_type.getFloat("offsety_all", 0);
+                    float offset_y_all = objectInfo.getFloat("offsety_all", 0);
                     Vector2 correctionPos = new Vector2(
                             //  usual correction as see below in SPIKES || correction for the offset
                             // -----------------------------------||-------------------------------------------|
@@ -107,10 +103,9 @@ public class TrapFactory {
                             1 + MathUtils.sinDeg(-rotation-90) - offset_y_all * MathUtils.cosDeg(-rotation)
                     );
 
-                    Gdx.app.debug("TrapFactory", "Check of switcher_type.simple: "+ info_type);
                     newInteractiveObject = new SimpleSwitcher(gameScreen,
                             rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()),
-                            -rotation, info_type, weight, isEnabledByDefault);
+                            -rotation, objectDataID, weight, isEnabledByDefault);
 //                    newInteractiveObject = new SimpleSwitcher(gameScreen,
 //                            rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()),
 //                            -rotation*MathUtils.degreesToRadians, texture_name, info, weight, isEnabledByDefault);
@@ -141,6 +136,8 @@ public class TrapFactory {
     }
 
     private Triggerable addTriggerable(MapLayer mapLayer, RectangleMapObject rectangleObj, String nameObject, String HubID){
+        // FIXME: we can probably simplify the code,
+        // just extract the data from tiled, put it in an objectmap and passes it to the object constructor
         Triggerable newInteractiveObject = null;
         float rotation;
         float intervalON;
@@ -195,7 +192,7 @@ public class TrapFactory {
                     newInteractiveObject = new SimpleLauncher(gameScreen,rectangle.getPosition(new Vector2()).add(correctionPos),
                             rectangle.getSize(new Vector2()) , -rotation, intervalShoot, reloadTime, impulse, nbpool, defaultON, type_projectile );
                     break;
-                case PLATFORM:
+                case MOVING_PLATFORM:
                     rotation =0;
                     if (rectangleObj.getProperties().get("rotation", Float.class) != null)
                         rotation = rectangleObj.getProperties().get("rotation", Float.class);
@@ -203,6 +200,7 @@ public class TrapFactory {
                     Gdx.app.debug("FactoryTrap", "PLATFORM" );
                     Gdx.app.debug("FactoryTrap", "RotationTiled "+ rectangleObj.getProperties().get("Rotation", String.class)+"; myRotation "+0.0f );
                     String pathID = rectangleObj.getProperties().get("Path", String.class);
+                    String objectDataID = rectangleObj.getProperties().get("Object", String.class);
                     float rotationSpeed =0;
                     if (rectangleObj.getProperties().get("rotationSpeed", String.class) != null)
                         rotationSpeed = Float.parseFloat(rectangleObj.getProperties().get("rotationSpeed", String.class));
@@ -210,9 +208,11 @@ public class TrapFactory {
                     MapObject path = mapLayer.getObjects().get(pathID);
                     defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
                     boolean alwaysVisible = Boolean.valueOf(rectangleObj.getProperties().get("alwaysVisible", "true", String.class));
-                    String textureName = rectangleObj.getProperties().get("texture", "wood", String.class);
-                    newInteractiveObject = new MovingPlatform(gameScreen, rectangle.getPosition(new Vector2()).add(correctionPos),
-                            rectangle.getSize(new Vector2()),-rotation, path, rotationSpeed, waitingTime, defaultON, alwaysVisible, textureName);
+                    String color_texture = rectangleObj.getProperties().get("texture", "wood", String.class);
+                    newInteractiveObject = new MovingPlatform(gameScreen,
+                            rectangle.getPosition(new Vector2()).add(correctionPos),
+                            rectangle.getSize(new Vector2()),-rotation, path, rotationSpeed, waitingTime,
+                            defaultON, alwaysVisible, objectDataID, color_texture);
                     break;
             }
             currentHub = listHubs.get(HubID);

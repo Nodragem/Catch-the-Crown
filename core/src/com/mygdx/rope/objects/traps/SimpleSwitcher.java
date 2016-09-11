@@ -28,15 +28,17 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
     private boolean isActiveByDefault; // note that this is different from being on or off.
 
     public SimpleSwitcher(GameScreenTournament game, Vector2 position,  Vector2 dimension, float angle,
-                          JsonValue info_type, float weight, boolean isEnabledByDefault) {
-        super(game, position, dimension, angle, info_type.getString("texture", null), info_type);
-        Gdx.app.debug("Switcher:", "FixtureDef is: "+ info_type );
-        this.holding = info_type.getBoolean("hold", true);
-        this.isVisible = info_type.getBoolean("visible", true);
+                          String objectDataID, float weight, boolean isEnabledByDefault) {
+        super(game, position, dimension, angle, objectDataID);
+
+        Gdx.app.debug("Switcher:", "ID is: "+ objectDataID );
+        this.holding = game.getObjectDataBase().get(objectDataID).getBoolean("hold", true);
+        this.isVisible = game.getObjectDataBase().get(objectDataID).getBoolean("visible", true);
         this.myWeight = weight;
         this.isActiveByDefault = isEnabledByDefault;
         switchOFF();
         this.body.setType(BodyDef.BodyType.StaticBody);
+
     }
 
     public void initAnimation() {
@@ -49,42 +51,17 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
         Array <TextureRegion> textures = new Array<TextureRegion>(
                 new TextureRegion[]{  new TextureRegion(new Texture(pixmap1)), new TextureRegion(new Texture(pixmap2)) }
         );
-        animSwitchON = new Animation(1 / 6.0f, textures,  Animation.PlayMode.NORMAL);
+        animations.put("SwitchingOFF",
+                new Animation(1 / 6.0f, textures,  Animation.PlayMode.NORMAL));
         textures.reverse();
-        animSwitchOFF = new Animation(1 / 6.0f, textures ,  Animation.PlayMode.NORMAL);
-        //main_animation = new Animation(1 / 6.0f, textures.get(0));
-        setAnimation( animSwitchON);
-        //pixmap1.endPauseMenu();
-        //pixmap2.endPauseMenu();
+        animations.put("SwitchingON",
+                new Animation(1 / 6.0f, textures ,  Animation.PlayMode.NORMAL));
+        animations.put("Activated",
+                new Animation(1 / 6.0f, textures ,  Animation.PlayMode.LOOP_RANDOM));
+
+        setAnimation("SwitchingON");
         stateTime = 0;
     }
-
-    public void initAnimation(String name_texture) {
-        if (name_texture == null){
-            initAnimation();
-        }
-        else {
-            Array<TextureAtlas.AtlasRegion> regions = null;
-            // anim normal:
-            regions = atlas.findRegions(name_texture + "_off");
-            if (regions.size > 0)
-                animSwitchOFF = new Animation(1.0f / 4.0f, regions, Animation.PlayMode.LOOP);
-            setAnimation(main_animation);
-
-            regions = atlas.findRegions(name_texture + "_on");
-            if (regions.size > 0)
-                animSwitchON = new Animation(1.0f / 4.0f, regions, Animation.PlayMode.LOOP);
-
-            regions = atlas.findRegions(name_texture + "_activated");
-            if (regions.size > 0)
-                animSwitchACTIVATED = new Animation(1.0f / 4.0f, regions, Animation.PlayMode.LOOP);
-
-            setAnimation( animSwitchON);
-            stateTime = 0;
-        }
-    }
-
-
 
     @Override
     public boolean update(float deltaTime){
@@ -113,17 +90,17 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
     }
 
     private void switchON() {
-        setAnimation(animSwitchON);
+        setAnimation("SwitchingON");
         switchstate = Constants.SWITCHSTATE.ON;
     }
 
     private void switchOFF() {
-        setAnimation(animSwitchOFF);
+        setAnimation("SwitchingOFF");
         switchstate = Constants.SWITCHSTATE.OFF;
     }
 
     private void switchACTIVATED() {
-        setAnimation(animSwitchACTIVATED);
+        setAnimation("Activated");
         switchstate = Constants.SWITCHSTATE.ACTIVATED;
     }
 

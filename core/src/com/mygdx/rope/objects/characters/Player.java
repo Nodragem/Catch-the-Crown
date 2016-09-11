@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.ControlProcessor;
 import com.mygdx.rope.objects.Updatable;
-import com.mygdx.rope.objects.weapon.LanceManager;
+import com.mygdx.rope.objects.weapon.AttackManager;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.screens.Window;
 import com.mygdx.rope.util.Constants.JUMP_STATE;
@@ -36,7 +36,7 @@ public class Player implements ControlProcessor, Updatable  {
     private ContactData sensorBuffer;
     private boolean jumpButtonPressed = false;
     private boolean pickUpButtonPressed = false;
-    private LanceManager weapon;
+    private AttackManager weapon;
     private int challengePressCount = 0; // the players compete in pressing the action buttons when they are picking or picked up.
     private Vector2 bodyVel =  new Vector2(0,0);
     private Vector2 bodyPos = new Vector2(0,0);
@@ -64,8 +64,9 @@ public class Player implements ControlProcessor, Updatable  {
 		this.character = character;
         this.objBody = character.body;
         character.setPlayer(this);
-        weapon = new LanceManager(character.getGamescreen(),
-                character, character.position, "Lance", character.color_texture); // that weird t have that here! (I agree)
+        weapon = new AttackManager(character.getGamescreen(),
+                character, character.position, "lance", "attack_layer", character.color_texture);
+        //FIXME: that is weird that I have left that here! (I agree)
     }
 
 
@@ -227,10 +228,11 @@ public class Player implements ControlProcessor, Updatable  {
         if (character.moveState == MOVE_STATE.PICKINGUP){
             return;
         }
-        weapon.longDistanceAttack(isPressed, bodyPos, currentAimingAngle, isAiming, deltaTime);
-        /* the PlayerController is doing the job of a Child System, it is positionning the weapon on the character
-        but it is not all, the LanceManager itself is applying a shift of (0.5, 0.5) units for aligning the Lance to the Player center.
-        That's not readable/easy to maintain.
+        weapon.longDistanceAttack(isPressed, currentAimingAngle, isAiming, deltaTime);
+        /* FIXME (WIP): the PlayerController is doing the job of a Child System,
+        it is positionning the weapon on the character
+        but it is not all, the AttackManager itself is applying a shift of (0.5, 0.5) units
+        for aligning the Lance to the Player center. That's not readable/easy to maintain.
         */
     }
 

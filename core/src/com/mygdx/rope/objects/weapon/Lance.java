@@ -21,36 +21,38 @@ import static java.lang.Math.abs;
 public class Lance extends GameObject {
     private ContactData collisionStick;
     private Vector2 anchorPoint;
-    private WeldJoint myAnchor;
+//    private WeldJoint myAnchor;
     boolean isAttached =true;
     private Filter pickFilter;
     private Filter handleFilter;
-    private Animation animThrowed;
+    private boolean isToDetroy;
+    private float defaultDamage;
 
-    public Lance(GameScreenTournament game, Vector2 position, float angle, Animation animThrowed) {
-        super(game, position, new Vector2(1.5f, 0.25f), angle);
-        setOrigin(0.0f, 0.0f);
+
+    public Lance(GameScreenTournament game, Vector2 position, float angle, String objectDataID) {
+        super(game, position, new Vector2(2.0f, 0.6875f), angle, "No Init");
+        // \--> old size (1.5f, 0.25f)
+        initAnimation(objectDataID, "");
+        // FIXME: the initFixture should be data-driven
+        initFixture();
+        mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
+        initCollisionMask();
+        //setOrigin(0.0f, 0.0f);
 //        setTransform(position.x, position.y, angle);
-        givenDamage = 10.0f; // should change with the charge duration
         anchorPoint = new Vector2(1.2f, 0.125f);
-        this.animThrowed = animThrowed;
         stateTime = 0;
         isVisible = false;
+        defaultDamage = 34.0f;
+        // the givenDamage (from GameObject) is defaultDamage times a multiplicator
 
-    }
-
-    @Override
-    public void initAnimation() {
-        //setAnimation(animThrowed);
     }
 
     @Override
     public void initFixture() {
-        //mytruesize = new Vector2(1.5f, 0.25f);
-        myAnchor = null;
-        // create the pick Ficture:
+        // ---- create the pick Ficture:
         PolygonShape p = new PolygonShape();
-        p.setAsBox(dimension.x *0.4f, dimension.y *0.25f, new Vector2(dimension.x *0.4f, dimension.y *0.5f), 0);
+        // p.setAsBox(dimension.x *0.4f, dimension.y *0.25f, new Vector2(dimension.x *0.4f, dimension.y *0.5f), 0);
+        p.setAsBox(dimension.x *0.3f, dimension.y *0.25f/2.75f, new Vector2(dimension.x *0.4f, dimension.y *0.5f), 0);
         FixtureDef fd = new FixtureDef();
         fd.shape = p;
         fd.density = 10;
@@ -58,11 +60,12 @@ public class Lance extends GameObject {
         fd.friction = 0.0f;
         //fd.isSensor = true;
         this.body.createFixture(fd);
-        collisionStick = new ContactData(8, this.body.getFixtureList().get(0)); // that's the origin of the flying bug! the lance cannot send a message to the people it touched cause its list was too small!!
+        collisionStick = new ContactData(8, this.body.getFixtureList().get(0));
         p.dispose();
-        // the main stick Fixture, which is the main contact box
+        // ---- the main stick Fixture, which is the main contact box
         p = new PolygonShape();
-        p.setAsBox(dimension.x *0.1f, dimension.y *0.5f, new Vector2(dimension.x * 0.9f, dimension.y *0.5f), 0);
+//        p.setAsBox(dimension.x *0.1f, dimension.y *0.5f, new Vector2(dimension.x * 0.9f, dimension.y *0.5f), 0);
+        p.setAsBox(dimension.x *0.075f, dimension.y *0.5f/2.75f, new Vector2(dimension.x * 0.9f, dimension.y *0.5f), 0);
         fd = new FixtureDef();
         fd.shape = p;
         fd.density = 40;
@@ -78,30 +81,35 @@ public class Lance extends GameObject {
 
     @Override
     public boolean update(float deltaTime) {
+        isToDetroy = super.update(deltaTime);
         //ContactData d = (ContactData) body.getFixtureList().get(0).getUserData();
         //Gdx.app.debug("Lance", "my Stick ContactData is "+d + " and it is colliding: "+d.getTouchedFixtures());
         if (!isAttached && mainBoxContact.isTouched()){ // mainBoxContact here is the pick
             goToPlatformState();
         }
-        if (!isAttached && abs(body.getLinearVelocity().len()) > 0.1f) { //follow the direction of speed
+        if (!isAttached && abs(body.getLinearVelocity().len()) > 0.1f) {
+            //the rotation follows the direction of speed
+            // FIXME: note that the super.update already gave an angle, so that is not really sexy to do it twice
             body.setTransform(body.getPosition(), body.getLinearVelocity().angleRad());
         }
-        // udate drawing position::
-        stateTime += deltaTime;
         // the origin is really at the origin
-        position.set(body.getPosition().sub(origin));
-        // /position.set(origin.x - dimension.x/2.0f, origin.y - dimension.y/2.0f); // the origin of the body is on the left bottom corner
-        rotation = body.getAngle(); //* MathUtils.radiansToDegrees;
+        // FIXME (done?): I dont understand why this shift in origin is necessary
+        // Note that we can find that in Attack manager also, but not in GameObject... why?
+        // OK so it was not necessary ...
+//        position.set(body.getPosition().sub(origin));
         mainBoxContact.flush();
-        return checkIfToDestroy();
+        return isToDetroy;
     }
 
     public void goToPlatformState() {
         Sound soundLanceHit = gamescreen.assetManager.getRandom("lance_hit");
         soundLanceHit.play();
         Vector2 worldAnchorPoint = body.getWorldPoint(anchorPoint);
-        WeldJointDef wJD = new WeldJointDef();
+
+        this.body.setType(BodyDef.BodyType.KinematicBody);
+        // FIXME: maybe that won't work out of the box to use the parenting relationship
         Body touchedBody = mainBoxContact.popTouchedFixtures().getBody();
+        setParentBody(touchedBody);
         GameObject touchedObj = (GameObject) touchedBody.getUserData();
         if( touchedObj != null) {
             touchedObj.addDamage(givenDamage);
@@ -111,9 +119,6 @@ public class Lance extends GameObject {
                 hurtSound.play(0.5f);
             }
         }
-        wJD.initialize(touchedBody, body, worldAnchorPoint);
-        //wJD.referenceAngle = body.getAngle();
-        myAnchor = (WeldJoint) gamescreen.getB2World().createJoint(wJD);
 
         if (!(touchedObj instanceof com.mygdx.rope.objects.characters.Character))
         {
@@ -149,7 +154,7 @@ public class Lance extends GameObject {
 
     public void goToGhostState() {
         handleFilter.categoryBits = Constants.CATEGORY.get("Object");
-        handleFilter.maskBits = 0;
+        handleFilter.maskBits = 0; // sense nobody?
         this.body.getFixtureList().get(0).setFilterData(handleFilter);
         pickFilter.categoryBits = Constants.CATEGORY.get("Object");
         pickFilter.maskBits = 0;
@@ -160,15 +165,32 @@ public class Lance extends GameObject {
 
 
 
-    public void throwMe(float angle, float force, float damage){
+    public void use(Vector2 startPos, float angle, float force, float damageMultiplicator){
         Sound throwSound = gamescreen.assetManager.getRandom("lance_thrown");
         throwSound.play();
-        givenDamage = damage;
+        givenDamage = damageMultiplicator*defaultDamage;
         goToWeaponState();
         isVisible = true;
-        setAnimation(animThrowed);
-        //this.body.setTransform(body.getPosition(), angle);
-        this.body.applyForceToCenter(new Vector2(MathUtils.cos(angle), MathUtils.sin(angle)).scl(force*1000), true);
+        setAnimation("Moving");
+        body.setLinearVelocity(0, 0);
+        body.setAngularVelocity(0);
+        body.setTransform(startPos, angle);
+        this.body.applyForceToCenter(
+                new Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
+                        .scl(force*1000), true);
+// FIXME: check if it could be a projectile implementing usable
+//        this.user = obj;
+//        this.goToActivation();
+//        this.setLife(100f);
+//        body.setLinearVelocity(0, 0);
+//        body.setAngularVelocity(0);
+//        body.setTransform(position, 0f);
+//        Gdx.app.debug("Projectile: ", "impulse * body.getMass() = " + body.getMass() * impulse.x + ", " + body.getMass() * impulse.y);
+//        if (body.getType() == BodyDef.BodyType.DynamicBody)
+//            body.applyLinearImpulse(body.getMass() * impulse.x, body.getMass() * impulse.y, body.getPosition().x, body.getPosition().y, true);
+//        else {
+//            body.setLinearVelocity(impulse.x, impulse.y);
+//        }
     }
 
     public void goToWeaponState() {
@@ -180,6 +202,12 @@ public class Lance extends GameObject {
         this.body.getFixtureList().get(1).setFilterData(pickFilter);
         body.setType(BodyDef.BodyType.DynamicBody);
         isAttached = false;
+    }
+
+    protected boolean checkIfToDestroy() {
+        if (life < 0)
+            goToDesactivation();
+        return false;
     }
 
 }

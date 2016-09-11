@@ -259,7 +259,9 @@ public class GUILayer {
         float y = cornerIndex>=2?-18:(Constants.VIEWPORT_GUI_HEIGHT-ySizePlayerBox+70);
         playersUIBox.add(new Vector2(x,y));
         playersHeadGUI.add(new TextureRegion(
-                player.getCharacter().getMain_animation().getKeyFrame(1),
+                player.getCharacter().
+                        getAnimation("Standing").
+                        getKeyFrame(1),
                 0, 0, 32,14));
     }
 

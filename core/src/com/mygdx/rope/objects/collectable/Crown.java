@@ -46,8 +46,8 @@ public class Crown extends GameObject {
         Array<TextureAtlas.AtlasRegion> regions = null;
         // anim normal:
         regions = atlas.findRegions("crown");
-        main_animation = new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP);
-        this.setAnimation(main_animation);
+        animations.put("Main", new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP));
+        this.setAnimation("Main");
         stateTime = 0;
     }
 

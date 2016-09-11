@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
+import com.mygdx.rope.util.ContactData;
 import com.mygdx.rope.util.TrajectorySolver.TrajectoryPolygon;
 import com.mygdx.rope.util.TrajectorySolver.TrajectorySolver;
 
@@ -35,17 +36,25 @@ public class MovingPlatform extends GameObject implements Triggerable {
     private boolean stopped;
     private float waitingTime;
     private boolean platformAlwaysVisible;
-    private Array<TextureRegion> platformBlocks;// we could do a static array of arrays, and the class would load oall the type of platform used in the level.
+    private Array<Animation> platformBlocks;
+    // we could do a static array of arrays, and the class
+    // would load oall the type of platform used in the level.
     private int blockFlag;
 
-    public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, MapObject path,
-                          float angularSpeed, float waitingTime, boolean defaultON, boolean alwaysVisible, String nameTexture) {
+    public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension,
+                          float angle, MapObject path, float angularSpeed, float waitingTime, boolean defaultON,
+                          boolean alwaysVisible, String objectDataID, String color_texture) {
+        // FIXME: 1
         // instead of Overriding I could just do a simple GameObject Factory which
         // would use the GameObject constructor to give the Fixture, the filter and the animation definition to GameObject.
         // Further more, the Factory could also set up the Body Type and give an animation of switching off or on.
         // The only thing missing to GameObject is float "damage", which if it is > 0 is called and removed from the other object --> We tried to do something
-        super(game, position, dimension, angle, nameTexture);
-
+        // FIXME: 2 - should we put the data from TiledMap into a json / hashmap?
+        super(game, position, dimension, angle, "No Init");
+        initAnimation(objectDataID, color_texture);
+        initFixture();
+        mainBoxContact = new ContactData(10, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
+        initCollisionMask();
         this.platformAlwaysVisible = alwaysVisible;
         this.defaultON = defaultON;
         this.waitingTime = waitingTime;
@@ -54,8 +63,9 @@ public class MovingPlatform extends GameObject implements Triggerable {
         origin.y = dimension.y/2;
         correctionRadius = (float) Math.sqrt(Math.pow(origin.x, 2) + Math.pow(origin.y, 2));
         correctionAngle = MathUtils.atan2(origin.y, origin.x);
-        origin.x = correctionRadius * MathUtils.cos(this.rotation+correctionAngle);
-        origin.y = correctionRadius * MathUtils.sin(this.rotation+correctionAngle);
+
+//        origin.x = correctionRadius * MathUtils.cos(this.rotation+correctionAngle);
+//        origin.y = correctionRadius * MathUtils.sin(this.rotation+correctionAngle);
         body.setTransform(body.getPosition().x+origin.x, body.getPosition().y+origin.y, this.rotation);
         Gdx.app.debug("Platform", "Platform in creation!, origin ="+ origin.x + "; "+origin.y);
         body.setType(BodyDef.BodyType.KinematicBody);
@@ -97,63 +107,42 @@ public class MovingPlatform extends GameObject implements Triggerable {
         pixmap2.setColor(0.7f, 0.2f, 0.3f, 1.0f);
         pixmap2.fillRectangle(0, 0, 32, 32);
         TextureRegion region =  new TextureRegion(new Texture(pixmap2));
-        main_animation = new Animation(1.0f/2.0f, region);
-        setAnimation(main_animation);
+        animations.put("Main", new Animation(1.0f/2.0f, region));
+        setAnimation("Main");
     }
     @Override
-    public void initAnimation(String name_texture){
-        TextureRegion region = null;
-        Array <TextureRegion> bufferBlocks = new Array <TextureRegion>(5);
-         // anim normal:
-        region = atlas.findRegion("moving_" + name_texture + "_left");
-        if (region!=null)
-            bufferBlocks.add(region);
-        region = atlas.findRegion("moving_" + name_texture + "_rleft");
-        if (region!=null)
-            bufferBlocks.add(region);
+    public void initAnimation(String objectDataID, String color_texture){
+        super.initAnimation(objectDataID, color_texture);
 
-        region = atlas.findRegion("moving_" + name_texture + "_center");
-        if (region!=null)
-            bufferBlocks.add(region);
-
-        region = atlas.findRegion("moving_" + name_texture + "_rright");
-        if (region!=null)
-            bufferBlocks.add(region);
-
-        region = atlas.findRegion("moving_" + name_texture + "_right");
-        if (region!=null)
-            bufferBlocks.add(region);
-
-        if (bufferBlocks.size != 5) {
-            Gdx.app.error("Moving Platform", "Moving Platform style is incorrect for "+ name_texture + " checks if you have all the textures needed: left, repeat_01, repeat_02, center, right");
+        if (animations.size != 5) {
+            Gdx.app.error("Moving Platform",
+                    "Moving Platform style is incorrect for: "+
+                            objectDataID + "_"+ color_texture +
+                            "\n Checks if you have all the textures needed: " +
+                            "left, rleft, center, rright, right");
         }
 
-        platformBlocks = new Array<TextureRegion>((int)dimension.x);
+        platformBlocks = new Array<Animation>((int)dimension.x);
         for (int i = 0; i < dimension.x; i++) {
-            if (i > ((dimension.x-1)/2.0f) || i < ((dimension.x-1)/2.0f)){ // the right or left side
+            if (i > ((dimension.x-1)/2.0f) || i < ((dimension.x-1)/2.0f)){
+                // \--> if on the right or the left side:
                 if(i == (dimension.x - 1)){ // the final right block
-                    platformBlocks.add(bufferBlocks.get(4));
+                    platformBlocks.add(animations.get("right"));
                 }
                 else if(i == 0 ){ // the first left block
-                    platformBlocks.add(bufferBlocks.get(0));
+                    platformBlocks.add(animations.get("left"));
                 }
                 else{ // an usual left/right block
                     if (MathUtils.random()>0.5f)
-                        platformBlocks.add(bufferBlocks.get(3));
+                        platformBlocks.add(animations.get("rright")); // rright: repeat right
                     else
-                        platformBlocks.add(bufferBlocks.get(1));
+                        platformBlocks.add(animations.get("rleft"));
                 }
-            } else { // the center piece
-                    platformBlocks.add(bufferBlocks.get(2));
+            } else { // \--> if on the center piece:
+                    platformBlocks.add(animations.get("center"));
              }
         }
 
-        Pixmap pixmap2 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
-        pixmap2.setColor(0.7f, 0.2f, 0.3f, 1.0f);
-        pixmap2.fillRectangle(0, 0, 32, 32);
-        region =  new TextureRegion(new Texture(pixmap2));
-        main_animation = new Animation(1.0f/2.0f, region);
-        setAnimation(main_animation);
     }
 
     public void initFixture() {
@@ -240,27 +229,11 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     public void render(SpriteBatch batch) {
-//        if(isVisible) {
-//            TextureRegion reg = null;
-//            //Gdx.app.debug(TAG, "Key Frame: " + stateTime);
-//            batch.setColor(color.get(0), color.get(1), color.get(2), color.get(3));
-//            reg = current_animation.getKeyFrame(stateTime);
-//            batch.draw(reg.getTexture(), // we called this long draw() method just to get access the flip argument...
-//                    position.x, position.y,
-//                    0, 0,
-//                    dimension.x, dimension.y,
-//                    1, 1,
-//                    rotation,
-//                    reg.getRegionX(), reg.getRegionY(),
-//                    reg.getRegionWidth(), reg.getRegionHeight(),
-//                    viewDirection == Constants.VIEW_DIRECTION.LEFT, false);
-//            batch.setColor(1, 1, 1, 1);
-//        }
         if(isVisible) {
-            TextureRegion reg = null;
-            reg = current_animation.getKeyFrame(stateTime);
             for (int i = 0; i < platformBlocks.size; i++) {
-                batch.draw(platformBlocks.get(i), position.x + i*MathUtils.cos(rotation), position.y + i*MathUtils.sin(rotation),
+                batch.draw(platformBlocks.get(i).getKeyFrame(stateTime),
+                        position.x + i*MathUtils.cos(rotation),
+                        position.y + i*MathUtils.sin(rotation),
                         0.0f, 0.0f, // origins
                         1, 1, 1, dimension.y, // dimension and scale
                         rotation * MathUtils.radiansToDegrees

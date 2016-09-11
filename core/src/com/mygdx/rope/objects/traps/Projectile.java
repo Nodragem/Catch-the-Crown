@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Usable;
 import com.mygdx.rope.screens.GameScreenTournament;
+import com.mygdx.rope.util.Constants;
 
 /**
  * Created by Geoffrey on 15/02/2015.
@@ -28,6 +29,7 @@ public class Projectile extends GameObject implements Usable {
         rateOfDeath = objectInfo.getFloat("rateDeath", 0); // note that in any case the launcher will kill and call them back after reloading time.
         body.setGravityScale(objectInfo.getFloat("gravity", 0));
         isKillable = true;
+        //FIXME: should be resetted by the Launcher instead
         setActivate(false);
 
 
@@ -65,6 +67,7 @@ public class Projectile extends GameObject implements Usable {
 
     @Override
     public void use(GameObject obj, Vector2 position, Vector2 impulse) {
+        // FIXME: note that the user of the pool should be know since the creation of the pool
         Gdx.app.debug("projectile: ", "state activation: "+ activeState);
 //        if(activeState == Constants.ACTIVE_STATE.DESACTIVATED) {
         this.user = obj;
@@ -72,6 +75,8 @@ public class Projectile extends GameObject implements Usable {
         this.setLife(100f);
         body.setLinearVelocity(0, 0);
         body.setAngularVelocity(0);
+        // FIXME: if we shot upward, does the angle change in accordance?
+        // maybe take example on Lance
         body.setTransform(position, 0f);
         Gdx.app.debug("Projectile: ", "impulse * body.getMass() = " + body.getMass() * impulse.x + ", " + body.getMass() * impulse.y);
         if (body.getType() == BodyDef.BodyType.DynamicBody)
@@ -86,7 +91,8 @@ public class Projectile extends GameObject implements Usable {
     }
 
     protected boolean checkIfToDestroy() {
-        if (life < 0)
+        // FIXME: we should just rely on DEACTIVATED (some object would be permanent and would not be destroyed when DEACTIVATED)
+        if (life < 0 && activeState != Constants.ACTIVE_STATE.DESACTIVATED)
             goToDesactivation();
         return false;
     }

@@ -51,13 +51,15 @@ public class SimpleLauncher extends GameObject implements Triggerable {
         poolObj = new Array<Usable>(nb_pool);
 
         JsonValue infoProjectile = game.getObjectDataBase().get(objectDataIDOfProjectile);
-        Gdx.app.debug("SimpleLauncher", "name_texture from projectile: "+infoProjectile);
+
         if (infoProjectile != null) {
             for (int i = 0; i < pool_size; i++) {
                     poolObj.add(new Projectile(this.gamescreen,
                             new Vector2(position).add(0,i), new Vector2(dimension),
                             this.rotation, objectDataIDOfProjectile));
             }
+        } else {
+            Gdx.app.error("SimpleLauncher", "projectile: "+ objectDataIDOfProjectile+ " not found in Object DataBase (json)");
         }
         this.intervalProjectile = intervalProjectile;
         this.reloadTime = reloadTime;
@@ -104,6 +106,8 @@ public class SimpleLauncher extends GameObject implements Triggerable {
         start_point = new Vector2(position.x+radiusToStartPoint*MathUtils.cos(this.rotation + angleToStartPoint),
                 position.y+radiusToStartPoint*MathUtils.sin(this.rotation + angleToStartPoint));
         impulse = new Vector2(undirectional_impulse * MathUtils.cos(this.rotation) , undirectional_impulse * MathUtils.sin(this.rotation));
+        // FIXME: as with Lance and AttackManager, the directional impulse
+        // should be computed when a Lance is actually throwed
     }
 
     public void deliver() {

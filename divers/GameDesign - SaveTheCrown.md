@@ -124,6 +124,8 @@ Règle de partie perdue (recommence leniveau) :
 
 - [ ] **[B]** option menu
 
+- [ ] **[B]** use the launcher class in the AttackManager??
+
 - [ ] **[B]** the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
 
 - [ ] **[C]** make background for the level,
@@ -147,6 +149,7 @@ Règle de partie perdue (recommence leniveau) :
 - **[A]** crown carrier can't attack,
 - **[A]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
 - **[A]** double jump?
+- **[A]** reloading time after used 3 lances?
 - **[A]** slow down character who carry something,
 
   > should we slow down the crown carrier?
@@ -434,7 +437,7 @@ Règle de partie perdue (recommence leniveau) :
 - [x] make switches triggerable, such that a switch can enable a new switch,
 
   ```
-  **[?]** this, for now causes a bug because parented switches are not desactivated with their parent,
+  **[?]** this, for now causes a bug because parented switches are not desactivated with their parentBody,
   ```
 
 - [x] balance the crown rate to 0.333
@@ -442,12 +445,12 @@ Règle de partie perdue (recommence leniveau) :
 - [x] spiking moving platform
 
   ```
-  >  add also parent system, switch will also be able to follow a platform (attachable interface),
+  >  add also parentBody system, switch will also be able to follow a platform (attachable interface),
 
   - [x] create the Parenting System (managed from Tiled),
   ```
 
-- [x] bugs: parent-children rotations,
+- [x] bugs: parentBody-children rotations,
 
   ```
   > the bug comes from the desactivation of the spikes. We may want to try to change the fixture filter t0 0x000 instead of deactivating the body...

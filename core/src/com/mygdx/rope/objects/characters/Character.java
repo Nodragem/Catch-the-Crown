@@ -51,11 +51,13 @@ public class Character extends GameObject {
     private Texture MarkTexture;
 
     public Character(GameScreenTournament game, Vector2 position, String objectDataID, String color_texture){
-        super(game, position, new Vector2(1, 0.9f), 0, "NoInit");
+        super(game, position, new Vector2(1, 0.9f), 0, "No Init");
+        this.color_texture = color_texture;
         initAnimation(objectDataID, color_texture);
-        initFixture(objectDataID);
+        // FIXME: the initFixture should be data-driven
+        initFixture();
         mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
-        initCollisionMask(objectDataID);
+        initCollisionMask();
         respawnTime = -1;
         marks = 0;
         player = null;
@@ -85,7 +87,7 @@ public class Character extends GameObject {
 
         filter = new Filter();
         filter.categoryBits = CATEGORY.get("Sensor");
-        filter.maskBits = (short)( CATEGORY.get("Object") | CATEGORY.get("Scenery") | CATEGORY.get("Player") );//remove the status object from LanceManager! <-- not clear :/
+        filter.maskBits = (short)( CATEGORY.get("Object") | CATEGORY.get("Scenery") | CATEGORY.get("Player") );//remove the status object from AttackManager! <-- not clear :/
         this.myRightHand.setFilterData(filter);
 
         filter = new Filter();
@@ -104,7 +106,7 @@ public class Character extends GameObject {
 
     @Override
     public void initAnimation(String objectDataID, String color_texture) {
-        super.initAnimation(objectDataID, this.color_texture);
+        super.initAnimation(objectDataID, color_texture);
         // -- Marks:
         Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
         pixmap.setColor(1f, 1f, 1f, 1.0f);
@@ -254,7 +256,7 @@ public class Character extends GameObject {
                 switch (jumpState){
                     case RISING:
                         if (current_animation != animations.get("Falling")) {
-                            setAnimation("Jumping");
+                            setAnimation("Rising");
                             myBodyFixture.setFriction(0);
                             Gdx.app.debug("Player", "RISING, Friction: " + myBodyFixture.getFriction());
                         }
@@ -286,8 +288,8 @@ public class Character extends GameObject {
             case SLEEPING:
                 if (justDied())
                     break;
-                if (current_animation != animations.get("Sleeping"))
-                    setAnimation("Sleeping");
+                if (current_animation != animations.get("Stunned"))
+                    setAnimation("Stunned");
 
                 awakeStateTimer += deltaTime;
                 if (awakeStateTimer > sleepingTime) {

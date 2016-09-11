@@ -11,7 +11,7 @@ from PIL import Image
 print "start from", os.getcwd()
 
 root_path = os.getcwd()
-toavoid = ["topack", "level_tiles", "inspiration", "output"]
+toavoid = ["topack", "level_tiles", "inspiration", "output", "old"]
 
 ## clean up
 filelist = glob.glob(root_path+"\\topack\\*.png")
@@ -37,11 +37,11 @@ for (path, dirs, files) in os.walk(root_path):
         shutil.copy("\\".join([path,srcfile]), root_path+"\\topack")
 
 ## crop the images
-filelist = glob.glob(root_path+"\\topack\\*.png")
-for f in filelist:
-    image = Image.open(f)
-    image.load()
-    imageSize = image.size
-    imageBox = image.getbbox()
-    cropped = image.crop(imageBox)
-    cropped.save(f)
+# filelist = glob.glob(root_path+"\\topack\\*.png")
+# for f in filelist:
+#     image = Image.open(f)
+#     image.load()
+#     imageSize = image.size
+#     imageBox = image.getbbox()
+#     cropped = image.crop(imageBox)
+#     cropped.save(f)
