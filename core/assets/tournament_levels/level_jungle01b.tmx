@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" backgroundcolor="#55aaff" nextobjectid="53">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" backgroundcolor="#55aaff" nextobjectid="54">
  <properties>
   <property name="CrownSharing" value="0.0"/>
   <property name="GoldRespawn" value="OnTrigger"/>
@@ -120,7 +120,7 @@
   <object id="30" name="Spike" type="Triggerable" x="608" y="960" width="384" height="32">
    <properties>
     <property name="Hub_in" value="HUB01"/>
-    <property name="Object" value="Spikes"/>
+    <property name="Object" value="spikes"/>
     <property name="Triggerable" value="True"/>
     <property name="defaultON" value="false"/>
     <property name="intervalOFF" value="2"/>
@@ -131,7 +131,7 @@
   <object id="31" name="Spike" type="Triggerable" x="32" y="960" width="416" height="32">
    <properties>
     <property name="Hub_in" value="HUB01"/>
-    <property name="Object" value="Spikes"/>
+    <property name="Object" value="spikes"/>
     <property name="Triggerable" value="True"/>
     <property name="defaultON" value="false"/>
     <property name="intervalOFF" value="2"/>
@@ -229,7 +229,7 @@
   <object id="50" name="Spike" type="Triggerable" x="320" y="576" width="96" height="32">
    <properties>
     <property name="Hub_in" value="HUB01"/>
-    <property name="Object" value="Spikes"/>
+    <property name="Object" value="spikes"/>
     <property name="Parent" value="42"/>
     <property name="Triggerable" value="True"/>
     <property name="defaultON" value="false"/>
@@ -241,7 +241,7 @@
   <object id="51" name="Spike" type="Triggerable" x="608" y="576" width="96" height="32">
    <properties>
     <property name="Hub_in" value="HUB01"/>
-    <property name="Object" value="Spikes"/>
+    <property name="Object" value="spikes"/>
     <property name="Parent" value="46"/>
     <property name="Triggerable" value="True"/>
     <property name="defaultON" value="false"/>

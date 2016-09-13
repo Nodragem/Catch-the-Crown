@@ -59,14 +59,21 @@ public class MovingPlatform extends GameObject implements Triggerable {
         this.defaultON = defaultON;
         this.waitingTime = waitingTime;
         body.getFixtureList().get(0).setFriction(1.0f);
-        origin.x = dimension.x/2;
-        origin.y = dimension.y/2;
+
+        /* ---- we need to adjust the position of the body because the body center is placed
+        on the left-bottom corner of the tiled map object by libGDX.
+        That is caused by the fact that we create the body with a center on
+        the left-bottom corner of the GameObject -- see initFixture().
+        That is the only way to rotate the body on its center. */
+        origin.x = dimension.x/2f;
+        origin.y = dimension.y/2f;
         correctionRadius = (float) Math.sqrt(Math.pow(origin.x, 2) + Math.pow(origin.y, 2));
         correctionAngle = MathUtils.atan2(origin.y, origin.x);
+        float ox = correctionRadius * MathUtils.cos(this.rotation+correctionAngle);
+        float oy = correctionRadius * MathUtils.sin(this.rotation+correctionAngle);
+        body.setTransform(body.getPosition().x+ox, body.getPosition().y+oy, this.rotation);
 
-//        origin.x = correctionRadius * MathUtils.cos(this.rotation+correctionAngle);
-//        origin.y = correctionRadius * MathUtils.sin(this.rotation+correctionAngle);
-        body.setTransform(body.getPosition().x+origin.x, body.getPosition().y+origin.y, this.rotation);
+        setOrigin(dimension.x/2, 0.45f);
         Gdx.app.debug("Platform", "Platform in creation!, origin ="+ origin.x + "; "+origin.y);
         body.setType(BodyDef.BodyType.KinematicBody);
         //body.getFixtureList().get(0).setSensor(true);
@@ -171,11 +178,12 @@ public class MovingPlatform extends GameObject implements Triggerable {
             body.setAngularVelocity(0f);
         }
         super.update(deltaTime);
-        position.add(-correctionRadius * MathUtils.cos(body.getAngle() + correctionAngle),
-                -correctionRadius * MathUtils.sin(body.getAngle() + correctionAngle));
 
-        gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(position.x*10.0f)/10.0f) + "; "
-                                            +(float) (Math.round(position.y*10.0f)/10.0f));
+        // that position the
+        position.set(body.getPosition()).sub(origin);
+
+        gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(origin.x*10.0f)/10.0f) + ", "
+                                            +(float) (Math.round(origin.y*10.0f)/10.0f));
 
         return false;
     }
@@ -229,15 +237,24 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     public void render(SpriteBatch batch) {
-        if(isVisible) {
+        if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             for (int i = 0; i < platformBlocks.size; i++) {
+//                batch.draw(platformBlocks.get(i).getKeyFrame(stateTime),
+//                        position.x + i*MathUtils.cos(rotation),
+//                        position.y + i*MathUtils.sin(rotation),
+//                        0, 0, // origins
+//                        1, 1, 1, dimension.y, // dimension and scale
+//                        rotation * MathUtils.radiansToDegrees
+//                );
                 batch.draw(platformBlocks.get(i).getKeyFrame(stateTime),
                         position.x + i*MathUtils.cos(rotation),
                         position.y + i*MathUtils.sin(rotation),
-                        0.0f, 0.0f, // origins
+                        origin.x, origin.y, // origins
                         1, 1, 1, dimension.y, // dimension and scale
                         rotation * MathUtils.radiansToDegrees
                 );
+
+
             }
         }
 

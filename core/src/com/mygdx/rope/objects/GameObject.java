@@ -76,7 +76,8 @@ public class GameObject implements Updatable {
         this.viewDirection = Constants.VIEW_DIRECTION.RIGHT;
         //Gdx.app.debug("ObjGame", "Position: "+position);
         this.dimension = dimension;
-        origin = new Vector2(0,0); // the origin is really at the origin
+//        origin = new Vector2(0.5f,0.5f); // the origin is really at the origin
+        origin = new Vector2(0f,0f); // the origin is really at the origin
         scale = new Vector2(1, 1);
         this.position = position; // position and rotation may be not useful and redundant with the body
         this.rposition = new Vector2(0,0);
@@ -165,9 +166,13 @@ public class GameObject implements Updatable {
         dimension.y = info.getFloat("dimensiony", dimension.y);
         float scaleX = info.getFloat("scalex", 1f); // if you prefer to get the fixture dimension as a scale of the object dimension. usefull for switcher
         float scaleY =  info.getFloat("scaley", 1f);
+        float scale_offsetX = info.getFloat("scale_offsetx", 0f); // if you prefer to get the fixture dimension as a scale of the object dimension. usefull for switcher
+        float scale_offsetY =  info.getFloat("scale_offsety", 0f);
         float offsetx = info.getFloat("offsetx", 0.5f);
         float offsety = info.getFloat("offsety", 0.5f);
-        p.setAsBox(scaleX*dimension.x / 2.0f, scaleY * dimension.y / 2.0f, new Vector2(offsetx*dimension.x , offsety* dimension.y), 0);
+        p.setAsBox(scaleX*dimension.x / 2.0f + scale_offsetX,
+                scaleY * dimension.y / 2.0f + scale_offsetY,
+                new Vector2(offsetx*dimension.x , offsety* dimension.y), 0);
         FixtureDef fd = new FixtureDef();
         fd.shape = p;
         fd.density = info.getFloat("density", 5f);
@@ -358,6 +363,7 @@ public class GameObject implements Updatable {
 //                    absoluteAngle);
             rotation = body.getAngle(); //* MathUtils.radiansToDegrees;
             position.set(body.getPosition());
+            // FIXME: note that we are not doing an origin sub as in MovingPlatform, because we did not offset the object from the body
             //this.isVisible = parentBody.isVisible;
         }
 

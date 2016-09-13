@@ -39,36 +39,6 @@ public class Spikes extends GameObject implements Triggerable {
     }
 
     @Override
-    public void initCollisionMask() {
-        Filter defaultFilter = new Filter();
-        defaultFilter.categoryBits = Constants.CATEGORY.get("Weapon");
-        defaultFilter.maskBits = Constants.MASK.get("Weapon");
-        this.body.getFixtureList().get(0).setFilterData(defaultFilter);
-    }
-
-    public  void initFixture(){
-        PolygonShape p = new PolygonShape();
-        p.setAsBox(dimension.x *0.5f-0.4f, dimension.y *0.3f, new Vector2(dimension.x *0.5f, dimension.y *0.15f), 0);
-        FixtureDef fd = new FixtureDef();
-        fd.shape = p;
-        fd.density = 1;
-        fd.restitution = 0.0f;
-        fd.friction = 0.0f;
-        this.body.createFixture(fd);
-        body.setType(BodyDef.BodyType.StaticBody);
-        body.getFixtureList().get(0).setSensor(true);
-        p.dispose();
-    }
-
-//    @Override
-//    public void initAnimation(){
-//        Array<TextureAtlas.AtlasRegion> regions = null;
-//        regions = atlas.findRegions("pick");
-//        main_animation = new Animation(1.0f/2.0f, regions, Animation.PlayMode.LOOP);
-//        setAnimation(main_animation);
-//    }
-
-    @Override
     public boolean update(float deltaTime){
         if (trapstate == Constants.TRAPSTATE.ON && intervalOFF != 0){
             timer +=deltaTime;
@@ -86,7 +56,7 @@ public class Spikes extends GameObject implements Triggerable {
 
     @Override
     public void render(SpriteBatch batch) {
-        if(isVisible) {
+        if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             TextureRegion reg = null;
             reg = current_animation.getKeyFrame(stateTime);
             for (int i = 0; i < dimension.x; i++) {

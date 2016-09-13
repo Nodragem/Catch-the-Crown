@@ -115,7 +115,17 @@
 
     },
     "spikes": {
-      "texture_name": "pick"
+      "texture_name": "spikes",
+      "scalex": 1,
+      "scaley": 0.6,
+      "scale_offsetx": -0.4,
+      "offsetx": 0.5,
+      "offsety": 0.15,
+      "isRotation": false,
+      "bodyType": "KinematicBody",
+      "sensor": true,
+      "Mask": "Weapon",
+      "Category": "Weapon"
     }
   },
   "collectable_type":

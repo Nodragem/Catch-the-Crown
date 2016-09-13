@@ -194,7 +194,6 @@ public class AttackManager extends GameObject {
 
     @Override
     public boolean update(float deltaTime) {
-        // FIXME: Copy paste from GameObject -- need to be parented only for the position
         stateTime += deltaTime;
         body.setTransform(
                 parentBody.getPosition().x + rposition.x + 0.5f*MathUtils.cos(aimingAngle),
@@ -203,10 +202,6 @@ public class AttackManager extends GameObject {
                 );
         rotation = body.getAngle(); 
         position.set(body.getPosition()).sub(origin);
-        // FIXME (WIP): Orgin problem: can't rotate on something else than the left-bottom corner
-        // previous solution was to center the center of the body fixture (the y),
-        // on the left-bottom corner of the texture
-        // should check what we did for the rotating platform
 
         switch(attackState){
             case LONGATTACK:
@@ -255,7 +250,7 @@ public class AttackManager extends GameObject {
     private void goToAimingState() { // change that as a case switch
         attackState = Constants.ATTACK_STATE.AIMING;
         isVisible = true;
-        setOrigin(0.0f, 0.5f);
+        setOrigin(0f, 0.5f);
 
     }
 

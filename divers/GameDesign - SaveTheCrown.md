@@ -275,6 +275,16 @@ Règle de partie perdue (recommence leniveau) :
 
 # Changelog
 
+## Up to 13/09/2016
+
+-[x] Origin problem: can't rotate on something else than the left-bottom corner
+// previous solution was to center the center of the body fixture (the y),
+// on the left-bottom corner of the texture
+// should check what we did for the rotating platform
+> we actually did the same for moving platform.
+However, in moving platform, we were using trigonometric formula to place the texture back on the Body of the GameObject.
+> We decided to use the origin method instead.
+
 ## Up to 07/08/2016
 
 - [x] Menu - restart/resume/quit/preference,
