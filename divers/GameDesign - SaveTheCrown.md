@@ -275,25 +275,50 @@ Règle de partie perdue (recommence leniveau) :
 
 # Changelog
 
-## Up to 13/09/2016
+##  Up to 13/09/2016
 
--[x] Origin problem: can't rotate on something else than the left-bottom corner
-// previous solution was to center the center of the body fixture (the y),
-// on the left-bottom corner of the texture
-// should check what we did for the rotating platform
-> we actually did the same for moving platform.
-However, in moving platform, we were using trigonometric formula to place the texture back on the Body of the GameObject.
-> We decided to use the origin method instead.
+- [x] add conversion to 16-bit in createSoundsGroup.py, using sox (SOund eXchange)
+  > indeed LibGDX was not happy with 8-bit format...
+
+- [x] BUG: projectiles collision where putting the projectile to an other position
+  > We put the velocity at 0 when colliding and we do not change the angle of the projectile if the speed is under 0.1.
+
+- [x] BUG: the cahracter is sliding toward the wall when grounded on a lance
+  > that is because the character get the velovity of what he is grounded to.
+  > we needed to reset the velocity of the lance to 0 when it become a platform
+
+- [x] FIXME: change the sync of weapon/character positions
+  > the PlayerController is not sync the position of the arms and of the character anymore (it was is doing the job of a Child System)
+  > we are using the parent/child system of the GameOBject: Weapon is a child of character ,
+
+- [x] Lances were making damage even in platform mode and after death +bug
+- [x] Lance were giving twice their given damage
+- [x] gotoState() instead of several functions in AttackManager
+- [x] lance starting point need to be centered on the arrow
+- [x] use the same rotation origin system for moving platform and aiming arrow
+
+  > there is an origin problem: can't rotate a body on something else than the left-bottom corner of the GameObject/Texture
+
+  > In moving platform, we were using trigonometric formula to place the texture back on the Body of the GameObject.
+
+  > In aiming arrow (AttackManager), we center the center of the body fixture (the y),
+  on the left-bottom corner of the texture to change its rotation origin, and then we use the
+  render origin parameters to put the texture back to the body position.
+
+  > We decided to use the render origin method instead.
+
+- [x] lance can't be thrown if wall/something
+- [x] arms were should be flipped up/down when aiming on the left
+
+
 
 ## Up to 07/08/2016
 
-- [x] Menu - restart/resume/quit/preference,
+- [x] Menu - restart/resume/quit/preference
 
 - [x] **[A]** some switcher can activate the onset of a group of coins
-
-  ```
   > I think that it was already implemented
-  ```
+
 
 - [x] Controller/Keyboard distribution,
 
@@ -304,17 +329,13 @@ However, in moving platform, we were using trigonometric formula to place the te
 - [x] no lance collision when lance on the players,
 
 - [x] Lance angles -- no collision/one way collision
-
-  ```
   > longer than what I thought to resolve.
   > Finally create a new collision shape for the player.
-  ```
+
 
 - [x] bug: when jumping through an almost vertical lance, the character can get stuck in the FALLING state
-
-  ```
   > Solution: add a bigger array for the Feet ContactData.
-  ```
+
 
 - [x] First trap, fire launcher, add trap fireball (extend the throwable system to a non player object)
 
@@ -329,28 +350,23 @@ However, in moving platform, we were using trigonometric formula to place the te
 - [x] bug: moving platform, started at a random distance when triggered bu a switch (the timer was counting when not activated)
 
 - [x] bug: the one-way collicsion of Lances was not working anymore.
-
-  ```
   >the problem came from the mainBodyBox addition in GameObject.
   >All object has a ContactSensor now. The ConstactListener was considering that only the lance would have a ContactSensor.
-  ```
+
 
 - [x] check the code line 138-150 in Lance Manager, I got the impression, it is wrong. (powerLoad == defaultLoad) ??
 
 - [x] bug: slapping when close to the oponent was not working anymore
-
-  ```
   > the problem came from the mainBodyBox addition in GameObject which was not well used (ignored) in children objects, especially in the LanceManager.
-  ```
+
 
 - [x] system of crown score / player score (money go to the crown account or to the player account)
 
 - [x] add moving platforms
 
-  ```
    > Note that for now, it is the character adds by itself to itself the speed of the last grounded object.
    > Indeed, no suitable solution has been found with using the friction and the physics engine. Indeed the player class is using the physics in a tricky way to make the character fully controllable.
-  ```
+
 
 - [x] bug: threshold/switcher (trap were initially activated while the threshold was not reached)
 
@@ -360,15 +376,16 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] add compatibility with keyboard / allow custom button mapping
 
-- [x] the friction switch has been added back, with some modification. Low Friction of 0.01 when moving prevent to stick of hard corner. Also prevent to stick on top edge when jumping? even thought we also cut down the top of the hit box of the character to prevent it.
+- [x] the friction switch has been added back, with some modification.
+  > Low Friction of 0.01 when moving prevent to stick of hard corner. Also prevent to stick on top edge when jumping? even thought we also cut down the top of the hit box of the character to prevent it.
 
 - [x] [not applicable] in MapBodyBuilder, we could try to play with friction and restitution to hav block which glides and block which stick, and block which bounces. (not possible)
 
 - [x] to remove the friction switch (0.2 when grounded, 0.0 when in air), remove the casual bugs of staying blocked on a downer corner of a brick when jumping.
 
-  ```
-  However, this switch is needed in order to not slide on moving platform :/
-  ```
+
+  > However, this switch is needed in order to not slide on moving platform :/
+
 
 - [x] the bug of the omnipresent slap occur after carrying the victim player.
 
@@ -376,7 +393,7 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] the bug of free flying is not yet resolved...
 
-  ```
+
   > was happening, for instance, when a Lance disappeared from the Player's feet. It stayed in the feet sensor.
 
   > RESOLVED: coming from the ContactData gestion, we add a loop which find any fixture touched by the removed Lance and tell it to remove the Lance from its ContactData list.
@@ -385,7 +402,7 @@ However, in moving platform, we were using trigonometric formula to place the te
 
   > note also we modified the function pushTouchedFixtures(Fixture f) so that it add a fixture only if not already present in the list of ContactData.
   > That change would probably resolved the bug of the slap also.
-  ```
+
 
 - [x] add LT for launching a Lance and aim
 
@@ -393,10 +410,10 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] bug Lance: stop display when was aiming and hit an object box:
 
-  ```
+
   > changed to "short attack not aiming and is colliding something"
   > if you collide something, you can still aim if you were previously aiming.
-  ```
+
 
 - [x] bug Lance: the lance has to hit and hang on the Player body, not on the sensors,
 
@@ -436,35 +453,34 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] bug: when the reward Window comes the game didn't pause,
 
-  ```
-  - [x] bug: reward Window, the top columns is too high!
 
-        > (was actually caused by the fact the game didn't pause)
-  ```
+- [x] bug: reward Window, the top columns is too high!
+
+      > (was actually caused by the fact the game didn't pause)
+
 
 - [x] moving platform can stop at different check points define by vertex in Tiledmap,
 
 - [x] make switches triggerable, such that a switch can enable a new switch,
 
-  ```
-  **[?]** this, for now causes a bug because parented switches are not desactivated with their parentBody,
-  ```
+
+- **[?]** this, for now causes a bug because parented switches are not desactivated with their parentBody,
+
 
 - [x] balance the crown rate to 0.333
 
 - [x] spiking moving platform
 
-  ```
   >  add also parentBody system, switch will also be able to follow a platform (attachable interface),
 
-  - [x] create the Parenting System (managed from Tiled),
-  ```
+- [x] create the Parenting System (managed from Tiled),
+
 
 - [x] bugs: parentBody-children rotations,
 
-  ```
+
   > the bug comes from the desactivation of the spikes. We may want to try to change the fixture filter t0 0x000 instead of deactivating the body...
-  ```
+
 
 - [x] replace flush with deepFlush when it seemed needed, I flagged the change, normally...
 
@@ -472,13 +488,13 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] jump system, add this limitation: can't automatically re-jump if RISING
 
-  ```
+
   > we tried to do it, with saving previous state, we get a bug when on moving ascending platform...
 
   > the bug comes from a y_vel > 0.1 detected before the ground contact has been detected.
 
   > the solution to avoid complex solution was to forbid FALLING --> RISING (which will allow forbid double-jump).
-  ```
+
 
 - [x] marking system, to slap give a mark to the slapped character, a top of 5 marks, 1 mark add 3 seconds to next death (an usual death is 5 seconds),
 
@@ -488,13 +504,13 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] slapping and attack has been improve!
 
-  ```
+
     > - slapping box is wider/inside player (of course, it ignores the slapper player)
     > - can't attack during animation (consequently, that decreases the shooting rate)
     > - increase impulse distance when slapped.
     >   - 3 lances to kill,
     >   - 12 slaps to kill,
-  ```
+
 
 - [x] Tournament Mode,
 
@@ -522,9 +538,9 @@ However, in moving platform, we were using trigonometric formula to place the te
 
 - [x] bug: respawn is cleaner now / less buggy
 
-  ```
+
   > sometimes the slap was giving a strong impulse.
-  ```
+
 
 - [x] bug: we were able to attack when carrying someone
 

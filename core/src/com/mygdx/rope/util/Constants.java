@@ -37,9 +37,10 @@ public class Constants {
     public static enum VIEW_DIRECTION { LEFT, RIGHT, UP, DOWN}
     public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
+    public static enum DAMAGE_STATE { IMMUNE,  NOT_IMMUNE}
     public static enum JUMP_STATE {IDLE, GROUNDED, FALLING, RISING}
     public static enum MOVE_STATE {PICKINGUP, PICKUPCHALLENGED, PICKUPCHALLENGER, THROWED, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.
-    public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, AIMING, CHARGING}
+    public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, CARRYING, AIMING, CHARGING, CHARGE_READY}
     public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}
     public static enum COLLIDER_TYPE {STICKY, SENSOR, HURTABLE, ONEWAY, CROWN}
     public static enum TRIGGERABLE_TYPE {SPIKES, LAUNCHER, MOVING_PLATFORM}
@@ -61,7 +62,7 @@ public class Constants {
     static {
         MASK.put("Player", (short) (CATEGORY.get("Weapon") | CATEGORY.get("Sensor") | CATEGORY.get("Collectable") | CATEGORY.get("Scenery") | CATEGORY.get("AttachedObject") ) );
         //MASK.put("Sensor", (short)(CATEGORY.get("Player") | CATEGORY.get("Scenery")) );
-        MASK.put("Sensor", (short)CATEGORY.get("Player" ));
+        MASK.put("Sensor", (short) (CATEGORY.get("Player" )|CATEGORY.get("Scenery")));
         MASK.put("Object",(short)(CATEGORY.get("Sensor") | CATEGORY.get("Object") | CATEGORY.get("Scenery") ) );
         //MASK.put("Weapon",  (short) ~( CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );
         MASK.put("Weapon",  (short) ~( CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );

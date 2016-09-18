@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.mygdx.rope.objects.ControlProcessor;
+import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Updatable;
 import com.mygdx.rope.objects.weapon.AttackManager;
 import com.mygdx.rope.screens.GameScreenTournament;
@@ -29,6 +31,7 @@ public class Player implements ControlProcessor, Updatable  {
     public final String TAG = "PlayerController";
     public String name;
     public float score;
+    public ArrayMap<GameObject, Integer> killTable;
     public GameScreenTournament gameScreen;
 	private Body objBody;
     private Character character; // only character has feetsensor
@@ -36,7 +39,6 @@ public class Player implements ControlProcessor, Updatable  {
     private ContactData sensorBuffer;
     private boolean jumpButtonPressed = false;
     private boolean pickUpButtonPressed = false;
-    private AttackManager weapon;
     private int challengePressCount = 0; // the players compete in pressing the action buttons when they are picking or picked up.
     private Vector2 bodyVel =  new Vector2(0,0);
     private Vector2 bodyPos = new Vector2(0,0);
@@ -57,6 +59,7 @@ public class Player implements ControlProcessor, Updatable  {
         setCurrentWindow(null);
         setCharacter(character);
         soundJump = gameScreen.assetManager.getRandom("jump");
+        killTable = new ArrayMap<GameObject, Integer>(10);
     }
 
     public void setCharacter(Character character) {
@@ -64,8 +67,8 @@ public class Player implements ControlProcessor, Updatable  {
 		this.character = character;
         this.objBody = character.body;
         character.setPlayer(this);
-        weapon = new AttackManager(character.getGamescreen(),
-                character, character.position, "lance", "attack_layer", character.color_texture);
+        character.setWeapon(new AttackManager(character.getGamescreen(),
+                character, character.position, "lance", "attack_layer", character.color_texture));
         //FIXME: that is weird that I have left that here! (I agree)
     }
 
@@ -144,8 +147,9 @@ public class Player implements ControlProcessor, Updatable  {
 
     private void processAimingInput() {
         if (currentAimingAngle == null)
-            currentAimingAngle = MathUtils.PI * (character.viewDirection == VIEW_DIRECTION.RIGHT?0:1);
-        character.viewDirection = (currentAimingAngle < MathUtils.PI/2 | currentAimingAngle > 3*MathUtils.PI/2)? VIEW_DIRECTION.RIGHT: VIEW_DIRECTION.LEFT;
+            currentAimingAngle = MathUtils.PI * (character.getViewDirection() == VIEW_DIRECTION.RIGHT?0:1);
+        character.setViewDirection( (currentAimingAngle < MathUtils.PI/2 | currentAimingAngle > 3*MathUtils.PI/2)?
+                                        VIEW_DIRECTION.RIGHT: VIEW_DIRECTION.LEFT );
         //character.viewDirection = (currentAimingAngle + MathUtils.PI/2 <MathUtils.PI)? VIEW_DIRECTION.RIGHT: VIEW_DIRECTION.LEFT;
     }
 
@@ -168,10 +172,10 @@ public class Player implements ControlProcessor, Updatable  {
             //if (!character.hasCarriedObject()) { // is that not equivalent to "is  not MOVE_STATE.PICKINGUP" ?
             if (character.moveState == MOVE_STATE.NORMAL){
                 sensorBuffer = (ContactData) character.currentHand.getUserData();
-                Array<Fixture> touched = sensorBuffer.getTouchedFixtures();
-                for (Fixture f : touched) {
-                    if (f.getUserData() != null) {
-                        character.setCarriedObject(f.getBody()); // this will change the movestate to PICKINGUP or PICKUPCHALLENGER / PICKUPCHALLENGED
+                Array<Fixture> touchedFixtures = sensorBuffer.getTouchedFixtures();
+                for (Fixture touchedFixture : touchedFixtures) {
+                    if (touchedFixture.getUserData() != null) {
+                        character.setCarriedBody(touchedFixture.getBody()); // this will change the movestate to PICKINGUP or PICKUPCHALLENGER / PICKUPCHALLENGED
                     }
                 }
                 sensorBuffer = null;
@@ -192,8 +196,8 @@ public class Player implements ControlProcessor, Updatable  {
             if(character.moveState == MOVE_STATE.PICKUPCHALLENGED){
                 if (challengePressCount >= Constants.MOVESTOFREE-2) {
 //                    character.getCarrier().moveState = MOVE_STATE.THROWED;
-                    character.setCarriedObject(character.getCarrier().getBody());
-                    character.getCarrier().setCarriedObject(null);
+                    character.setCarriedBody(character.getCarrier().getBody());
+                    character.getCarrier().setCarriedBody(null);
                     character.moveState = MOVE_STATE.NORMAL;
 //                    character.getCarrier().getBody().applyLinearImpulse(MathUtils.cos(currentAimingAngle) * 260.0f,
 //                            MathUtils.sin(currentAimingAngle) * 260.0f, 0.5f, 0.5f, true);
@@ -221,19 +225,15 @@ public class Player implements ControlProcessor, Updatable  {
         if (character.moveState == MOVE_STATE.PICKINGUP){
             return;
         }
-        weapon.shortDistanceAttack(isPressed, deltaTime);
+        character.getWeapon().shortDistanceAttack(isPressed, deltaTime);
     }
 
     private void processLongAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
         if (character.moveState == MOVE_STATE.PICKINGUP){
             return;
         }
-        weapon.longDistanceAttack(isPressed, currentAimingAngle, isAiming, deltaTime);
-        /* FIXME (WIP): the PlayerController is doing the job of a Child System,
-        it is positionning the weapon on the character
-        but it is not all, the AttackManager itself is applying a shift of (0.5, 0.5) units
-        for aligning the Lance to the Player center. That's not readable/easy to maintain.
-        */
+        character.getWeapon().longDistanceAttack(isPressed, currentAimingAngle, isAiming, deltaTime);
+
     }
 
     private void processJumpInput(boolean isPressed) {
@@ -299,5 +299,14 @@ public class Player implements ControlProcessor, Updatable  {
 
     public void savePreviousWindow(){
         previousWindow = currentWindow;
+    }
+
+    public void registerKill(GameObject obj) {
+        if(killTable.containsKey(obj)){
+            int id = killTable.indexOfKey(obj);
+            killTable.setValue(id, killTable.getValueAt(id) + 1);
+        } else {
+            killTable.put(obj, 1);
+        }
     }
 }

@@ -4,36 +4,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.collectable.Crown;
+import com.mygdx.rope.objects.weapon.AttackManager;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
 import static com.mygdx.rope.util.Constants.*;
+import static com.mygdx.rope.util.Constants.AWAKE_STATE.AWAKE;
+import static com.mygdx.rope.util.Constants.AWAKE_STATE.DEAD;
 
 public class Character extends GameObject {
-    private float sleepingTime;
-    private float awakeStateTimer; // a player can be Knock out and lose control of his character
+    private float timeToSleep;
+    private float timerToAwakeState; // a player can be Knock out and lose control of his character
     private float respawnTime;
     public int marks;
     public Player player;
-//    public Animation animWalk;
-//	private Animation animJump;
-//	private Animation animFalling;
-//    private Animation animDying;
-//    private Animation animSleeping;
-
+    public AttackManager weapon;
     public JUMP_STATE previousJumpState;
     public JUMP_STATE jumpState;
     public MOVE_STATE moveState;
@@ -63,14 +55,14 @@ public class Character extends GameObject {
         player = null;
         lastGroundedBody = null;
         isKillable = true;
-        previousJumpState = JUMP_STATE.FALLING;
-        jumpState = JUMP_STATE.FALLING;
         moveState = MOVE_STATE.NORMAL;
-        awakeState = AWAKE_STATE.AWAKE;
+        goToConciousState(AWAKE, 0);
+        setJumpState(JUMP_STATE.FALLING);
+        previousJumpState = JUMP_STATE.FALLING;
         carriedObject = null;
         crownBody = null;
-        awakeStateTimer = 0;
-        sleepingTime = 0;
+        timerToAwakeState = 0;
+        timeToSleep = 0;
 	}
 
     @Override
@@ -101,6 +93,24 @@ public class Character extends GameObject {
             this.previousJumpState = this.jumpState;
             this.jumpState = jumpState;
             Gdx.app.debug("Character", "jumpState from "+ previousJumpState + " to " + jumpState);
+            switch (jumpState){
+                case RISING:
+                    setAnimation("Rising");
+                    myBodyFixture.setFriction(0);
+                    break;
+                case FALLING:
+                    setAnimation("Falling");
+                    myBodyFixture.setFriction(0);
+                    break;
+                case GROUNDED:
+                    setAnimation("Walking");
+                    myBodyFixture.setFriction(0.01f);
+                    break;
+                case IDLE:
+                    setAnimation("Standing");
+                    myBodyFixture.setFriction(1.0f);
+                    break;
+            }
         }
     }
 
@@ -183,14 +193,14 @@ public class Character extends GameObject {
 
     @Override
     public boolean update(float deltaTime){
-        if(currentImmunity>0){
-            setColor(1f*Math.abs(MathUtils.sin(currentImmunity*MathUtils.PI/immunityReset)), 0.25f, 0.25f, 0);
+        if(damageState==DAMAGE_STATE.IMMUNE){
+            setColor(1f*Math.abs(MathUtils.sin(5*currentImmunity*MathUtils.PI)), 0.25f, 0.25f, 0);
         }
         else{
             setColor(1, 1, 1, 1);
         }
         // that's updating the jump states used by the "animation updater" and the renderer:
-        currentHand = this.viewDirection == VIEW_DIRECTION.LEFT ? myLeftHand:myRightHand; // use by the renderer directly
+        currentHand = this.getViewDirection() == VIEW_DIRECTION.LEFT ? myLeftHand:myRightHand; // use by the renderer directly
         // Animation updater: (could be an outside component)
         updateTheStateMachine(deltaTime);
         // Damage from collision management: (might part of the GameObject themself), or should be a component...
@@ -205,7 +215,7 @@ public class Character extends GameObject {
         // roughly that part look like updating Child objects, but we dont have a Child system :P so we are managing specifically a carried body and a crown.
         // Note that the child system would be useful also to attached a weapon to the player and to throw bullets from this weapon...
         if (carriedObject != null){
-            carriedObject.setTransform(this.position.x + 0.5f * ((viewDirection == VIEW_DIRECTION.LEFT)?-1:1),
+            carriedObject.setTransform(this.position.x + 0.5f * ((this.getViewDirection() == VIEW_DIRECTION.LEFT)?-1:1),
                     this.position.y + 0.5f, 0);
         }
         if (crownBody != null){
@@ -238,76 +248,58 @@ public class Character extends GameObject {
             if(moveState == MOVE_STATE.THROWED)
                 moveState = MOVE_STATE.NORMAL;
             if (Math.abs(this.body.getLinearVelocity().x - lastGroundedBody.getLinearVelocity().x)< 0.001)
+                // FIXME: \--> I think we could do something more intuitive, as NOT_MOVING
+                // FIXME: \--> I think we could do something more intuitive for JumpState, IDLE is a movestate no?
                 setJumpState(JUMP_STATE.IDLE);
             else
                 setJumpState(JUMP_STATE.GROUNDED);
         }
-        else {
+        else if(awakeState != DEAD){ // the sensor are inactive when the character is dead, so this state is to avoid
             if (this.body.getLinearVelocity().y > 0.1 && jumpState != JUMP_STATE.FALLING) // make sure we go to fall when we reset the speed
                 setJumpState(JUMP_STATE.RISING);
             else
                 setJumpState(JUMP_STATE.FALLING);
         }
         gamescreen.addDebugText("\n " + getPlayer().getName() + " JUMP_STATE: " + jumpState);
-        switch (awakeState){
-            case AWAKE:
-                if (justDied())
-                    break;
-                switch (jumpState){
-                    case RISING:
-                        if (current_animation != animations.get("Falling")) {
-                            setAnimation("Rising");
-                            myBodyFixture.setFriction(0);
-                            Gdx.app.debug("Player", "RISING, Friction: " + myBodyFixture.getFriction());
-                        }
-                        break;
-                    case FALLING:
-                        if(current_animation != animations.get("Falling")) {
-                            setAnimation("Falling");
-                            myBodyFixture.setFriction(0);
-                            Gdx.app.debug("Player", "FALLING, Friction:  " + myBodyFixture.getFriction());
-                        }
-                        break;
-                    case GROUNDED:
-                        if(current_animation!= animations.get("Walking")) {
-                            setAnimation("Walking");
-                            myBodyFixture.setFriction(0.01f);
-                            Gdx.app.debug("Player", "GROUNDED, Friction: " + myBodyFixture.getFriction());
-                        }
-                        break;
-                    case IDLE:
-                        if(current_animation!= animations.get("Standing")){
-                            setAnimation("Standing");
-                            myBodyFixture.setFriction(1.0f);
-                            Gdx.app.debug("Player", "IDLE, Friction: " + myBodyFixture.getFriction());
-                        }
-                        break;
-                }
 
-                break;
-            case SLEEPING:
-                if (justDied())
-                    break;
-                if (current_animation != animations.get("Stunned"))
-                    setAnimation("Stunned");
 
-                awakeStateTimer += deltaTime;
-                if (awakeStateTimer > sleepingTime) {
-                    awakeState = AWAKE_STATE.AWAKE;
-                    awakeStateTimer = 0;
-                    sleepingTime = 0; // no accumulation of the sleeping time during the round
+        switch (activeState) {
+            case ACTIVATED:
+                switch (awakeState) {
+                    case AWAKE:
+                        if (getLife() < 0) {
+                            goToConciousState(DEAD, 0);
+                            break;
+                        }
+
+                        break;
+                    case SLEEPING:
+                        if (getLife() < 0) {
+                            goToConciousState(DEAD, 0);
+                            break;
+                        }
+                        timerToAwakeState += deltaTime;
+                        if (timerToAwakeState > timeToSleep) {
+                            goToConciousState(AWAKE, 0);
+                        }
+                        break;
+                    case DEAD:
+                        timerToAwakeState += deltaTime;
+                        if (timerToAwakeState > respawnTime) {
+//                            goToConciousState(AWAKE, 0);
+                            goToDesactivation();
+                        }
+                        break;
                 }
                 break;
-            case DEAD:
-                if (current_animation != animations.get("Death"))
-                    setAnimation("Death");
-                awakeStateTimer += deltaTime;
-                if (awakeStateTimer > respawnTime) {
-                    reSpawn();
-                }
+            case DESACTIVATED:
+                goToActivation();
+                goToConciousState(AWAKE, 0);
                 break;
 
         }
+
+
     }
 
     public boolean hasCarriedObject(){
@@ -316,7 +308,7 @@ public class Character extends GameObject {
 
     public boolean hasTheCrown() {return this.crownBody != null;}
 
-    public void setCarriedObject(Body b){
+    public void setCarriedBody(Body b){
         if (b == null){
             GameObject g = (GameObject) carriedObject.getUserData();
             g.setCarrier(null);
@@ -401,6 +393,23 @@ public class Character extends GameObject {
 
     }
 
+    @Override
+    protected boolean checkIfToDestroy() {
+        return false;
+    }
+
+    public float getTimeToSleep() {
+        return timeToSleep;
+    }
+
+    public void addSleepingTime(float sleepingTime) {
+        this.timeToSleep += sleepingTime;
+    }
+
+    public void setTimeToSleep(float timeToSleep) {
+        this.timeToSleep = timeToSleep;
+    }
+
     private void reSpawn() {
         for ( JointEdge jointEdge: body.getJointList()) { // iterate over the joints that the character is involved in
             GameObject attachedObject = (GameObject) jointEdge.other.getUserData(); // find the *other* member of the joint
@@ -409,61 +418,46 @@ public class Character extends GameObject {
         }
         GameObject o = this.getCarrier();
         if(o != null)
-            this.getCarrier().setCarriedObject(null);
+            this.getCarrier().setCarriedBody(null);
         mainBoxContact.deepFlush();
         this.setPosition(gamescreen.getSpawnPosition());
-        awakeState = AWAKE_STATE.AWAKE;
         life = 100.0f;
         setMarks(0);
-        awakeStateTimer = 0;
         body.setTransform(body.getPosition(), 0);
     }
 
-    private boolean justDied() {
-        if (life <= 0 ){
-            Sound killSound = gamescreen.assetManager.getRandom("laugh_kill");
-            killSound.play();
-            awakeState = AWAKE_STATE.DEAD;
-            awakeStateTimer = 0;
-            Gdx.app.debug("Character", "Death Event");
-            respawnTime = RESPAWNTIME + marks*Constants.MARKPENALTY;
-            //body.setTransform(body.getPosition(),MathUtils.PI/2.0f);
-            //body.setType(K);
-            dropObjects();
-            for(Fixture fixt : body.getFixtureList()){
-                ContactData data = (ContactData) fixt.getUserData();
-                if(data != null)
-                    data.deepFlush(); // should be in the respawn function!!!
-                    //data.flush();
-            }
-            return true;
+    public void goToConciousState(AWAKE_STATE state, float time) {
+        switch (state){
+            case AWAKE:
+                timerToAwakeState = 0;
+                timeToSleep = 0; // no accumulation of the sleeping time during the round
+                if (awakeState == DEAD)
+                    reSpawn();
+                awakeState = state;
+                setAnimation("Standing");
+                break;
+            case DEAD:
+                setAnimation("Death");
+                timerToAwakeState = 0;
+                Gdx.app.debug("Character", "Death Event");
+                respawnTime = RESPAWNTIME + marks*Constants.MARKPENALTY;
+                dropObjects();
+                for(Fixture fixt : body.getFixtureList()) {
+                    ContactData data = (ContactData) fixt.getUserData();
+                    if (data != null)
+                        data.deepFlush(); // should be in the respawn function!!!
+                }
+                awakeState = state;
+                break;
+            case SLEEPING:
+                if(awakeState == AWAKE) {
+                    setAnimation("Stunned");
+                    dropObjects();
+                    addSleepingTime(time);
+                    awakeState = state;
+                }
         }
-        return false;
-    }
 
-    @Override
-    protected boolean checkIfToDestroy() {
-        return false;
-    }
-
-    public float getSleepingTime() {
-        return sleepingTime;
-    }
-
-    public void addSleepingTime(float sleepingTime) {
-        this.sleepingTime += sleepingTime;
-    }
-
-    public void setSleepingTime(float sleepingTime) {
-        this.sleepingTime = sleepingTime;
-    }
-
-    public void goToSleepFor(float time){
-        if(awakeState == AWAKE_STATE.AWAKE) {
-            dropObjects();
-            awakeState = Constants.AWAKE_STATE.SLEEPING;
-            addSleepingTime(time);
-        }
     }
 
     @Override
@@ -473,7 +467,7 @@ public class Character extends GameObject {
 
     public float getRespawnTime(){
         if (awakeState == AWAKE_STATE.DEAD)
-            return (respawnTime - awakeStateTimer);
+            return (respawnTime - timerToAwakeState);
         else
             return -1;
     }
@@ -504,6 +498,36 @@ public class Character extends GameObject {
     public void addMarks(int marks){
         this.marks += marks;
         this.marks = Math.min(Constants.MAXMARKS, this.marks);
+
+    }
+
+    public void setWeapon(AttackManager weapon) {
+        this.weapon = weapon;
+    }
+
+    public AttackManager getWeapon() {
+        return weapon;
+    }
+
+    public void registerKill(GameObject obj){
+        Sound killSound = gamescreen.assetManager.getRandom("laugh_kill");
+        killSound.play();
+        player.registerKill(obj);
+    }
+
+    @Override
+    public void setViewDirection(VIEW_DIRECTION viewDirection) {
+        super.setViewDirection(viewDirection);
+        weapon.setViewDirection(viewDirection);
+    }
+
+    @Override
+    protected void addToLife(float f) {
+        super.addToLife(f);
+        if(f<0){
+            Sound hurtSound = gamescreen.assetManager.getRandom("hurt");
+            hurtSound.play(1f);
+        }
 
     }
 }

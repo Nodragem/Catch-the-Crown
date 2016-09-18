@@ -1,6 +1,7 @@
 package com.mygdx.rope.util;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.rope.objects.GameObject;
 
 /**
  * Created by Nodragem on 04/05/2014.

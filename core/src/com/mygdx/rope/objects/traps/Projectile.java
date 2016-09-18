@@ -3,12 +3,14 @@ package com.mygdx.rope.objects.traps;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Usable;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
+
+import static java.lang.Math.abs;
 
 /**
  * Created by Geoffrey on 15/02/2015.
@@ -46,23 +48,34 @@ public class Projectile extends GameObject implements Usable {
     @Override
     public boolean update(float deltaTime){
         life -= rateOfDeath * deltaTime;
-        body.setTransform(body.getPosition(), body.getLinearVelocity().angleRad());
+        if (abs(body.getLinearVelocity().len()) > 0.1f) {
+            //the rotation follows the direction of speed
+            body.setTransform(body.getPosition(), body.getLinearVelocity().angleRad());
+        }
         return super.update(deltaTime);
     }
 
     @Override
-    protected void onCollision() {
+    public Array<GameObject> onCollision(boolean dealDamage) {
+//        Gdx.audio.newSound(Gdx.files.internal("sounds/3.wav"));
+        current_sound = gamescreen.assetManager.getRandom("explosion_fireball");
+        current_sound.play();
         Gdx.app.debug("Projectile", "Collision Detected");
-        for(Fixture fixture: mainBoxContact.getTouchedFixtures()){
-            GameObject touchedObject = (GameObject) fixture.getBody().getUserData();
+        body.setLinearVelocity(0f, 0f);
+        body.setType(BodyDef.BodyType.KinematicBody);
+        Gdx.app.debug("Projectile", "life before return damage: " + getLife());
+        Array<GameObject> touchedObjects = super.onCollision(false);
+        for (GameObject touchedObject: touchedObjects) {
             if (touchedObject instanceof Projectile){ // we need that cause goToActivation will remove (this) projectile to the touched object contactlist.
-                touchedObject.addDamage(((Projectile) touchedObject).getReturnedDamage());
+                touchedObject.addDamage(0); // because they will get the return damage anyway;
             } else if (touchedObject != null){
                 touchedObject.addDamage(givenDamage);
             }
-            this.addDamage(returnedDamage);
         }
+        this.addDamage(returnedDamage);
+        Gdx.app.debug("Projectile", "Return Damage!");
         Gdx.app.debug("Projectile", "life after return damage: " + getLife());
+        return null;
     }
 
     @Override
@@ -79,7 +92,8 @@ public class Projectile extends GameObject implements Usable {
         // maybe take example on Lance
         body.setTransform(position, 0f);
         Gdx.app.debug("Projectile: ", "impulse * body.getMass() = " + body.getMass() * impulse.x + ", " + body.getMass() * impulse.y);
-        if (body.getType() == BodyDef.BodyType.DynamicBody)
+        body.setType(defaultBodyType);
+        if (defaultBodyType == BodyDef.BodyType.DynamicBody)
             body.applyLinearImpulse(body.getMass() * impulse.x, body.getMass() * impulse.y, body.getPosition().x, body.getPosition().y, true);
         else {
             body.setLinearVelocity(impulse.x, impulse.y);

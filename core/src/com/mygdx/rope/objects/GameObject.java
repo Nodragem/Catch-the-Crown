@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -20,12 +21,16 @@ import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
+import static com.mygdx.rope.util.Constants.DAMAGE_STATE.IMMUNE;
+import static com.mygdx.rope.util.Constants.DAMAGE_STATE.NOT_IMMUNE;
+
 public class GameObject implements Updatable {
     //public final static TextureAtlas atlas = new TextureAtlas("texture_obj.pack"); // all the game object has access to a class Atlas
     public final static TextureAtlas atlas = new TextureAtlas("texture_obj.atlas"); // all the game object has access to a class Atlas
     public boolean isKillable;
     public Integer ID = null;
     public Array<Float> color;
+    public Constants.DAMAGE_STATE damageState;
     public float currentImmunity;
     public float immunityReset;
     protected float givenDamage;
@@ -33,17 +38,16 @@ public class GameObject implements Updatable {
     protected float timeStepDamage;
     public GameScreenTournament gamescreen;
     public Body parentBody = null;
+    public Array <GameObject> children;
     public int myRenderID;
     public boolean isVisible;
     public Body body;
+    public BodyType defaultBodyType; // sometimes we need to change the bodyType temporarily, so we need to remember what's the default
     public ContactData mainBoxContact;
     protected int mainFixtureIndex;
 	public Animation current_animation;
-//    public Animation main_animation;
-//    public Animation onset_animation = null;
-//    public Animation offset_animation = null;
     protected ObjectMap<String, Animation> animations;
-    public Constants.VIEW_DIRECTION viewDirection;
+    private Constants.VIEW_DIRECTION viewDirection;
 	public Vector2 position;
 	public Vector2 rposition; // in polar coordinate
 	public Vector2 dimension;
@@ -55,7 +59,8 @@ public class GameObject implements Updatable {
     public float life;
     public Character Carrier = null;
     public Constants.ACTIVE_STATE activeState;
-    private Constants.ACTIVE_STATE previousActiveState = null;
+    public Constants.ACTIVE_STATE previousActiveState = null;
+    public Sound current_sound;
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 
@@ -63,12 +68,14 @@ public class GameObject implements Updatable {
                       float angle, String objectDataID, Filter filter){ // angle in radians
         gamescreen = game;
         color = new Array<Float>(new Float[]{1.0f,1.0f,1.0f,1.0f});
+        children = new Array<GameObject>(1);
         //stateTime = 0;
         life = 100;
         isKillable =  false;
         isVisible = true;
+        damageState = NOT_IMMUNE;
         currentImmunity = 0.0f;
-        immunityReset = 0.25f; // if an object has a negative immunityReset, he can't be injured
+        immunityReset = 0.5f; // if an object is in his immune period, he can't be injured
         bufferReceivedDamage = 0.0f;
         givenDamage = 0.0f;
         timeStepDamage = 0.0f;
@@ -104,7 +111,6 @@ public class GameObject implements Updatable {
             initFixture(objectDataID);
             initCollisionMask(objectDataID);
         }
-        // FIXME: why do we give a contact box only to objects that have several fixtures?
         if (this.body.getFixtureList().size >0) { // > mainFixtureIndex
             mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
         }
@@ -137,16 +143,17 @@ public class GameObject implements Updatable {
     }
 
     public void initFixture() {
-            PolygonShape p = new PolygonShape();
-            p.setAsBox(dimension.x / 2.0f, dimension.y / 2.0f, new Vector2(dimension.x / 2, dimension.y / 2), 0);
-            FixtureDef fd = new FixtureDef();
-            fd.shape = p;
-            fd.density = 50;
-            fd.restitution = 0.0f;
-            fd.friction = 0.5f;
-            //fd.isSensor = isSensor;
-            this.body.createFixture(fd);
-            p.dispose();
+        PolygonShape p = new PolygonShape();
+        p.setAsBox(dimension.x / 2.0f, dimension.y / 2.0f, new Vector2(dimension.x / 2, dimension.y / 2), 0);
+        FixtureDef fd = new FixtureDef();
+        fd.shape = p;
+        fd.density = 50;
+        fd.restitution = 0.0f;
+        fd.friction = 0.5f;
+        //fd.isSensor = isSensor;
+        this.body.createFixture(fd);
+        defaultBodyType = body.getType();
+        p.dispose();
     }
 
     public void initFixture(String objectDataID) {
@@ -185,6 +192,7 @@ public class GameObject implements Updatable {
         if (bodyTypeString != null){
             BodyType bodyType = BodyType.valueOf(bodyTypeString);
             body.setType(bodyType);
+            defaultBodyType = bodyType;
         }
         p.dispose();
     }
@@ -308,7 +316,6 @@ public class GameObject implements Updatable {
                 );
             }
             else { // create a place holder in case no texture is found:
-                // FIXME: we may want to change the place holder
                 Pixmap pixmap1 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
                 pixmap1.setColor(1, 0, 0, 1.0f);
                 pixmap1.fillRectangle(0, 0, 32, 32);
@@ -348,32 +355,36 @@ public class GameObject implements Updatable {
         stateTime += deltaTime;
         // we update the position even when the object is not activated
         if (parentBody == null || body.getType() == BodyType.DynamicBody) {
-            position.set(body.getPosition());
-            rotation = body.getAngle(); // * MathUtils.radiansToDegrees;
+            position.set(body.getPosition()).sub(origin); // the sub is particularly useful for the lances attached, because we changed their origin
+            rotation = body.getAngle();
         }
         else{
-            // rposition. x = angle; rposition.y = radius
             body.setTransform(
-                    parentBody.getPosition().x + rposition.y*MathUtils.cos(rposition.x + parentBody.getAngle() /* *MathUtils.degreesToRadians*/),
-                    parentBody.getPosition().y + rposition.y*MathUtils.sin(rposition.x + parentBody.getAngle() /* *MathUtils.degreesToRadians */),
-                    (parentBody.getAngle() + rrotation) //*MathUtils.degreesToRadians
+                    parentBody.getPosition().x + rposition.y*MathUtils.cos(rposition.x + parentBody.getAngle() ),
+                    parentBody.getPosition().y + rposition.y*MathUtils.sin(rposition.x + parentBody.getAngle() ),
+                    (parentBody.getAngle() + rrotation)
             );
-//            body.setTransform(parentBody.position.x,
-//                    parentBody.position.y,
-//                    absoluteAngle);
-            rotation = body.getAngle(); //* MathUtils.radiansToDegrees;
-            position.set(body.getPosition());
-            // FIXME: note that we are not doing an origin sub as in MovingPlatform, because we did not offset the object from the body
+            rotation = body.getAngle();
+            position.set(body.getPosition()).sub(origin);
+            // \--> the sub is particularly useful for the lances attached, because we changed their origin
             //this.isVisible = parentBody.isVisible;
         }
 
         switch (activeState){
             case ACTIVATED:
                 if(mainBoxContact.isTouched()){
-                    onCollision();
+                    onCollision(true);
                     //mainBoxContact.flush();
                 }
-                checkForDamage(deltaTime);
+                switch (damageState){
+                    case IMMUNE:
+                        currentImmunity -= 1.0 * deltaTime; // decrease of one per second;
+                        if (currentImmunity<0)
+                            goToImmuneState(NOT_IMMUNE);
+                        break;
+                    case NOT_IMMUNE:
+                        break;
+                }
                 break;
             case ACTIVATION:
                 if (previousActiveState != Constants.ACTIVE_STATE.ACTIVATION)
@@ -400,27 +411,31 @@ public class GameObject implements Updatable {
 
 	}
 
-    protected void onCollision() {
-        for(Fixture fixture: mainBoxContact.getTouchedFixtures()){
-            GameObject object = (GameObject) fixture.getBody().getUserData();
-            if (object != null){
-                object.addDamage(givenDamage);
+    public Array<GameObject> onCollision(boolean dealDamage) {
+        Array<GameObject> touchedObjects = new Array<GameObject>(1);
+        for(Fixture touchedFixture: mainBoxContact.getTouchedFixtures()){
+            GameObject touchedObject = (GameObject) touchedFixture.getBody().getUserData();
+            if (touchedObject != null){
+                if(!touchedObjects.contains(touchedObject, true)) { // if we touch two fixtures of the same object, we won't damage it twice
+                    touchedObject.addDamage(dealDamage?givenDamage:0);
+                    touchedObjects.add(touchedObject);
+                }
             }
         }
+        return touchedObjects;
     }
 
-    private void checkForDamage(float deltaTime) {
-        if (currentImmunity > 0)
-            currentImmunity -= 1.0 * deltaTime; // decrease of one per second;
-        if( isKillable && currentImmunity <= 0 && bufferReceivedDamage > 0) {
-            addToLife(-bufferReceivedDamage);
-            Gdx.app.debug("GameObect", "Received damage: "+bufferReceivedDamage);
-            bufferReceivedDamage = 0;
-            currentImmunity = immunityReset;
-         } else if (isKillable & currentImmunity > 0 & bufferReceivedDamage > 0){
-            Gdx.app.debug("GameObect", "Reset Damage from "+bufferReceivedDamage + " to zero");
-            bufferReceivedDamage = 0; // we don't want to accumulate the received damage during the immunity phase
+    private void goToImmuneState(Constants.DAMAGE_STATE state) {
+        damageState = state;
+        switch (state){
+            case IMMUNE:
+                currentImmunity = immunityReset;
+                break;
+            case NOT_IMMUNE:
+                currentImmunity = 0;
+                break;
         }
+
     }
 
     private void desactivationActions() { }
@@ -440,7 +455,7 @@ public class GameObject implements Updatable {
                     rotation*MathUtils.radiansToDegrees,
                     reg.getRegionX(), reg.getRegionY(),
                     reg.getRegionWidth(), reg.getRegionHeight(),
-                    viewDirection == Constants.VIEW_DIRECTION.LEFT, false);
+                    viewDirection == Constants.VIEW_DIRECTION.LEFT, viewDirection == Constants.VIEW_DIRECTION.DOWN);
             batch.setColor(1, 1, 1, 1);
         }
     }
@@ -482,7 +497,10 @@ public class GameObject implements Updatable {
     }
 
     public void addDamage(float damage){
-        bufferReceivedDamage += damage;
+        if(damageState == NOT_IMMUNE && isKillable && damage > 0) {
+            addToLife(-damage);
+            goToImmuneState(IMMUNE);
+        }
     }
 
     public void setLife(float life) {
@@ -516,47 +534,65 @@ public class GameObject implements Updatable {
 
     protected void setActivate(boolean b){
         activeState = (b? Constants.ACTIVE_STATE.ACTIVATED: Constants.ACTIVE_STATE.DESACTIVATED);
-        body.setActive(b); // FIXME
-        // |--> I think that this things make the projectile remove itself from what it touched
+        body.setActive(b);
         if(!b){ // if we desactivate, we need to flush
-            for (Fixture fixture : body.getFixtureList()) {
-                // FIXME note that we dont flush properly, we should remove the contact from the contacted fixtures
-                ContactData d = (ContactData) fixture.getUserData();
-                if (d != null)
-                    d.deepFlush();
+            for (Fixture myfixture : body.getFixtureList()) {
+                ContactData mydata = (ContactData) myfixture.getUserData();
+                if (mydata != null)
+                    mydata.deepFlush();
             }
         }
     }
 
     public void goToDesactivation(){
-            if (animations.get("Offset") != null){
-                // allows a delayed desactivation after playing a last animation
-                // (like an explosion)
-                activeState = Constants.ACTIVE_STATE.DESACTIVATION;
-            }
-            else {
-                setActivate(false);
-            }
+        if (animations.get("Offset") != null){
+            // allows a delayed desactivation after playing a last animation
+            // (like an explosion)
+            activeState = Constants.ACTIVE_STATE.DESACTIVATION;
+        }
+        else {
+            setActivate(false);
+        }
+        if(children.size>0){
+            for (GameObject child:children)
+                child.goToDesactivation();
+        }
     }
 
     public void goToActivation(){
-            if (animations.get("Onset") != null){
-                activeState = Constants.ACTIVE_STATE.ACTIVATION;
-            }
-            else {
-                setActivate(true);
-            }
+        if (animations.get("Onset") != null){
+            activeState = Constants.ACTIVE_STATE.ACTIVATION;
+        }
+        else {
+            setActivate(true);
+        }
+        if(children.size>0){
+            for (GameObject child:children)
+                child.goToActivation();
+        }
     }
 
     public void setParentBody(Body parentBody) {
         this.parentBody = parentBody;
-        rposition.set(MathUtils.atan2(position.y- parentBody.getPosition().y, position.x- parentBody.getPosition().x)- parentBody.getAngle(),
-                        position.dst(parentBody.getPosition())); // angle, radius
-        rrotation = rotation - parentBody.getAngle();
+        if(parentBody != null) {
+            GameObject parentObject = (GameObject) parentBody.getUserData();
+            if(parentObject != null){
+                parentObject.addChild(this);
+            }
+            rposition.set(
+                    MathUtils.atan2(body.getPosition().y - parentBody.getPosition().y,
+                                    body.getPosition().x - parentBody.getPosition().x) - parentBody.getAngle(),
+                    position.dst(parentBody.getPosition())); // angle, radius
+            rrotation = rotation - parentBody.getAngle();
+        }
     }
 
     public Body getParentBody() {
         return parentBody;
+    }
+
+    public void addChild(GameObject gameObject){
+        children.add(gameObject);
     }
 
     public void setID(Integer ID) {
@@ -565,5 +601,13 @@ public class GameObject implements Updatable {
 
     public Integer getID() {
         return ID;
+    }
+
+    public void setViewDirection(Constants.VIEW_DIRECTION viewDirection) {
+        this.viewDirection = viewDirection;
+    }
+
+    public Constants.VIEW_DIRECTION getViewDirection() {
+        return viewDirection;
     }
 }

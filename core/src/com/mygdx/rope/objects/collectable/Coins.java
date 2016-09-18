@@ -155,23 +155,27 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     public boolean update(float deltaTime){
-        // FIXME:: this loop is running even when the coins are deactivated
-        // that is confusing and not optimal
-        characterWithCrown = linkedCrown.getCarrier(); // FIXME:: not needed
-        if ( characterWithCrown!= null) {
-            for (int i = 0; i < respawnTimeCollectables.size; i++) {
-                if (respawnTimeCollectables.get(i) > 0 ) {
-                    ContactData data = (ContactData) body.getFixtureList().get(i).getUserData();
-                    if (data.isTouchedBy(characterWithCrown.getBody().getFixtureList().get(0))) {
-                        respawnTimeCollectables.set(i, coinsRespawnTime);
-                        distributeGold(valueCollectables.get(i));
+        switch (activeState) {
+            case ACTIVATED:
+                characterWithCrown = linkedCrown.getCarrier();
+                if (characterWithCrown != null) {
+                    for (int i = 0; i < respawnTimeCollectables.size; i++) {
+                        if (respawnTimeCollectables.get(i) > 0) {
+                            ContactData data = (ContactData) body.getFixtureList().get(i).getUserData();
+                            if (data.isTouchedBy(characterWithCrown.getBody().getFixtureList().get(0))) {
+                                respawnTimeCollectables.set(i, coinsRespawnTime);
+                                distributeGold(valueCollectables.get(i));
+                            }
+                        } else {
+                            respawnTimeCollectables.set(i, respawnTimeCollectables.get(i) + 1.0f * deltaTime);
+                        }
                     }
                 }
-                else {
-                    respawnTimeCollectables.set(i, respawnTimeCollectables.get(i)+1.0f*deltaTime);
-                }
-            }
+                break;
+            case DESACTIVATED:
+                break;
         }
+
         stateTime += deltaTime;
         return false;
 
@@ -200,7 +204,7 @@ public class Coins extends GameObject implements Triggerable {
                             rotation,
                             reg.getRegionX(), reg.getRegionY(),
                             reg.getRegionWidth(), reg.getRegionHeight(),
-                            viewDirection == Constants.VIEW_DIRECTION.LEFT, false);
+                            getViewDirection() == Constants.VIEW_DIRECTION.LEFT, false);
                     //batch.setColor(1, 1, 1, 1);
                 }
             }

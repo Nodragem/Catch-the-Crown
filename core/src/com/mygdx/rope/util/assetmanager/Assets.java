@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.JsonValue.JsonIterator;
 
 
 public class Assets implements Disposable, AssetErrorListener {
-
+	// FIXME: WE USE THAT ONLY FOR SOUNDS, maybe instead, gameobject should have references to sounds
 	private static final String TAG = "Assets";
 	private AssetManager manager;
 	private ObjectMap<String, Array<Asset>> groups;
