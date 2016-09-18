@@ -277,6 +277,12 @@ Règle de partie perdue (recommence leniveau) :
 
 ##  Up to 13/09/2016
 
+- [x] add fireball explosion sound
+- [x] change immunity system and make it simpler so that it is easier to play a sound when injured
+- [x] add a registration for kills
+  > that is the change in the damage system that allows it.
+  > we have a chain that goes from projectiles to launchers to character to player
+
 - [x] add conversion to 16-bit in createSoundsGroup.py, using sox (SOund eXchange)
   > indeed LibGDX was not happy with 8-bit format...
 

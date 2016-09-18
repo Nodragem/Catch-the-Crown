@@ -438,10 +438,6 @@ public class GameObject implements Updatable {
 
     }
 
-    private void desactivationActions() { }
-
-    private void activationActions() { }
-
     public void render(SpriteBatch batch) {
         if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             TextureRegion reg = null;
@@ -465,10 +461,7 @@ public class GameObject implements Updatable {
     }
 
     protected boolean checkIfToDestroy() {
-        if (life < 0){
-            return true; //true im dead
-        }
-        return false;
+        return life < 0;
     }
 
     public void setPosition(float x, float y) {
@@ -515,12 +508,12 @@ public class GameObject implements Updatable {
         return gamescreen;
     }
 
-    public boolean setCarrier(Character player) { // maybe this part should be in player and not here
-        if(player == null)
+    public boolean setCarrier(Character character) { // maybe this part should be in player and not here
+        if(character == null)
             body.setType(BodyType.DynamicBody);
         else
             body.setType(BodyType.KinematicBody);
-        this.Carrier = player;
+        this.Carrier = character;
         return true; //suceessfull
     }
 

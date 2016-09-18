@@ -1,0 +1,37 @@
+graph LR
+start((Start))
+throwLance((throw Lance))
+
+readInput[read Input]
+resetCharge[Charge = initValue]
+goToAimingState[AimingState]
+goToChargingState[ChargingState]
+increaseCharge[Charge++]
+
+cond1{isPressed?}
+cond2{isTouched?}
+cond3{Charge > minValue?}
+cond4{Charge < maxValue?}
+cond5{Charge == initValue?}
+cond6{Aiming?}
+
+start --> readInput
+readInput --> cond1
+cond1 --> |yes| cond3
+cond1 --> |no| cond5
+cond5 -- no --> cond4
+cond5 -- yes --> goToChargingState
+goToChargingState --> readInput
+cond4 --> |yes| increaseCharge
+increaseCharge-->readInput
+cond4 --> |no| readInput
+cond6 --> |no| readInput
+cond6 --> |yes| goToAimingState
+goToAimingState-->readInput
+cond3 --> |no| cond2
+cond3 --> |yes| cond6
+cond2 --> |yes| resetCharge
+resetCharge-->readInput
+cond2 --> |no| throwLance
+throwLance-->resetCharge
+resetCharge-->readInput
