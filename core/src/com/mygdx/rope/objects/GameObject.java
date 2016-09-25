@@ -24,7 +24,7 @@ import com.mygdx.rope.util.ContactData;
 import static com.mygdx.rope.util.Constants.DAMAGE_STATE.IMMUNE;
 import static com.mygdx.rope.util.Constants.DAMAGE_STATE.NOT_IMMUNE;
 
-public class GameObject implements Updatable {
+public class GameObject implements Updatable, Renderable {
     //public final static TextureAtlas atlas = new TextureAtlas("texture_obj.pack"); // all the game object has access to a class Atlas
     public final static TextureAtlas atlas = new TextureAtlas("texture_obj.atlas"); // all the game object has access to a class Atlas
     public boolean isKillable;
@@ -57,7 +57,7 @@ public class GameObject implements Updatable {
     private float rrotation;
 	public float stateTime;
     public float life;
-    public Character Carrier = null;
+//    public Character Carrier = null;
     public Constants.ACTIVE_STATE activeState;
     public Constants.ACTIVE_STATE previousActiveState = null;
     public Sound current_sound;
@@ -460,7 +460,7 @@ public class GameObject implements Updatable {
         color.set(0,r); color.set(1,g); color.set(2,b); color.set(2,a);
     }
 
-    protected boolean checkIfToDestroy() {
+    public boolean checkIfToDestroy() {
         return life < 0;
     }
 
@@ -508,18 +508,18 @@ public class GameObject implements Updatable {
         return gamescreen;
     }
 
-    public boolean setCarrier(Character character) { // maybe this part should be in player and not here
-        if(character == null)
-            body.setType(BodyType.DynamicBody);
-        else
-            body.setType(BodyType.KinematicBody);
-        this.Carrier = character;
-        return true; //suceessfull
-    }
+//    public boolean setCarrier(Character character) { // maybe this part should be in player and not here
+//        if(character == null)
+//            body.setType(BodyType.DynamicBody);
+//        else
+//            body.setType(BodyType.KinematicBody);
+//        this.Carrier = character;
+//        return true; //suceessfull
+//    }
 
-    public Character getCarrier() {
-        return Carrier;
-    }
+//    public Character getCarrier() {
+//        return Carrier;
+//    }
 
     public Body getBody() {
         return body;

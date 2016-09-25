@@ -42,7 +42,7 @@ import java.lang.String;
 import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
-	private static final boolean DEBUG_BOX2D = false;
+	private static final boolean DEBUG_BOX2D = true;
     private final RopeGame game;
     private TiledMap map;
     private ArrayMap <String, Player> playersList;
@@ -55,7 +55,7 @@ public class GameScreenTournament implements Screen {
     private ContactData bufferContactData;
     public Assets assetManager;
     public Viewport gameViewport;
-    public Array <GameObject> objectsToRender;
+    public Array <Renderable> objectsToRender;
     public Array <Updatable> objectsToUpdate;
     private Array<Updatable> objectsToWipeOut;
     public Array <Controller> XboxControllers;
@@ -123,7 +123,7 @@ public class GameScreenTournament implements Screen {
 
         GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
         timer = Constants.STARTTIMER;
-        objectsToRender = new Array<GameObject>();
+        objectsToRender = new Array<Renderable>();
         objectsToUpdate = new Array<Updatable>();
         objectsToWipeOut = new Array<Updatable>();
         playerSpawners = new Array<Vector2>();
@@ -265,7 +265,7 @@ public class GameScreenTournament implements Screen {
         map_renderer.setView(camera); // this do the same as batch.setProjectionMatrix
         map_renderer.render(backgroundLayers);
         batch.begin();
-        for (GameObject obj : objectsToRender) {
+        for (Renderable obj : objectsToRender) {
                 obj.render(batch);
         }
         batch.end();
@@ -319,6 +319,8 @@ public class GameScreenTournament implements Screen {
             }
             else {
                 objectsToUpdate.removeValue(updatable, true);
+                if (updatable instanceof Renderable)
+                    objectsToRender.removeValue((Renderable) updatable, true);
             }
         }
         objectsToWipeOut.clear();
@@ -453,7 +455,7 @@ public class GameScreenTournament implements Screen {
         return b2world;
     }
 
-    public Array<GameObject> getObjectsToRender() {
+    public Array<Renderable> getObjectsToRender() {
         return objectsToRender;
     }
 

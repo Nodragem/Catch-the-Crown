@@ -195,7 +195,7 @@ public class GUILayer {
             batch.setColor(0f, 1f, 1f, 1f);
         else
             batch.setColor(1f, 0.5f, 0.5f, 1f);
-        if ((xSizePlayerBox-130)*progress_ratio > 40)
+        if ((xSizePlayerBox-130)*progress_ratio > 40) // what?
             progressBarFull.draw(batch, middlePanelPosX + 105, 15, (xSizePlayerBox - 130) * progress_ratio, 30);
         batch.setColor(1, 1, 1, 1);
         progressBarEmpty.draw(batch, middlePanelPosX+105, 15, xSizePlayerBox-130, 30);

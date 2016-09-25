@@ -15,7 +15,8 @@ public class Constants {
     public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
     public static enum MENU_STATE {MAIN_MENU, STORY_MENU, TOURNAMENT_MENU, OPTION_MENU, CONTROL_MENU, QUIT_REQUEST}
     public static enum GUI_STATE {DISPLAY_GUI, DISPLAY_END, previousGUIState, DISPLAY_PAUSE}
-    public static final int MOVESTOFREE = 4;
+    public static final int MOVESTOFREE = 2;
+    public static final int MOVESTOTHROW = 4;
     public static final int MAXMARKS = 5;
     public static final float BONUSCROWN = 0;
     public static final float GOLDENDLEVEL = 3500;//500000;
@@ -38,9 +39,9 @@ public class Constants {
     public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
     public static enum DAMAGE_STATE { IMMUNE,  NOT_IMMUNE}
-    public static enum JUMP_STATE {IDLE, GROUNDED, FALLING, RISING}
-    public static enum MOVE_STATE {PICKINGUP, PICKUPCHALLENGED, PICKUPCHALLENGER, THROWED, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.
-    public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, CARRYING, AIMING, CHARGING, CHARGE_READY}
+    public static enum MOVE_STATE {IDLE, GROUNDED, FALLING, RISING, PANICKING, THROWED}
+    public static enum PICKUP_STATE {PICKINGUP, CHALLENGED, CHALLENGER, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.
+    public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, CARRYING, AIMING, CHARGING, CHARGE_READY, THROWING}
     public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}
     public static enum COLLIDER_TYPE {STICKY, SENSOR, HURTABLE, ONEWAY, CROWN}
     public static enum TRIGGERABLE_TYPE {SPIKES, LAUNCHER, MOVING_PLATFORM}

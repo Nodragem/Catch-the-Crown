@@ -226,7 +226,7 @@ public class Lance extends GameObject {
 
     }
 
-    protected boolean checkIfToDestroy() {
+    public boolean checkIfToDestroy() {
         if (life < 0)
             goToDesactivation();
         return false;

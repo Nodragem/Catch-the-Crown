@@ -1,11 +1,13 @@
 package com.mygdx.rope.objects.collectable;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.rope.objects.Carriable;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.screens.GameScreenTournament;
@@ -15,11 +17,12 @@ import com.mygdx.rope.util.ContactData;
 /**
  * Created by Nodragem on 20/05/2014.
  */
-public class Crown extends GameObject {
+public class Crown extends GameObject implements Carriable {
     public Array <Coins> linkedGroupCoins;
     private boolean neverTaken = true;
 //    private Character carrier;
     private float crownGoldValue;
+    private Character Carrier;
     // a part of the gold goes in the crown pocket, the other part in the player pocket
     // the crown holder score is: crown gold pocket + its own gold.
 
@@ -64,29 +67,37 @@ public class Crown extends GameObject {
     }
 
     @Override
-    public boolean setCarrier(Character character) {
-        if (character == null){
+    public void setCarrier(Character carrier) {
+        // FIXME we can probably factorise setCarrier and getCarried
+        if (carrier == null){
             this.body.setType(BodyDef.BodyType.DynamicBody);
             this.Carrier.getPlayer().addScore(-crownGoldValue);
             this.Carrier = null;
-            return true;
+            carrier.setCrownBody(body);
+            Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
+            stealCrown.play();
         }
         else if (this.Carrier == null) {
             if (neverTaken) {
-                character.getPlayer().addScore(Constants.BONUSCROWN);
+                carrier.getPlayer().addScore(Constants.BONUSCROWN);
                 for (Coins coins : linkedGroupCoins) {
                     coins.allowActivation(true);
                 }
                 neverTaken = false;
             }
-            this.Carrier = character;
+            this.Carrier = carrier;
             this.Carrier.getPlayer().addScore(crownGoldValue);
             this.body.setType(BodyDef.BodyType.KinematicBody);
-            return true;
+            carrier.setCrownBody(body);
+            Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
+            stealCrown.play();
         }
-        else {
-            return false;
-        }
+
+    }
+
+    @Override
+    public Character getCarrier() {
+        return Carrier;
     }
 
     @Override

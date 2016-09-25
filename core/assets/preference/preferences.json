@@ -4,14 +4,14 @@
 	"players": [
 		{
           "name": "Geoffrey",
-          "color": "green",
+          "color": "purple",
           "input": "controller",
           "id_input": 1
 		},
       {
           "name": "Kacper",
-          "color": "yellow",
-          "input": "keyboard",
+          "color": "green",
+          "input": "controller",
           "id_input": 2
       },
       {

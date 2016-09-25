@@ -104,7 +104,7 @@ public class Projectile extends GameObject implements Usable {
         return returnedDamage;
     }
 
-    protected boolean checkIfToDestroy() {
+    public boolean checkIfToDestroy() {
         // FIXME: we should just rely on DEACTIVATED (some object would be permanent and would not be destroyed when DEACTIVATED)
         if (life < 0 && activeState != Constants.ACTIVE_STATE.DESACTIVATED)
             goToDesactivation();

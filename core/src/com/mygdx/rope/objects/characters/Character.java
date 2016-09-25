@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.rope.objects.Carriable;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.collectable.Crown;
 import com.mygdx.rope.objects.weapon.AttackManager;
@@ -19,18 +20,18 @@ import static com.mygdx.rope.util.Constants.*;
 import static com.mygdx.rope.util.Constants.AWAKE_STATE.AWAKE;
 import static com.mygdx.rope.util.Constants.AWAKE_STATE.DEAD;
 
-public class Character extends GameObject {
+public class Character extends GameObject implements  Carriable {
     private float timeToSleep;
     private float timerToAwakeState; // a player can be Knock out and lose control of his character
     private float respawnTime;
     public int marks;
     public Player player;
     public AttackManager weapon;
-    public JUMP_STATE previousJumpState;
-    public JUMP_STATE jumpState;
+    public MOVE_STATE previousMoveState;
     public MOVE_STATE moveState;
+    public PICKUP_STATE pickupState;
     public AWAKE_STATE awakeState;
-    private Body carriedObject;
+    private Carriable carriedObject;
     private Body crownBody;
     public Body lastGroundedBody;
     public Fixture myFeet;
@@ -41,10 +42,13 @@ public class Character extends GameObject {
     public String name;
     public String color_texture;
     private Texture MarkTexture;
+    private actionProgressBar progressBar;
+    private Character Carrier;
 
     public Character(GameScreenTournament game, Vector2 position, String objectDataID, String color_texture){
         super(game, position, new Vector2(1, 0.9f), 0, "No Init");
         this.color_texture = color_texture;
+        progressBar = new actionProgressBar(game, this);
         initAnimation(objectDataID, color_texture);
         // FIXME: the initFixture should be data-driven
         initFixture();
@@ -52,13 +56,14 @@ public class Character extends GameObject {
         initCollisionMask();
         respawnTime = -1;
         marks = 0;
+        Carrier = null;
         player = null;
         lastGroundedBody = null;
         isKillable = true;
-        moveState = MOVE_STATE.NORMAL;
-        goToConciousState(AWAKE, 0);
-        setJumpState(JUMP_STATE.FALLING);
-        previousJumpState = JUMP_STATE.FALLING;
+        goToPickingUpState(PICKUP_STATE.NORMAL);
+        goToConsciousState(AWAKE, 0);
+        setMoveState(MOVE_STATE.FALLING);
+        previousMoveState = MOVE_STATE.FALLING;
         carriedObject = null;
         crownBody = null;
         timerToAwakeState = 0;
@@ -88,12 +93,12 @@ public class Character extends GameObject {
         this.myFeet.setFilterData(filter);
     }
 
-    public void setJumpState(JUMP_STATE jumpState) {
-        if(this.jumpState != jumpState) {
-            this.previousJumpState = this.jumpState;
-            this.jumpState = jumpState;
-            Gdx.app.debug("Character", "jumpState from "+ previousJumpState + " to " + jumpState);
-            switch (jumpState){
+    public void setMoveState(MOVE_STATE moveState) {
+        if(this.moveState != moveState) {
+            this.previousMoveState = this.moveState;
+            this.moveState = moveState;
+            Gdx.app.debug("Character", "moveState from "+ previousMoveState + " to " + moveState);
+            switch (moveState){
                 case RISING:
                     setAnimation("Rising");
                     myBodyFixture.setFriction(0);
@@ -109,6 +114,13 @@ public class Character extends GameObject {
                 case IDLE:
                     setAnimation("Standing");
                     myBodyFixture.setFriction(1.0f);
+                    break;
+                case THROWED:
+//                    setAnimation("Stunned");
+                    myBodyFixture.setFriction(0.0f);
+                    break;
+                case PANICKING:
+                    setAnimation("PickedUp");
                     break;
             }
         }
@@ -203,21 +215,14 @@ public class Character extends GameObject {
         currentHand = this.getViewDirection() == VIEW_DIRECTION.LEFT ? myLeftHand:myRightHand; // use by the renderer directly
         // Animation updater: (could be an outside component)
         updateTheStateMachine(deltaTime);
-        // Damage from collision management: (might part of the GameObject themself), or should be a component...
-        if(mainBoxContact.isTouched()){
-            //Gdx.app.debug("Player", "impulse of "+ mainBoxContact.getLastImpulse());
-            if(mainBoxContact.getLastImpulse() > 110.0 && moveState == MOVE_STATE.THROWED){ // threshold before to get injured
-                addToLife(-101);  // the injure could be proportionnal to the chock, don't care about invincibility frame
-                //goToSleepFor(1.0f);  // knock out from the collision should be optionnal
-                Gdx.app.debug("Player", "impulse of "+ mainBoxContact.getLastImpulse());
-            }
-        }
+
         // roughly that part look like updating Child objects, but we dont have a Child system :P so we are managing specifically a carried body and a crown.
         // Note that the child system would be useful also to attached a weapon to the player and to throw bullets from this weapon...
-        if (carriedObject != null){
-            carriedObject.setTransform(this.position.x + 0.5f * ((this.getViewDirection() == VIEW_DIRECTION.LEFT)?-1:1),
-                    this.position.y + 0.5f, 0);
+        if (pickupState == PICKUP_STATE.CHALLENGED){
+            setTransform(Carrier.position.x + 0.0f * ((Carrier.getViewDirection() == VIEW_DIRECTION.LEFT)?-1:1),
+                    Carrier.position.y + 0.55f, 0);
         }
+
         if (crownBody != null){
             crownBody.setTransform(this.position.x,
                     this.position.y + this.dimension.y, 0);
@@ -241,52 +246,52 @@ public class Character extends GameObject {
     }
 
     private void updateTheStateMachine(float deltaTime) {
-        ContactData sensorData = (ContactData) myFeet.getUserData();
-        if (sensorData.isTouched()){
-            lastGroundedBody = sensorData.getTouchedFixtures().peek().getBody(); // returns the last item, but do not remove it
-            //Gdx.app.debug("Player", "Platform idling on: "+ lastGroundedBody);
-            if(moveState == MOVE_STATE.THROWED)
-                moveState = MOVE_STATE.NORMAL;
-            if (Math.abs(this.body.getLinearVelocity().x - lastGroundedBody.getLinearVelocity().x)< 0.001)
-                // FIXME: \--> I think we could do something more intuitive, as NOT_MOVING
-                // FIXME: \--> I think we could do something more intuitive for JumpState, IDLE is a movestate no?
-                setJumpState(JUMP_STATE.IDLE);
-            else
-                setJumpState(JUMP_STATE.GROUNDED);
-        }
-        else if(awakeState != DEAD){ // the sensor are inactive when the character is dead, so this state is to avoid
-            if (this.body.getLinearVelocity().y > 0.1 && jumpState != JUMP_STATE.FALLING) // make sure we go to fall when we reset the speed
-                setJumpState(JUMP_STATE.RISING);
-            else
-                setJumpState(JUMP_STATE.FALLING);
-        }
-        gamescreen.addDebugText("\n " + getPlayer().getName() + " JUMP_STATE: " + jumpState);
-
-
+        gamescreen.addDebugText("\n " + getPlayer().getName() + " MOVE_STATE: " + moveState);
         switch (activeState) {
             case ACTIVATED:
                 switch (awakeState) {
                     case AWAKE:
                         if (getLife() < 0) {
-                            goToConciousState(DEAD, 0);
+                            goToConsciousState(DEAD, 0);
                             break;
+                        }
+                        if(moveState!=MOVE_STATE.PANICKING) {
+                            ContactData feetSensor = (ContactData) myFeet.getUserData();
+                            if (feetSensor.isTouched()) {
+                                lastGroundedBody = feetSensor.getTouchedFixtures().peek().getBody(); // returns the last item, but do not remove it
+                                //Gdx.app.debug("Player", "Platform idling on: "+ lastGroundedBody);
+                                if (moveState == MOVE_STATE.THROWED) {
+                                    addToLife(-101);
+                                }
+                                if (Math.abs(this.body.getLinearVelocity().x - lastGroundedBody.getLinearVelocity().x) < 0.001)
+                                    // FIXME: \--> I think we could do something more intuitive, as NOT_MOVING
+                                    // FIXME: \--> I think we could do something more intuitive for JumpState, IDLE is a movestate no?
+                                    setMoveState(MOVE_STATE.IDLE);
+                                else
+                                    setMoveState(MOVE_STATE.GROUNDED);
+                            } else if (moveState != MOVE_STATE.THROWED) { // the sensor are inactive when the character is dead, so this state is to avoid
+                                if (this.body.getLinearVelocity().y > 0.1 && moveState != MOVE_STATE.FALLING) // make sure we go to fall when we reset the speed
+                                    setMoveState(MOVE_STATE.RISING);
+                                else
+                                    setMoveState(MOVE_STATE.FALLING);
+                            }
                         }
 
                         break;
                     case SLEEPING:
                         if (getLife() < 0) {
-                            goToConciousState(DEAD, 0);
+                            goToConsciousState(DEAD, 0);
                             break;
                         }
                         timerToAwakeState += deltaTime;
                         if (timerToAwakeState > timeToSleep) {
-                            goToConciousState(AWAKE, 0);
+                            goToConsciousState(AWAKE, 0);
                         }
                         break;
                     case DEAD:
                         timerToAwakeState += deltaTime;
                         if (timerToAwakeState > respawnTime) {
-//                            goToConciousState(AWAKE, 0);
+//                            goToConsciousState(AWAKE, 0);
                             goToDesactivation();
                         }
                         break;
@@ -294,7 +299,7 @@ public class Character extends GameObject {
                 break;
             case DESACTIVATED:
                 goToActivation();
-                goToConciousState(AWAKE, 0);
+                goToConsciousState(AWAKE, 0);
                 break;
 
         }
@@ -308,77 +313,44 @@ public class Character extends GameObject {
 
     public boolean hasTheCrown() {return this.crownBody != null;}
 
-    public void setCarriedBody(Body b){
-        if (b == null){
-            GameObject g = (GameObject) carriedObject.getUserData();
-            g.setCarrier(null);
-            carriedObject = null;
-            moveState = MOVE_STATE.NORMAL;
-//            ContactData d = (ContactData) myLeftHand.getUserData();
-//            d.deepFlush();
-//            d = (ContactData) myRightHand.getUserData();
-//            d.deepFlush();
-            return;
+    public void pickUpObject(Carriable pickedObject){
+        if (pickedObject == null){
+            // note that setCarrier(null) will also remove the carriedObject
+            // from this character (i.e., this.carriedObject = null)
+            carriedObject.setCarrier(null);
+            goToPickingUpState(PICKUP_STATE.NORMAL);
         }
-        GameObject newItem = (GameObject) b.getUserData();
-        if (carriedObject != null && !newItem.getClass().equals(Crown.class)){ // if you already have an object in hand, you throw the current one and get the new one
-            useCarriedBody(45.0f, 50.0f);
-            //b.setType(BodyDef.BodyType.KinematicBody);
+        else{
+            pickedObject.setCarrier(this);
         }
-        if (newItem.getClass().equals(Character.class)){
-            Character p = (Character) newItem;
-            if(p.awakeState!=AWAKE_STATE.DEAD) {
-                p.moveState = MOVE_STATE.PICKUPCHALLENGED;
-                moveState = MOVE_STATE.PICKUPCHALLENGER;
-            }
-            else{
-                moveState = MOVE_STATE.PICKINGUP;
-                p.moveState = MOVE_STATE.NORMAL;
-            }
-            ContactData dd = (ContactData) p.myFeet.getUserData();
-            dd.deepFlush(); // to deepFlush
-            carriedObject = b;
-            p.setCarrier(this);
-
-
-        }
-        else if (newItem.getClass().equals(Crown.class)){
-            Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
-            stealCrown.play();
-            if (newItem.setCarrier(this)) // weird way to express it, the boolean if unnecessary
-                crownBody = b;
-        }
-
-        // we will do: else if ((newItem.getClass().equals(Item.class)
-//        else {
-//            carriedObject = b;
-//            newItem.setCarrier(this);
-//            moveState = MOVE_STATE.PICKINGUP;
-//        }
 
     }
 
-    public void useCarriedBody(float angle, float force){
+
+
+    private void startProgressBar(int maxProgress, int increment, String button, float y_offset) {
+        progressBar.startProgressBar(maxProgress, increment, button, y_offset);
+    }
+
+    public void throwObject(float angle, float force){
+        weapon.goToAttackState(ATTACK_STATE.THROWING);
         if (carriedObject != null) {
-            GameObject gobj = (GameObject) carriedObject.getUserData();
-            gobj.setCarrier(null);
-
-            if (gobj.getClass().equals(Character.class)) {
-                Character p = (Character) gobj;
-                p.moveState = MOVE_STATE.THROWED;
+            if (carriedObject.getClass().equals(Character.class)) {
+                Character p = (Character) carriedObject;
+                p.setMoveState(MOVE_STATE.THROWED);
+                p.goToPickingUpState(PICKUP_STATE.NORMAL);
             }
-            carriedObject.applyLinearImpulse(MathUtils.cos(angle) * force,
-                    MathUtils.sin(angle) * force, 0.5f, 0.5f, true);
-            carriedObject = null;
-        }
-        moveState = MOVE_STATE.NORMAL;
-        //ContactData d = (ContactData) myLeftHand.getUserData();
-        //d.flush();
-        //d = (ContactData) myRightHand.getUserData();
-        //d.flush();
-//        d = (ContactData) currentHand.getUserData();
-//        d.flush();
+            carriedObject.getBody().setType(BodyDef.BodyType.DynamicBody);
+//            carriedObject.getBody().applyLinearImpulse(MathUtils.cos(angle) * force,
+//                    MathUtils.sin(angle) * force, 0.5f, 0.5f, true);
+            carriedObject.getBody().applyForceToCenter(new Vector2(MathUtils.cos(angle),
+                    MathUtils.sin(angle)).scl(force * 10000), true);
+//           Again note that we don't need to add carriedObject = null,
+//           because the carriedObject.setCarrier(null) will do it.
+            carriedObject.setCarrier(null);
 
+        }
+        goToPickingUpState(PICKUP_STATE.NORMAL);
     }
 
     public void dropTheCrown(float angle){
@@ -386,7 +358,7 @@ public class Character extends GameObject {
             crownBody.setType(BodyDef.BodyType.DynamicBody);
             crownBody.applyForceToCenter(new Vector2(MathUtils.cos(angle),
                     MathUtils.sin(angle)).scl(20 * 1000), true);
-            GameObject crownObject = (GameObject) crownBody.getUserData();
+            Crown crownObject = (Crown) crownBody.getUserData();
             crownObject.setCarrier(null);
             crownBody = null;
         }
@@ -394,7 +366,7 @@ public class Character extends GameObject {
     }
 
     @Override
-    protected boolean checkIfToDestroy() {
+    public boolean checkIfToDestroy() {
         return false;
     }
 
@@ -418,7 +390,7 @@ public class Character extends GameObject {
         }
         GameObject o = this.getCarrier();
         if(o != null)
-            this.getCarrier().setCarriedBody(null);
+            this.getCarrier().pickUpObject(null);
         mainBoxContact.deepFlush();
         this.setPosition(gamescreen.getSpawnPosition());
         life = 100.0f;
@@ -426,7 +398,7 @@ public class Character extends GameObject {
         body.setTransform(body.getPosition(), 0);
     }
 
-    public void goToConciousState(AWAKE_STATE state, float time) {
+    public void goToConsciousState(AWAKE_STATE state, float time) {
         switch (state){
             case AWAKE:
                 timerToAwakeState = 0;
@@ -460,6 +432,8 @@ public class Character extends GameObject {
 
     }
 
+
+
     @Override
     public float getLife() {
             return life;
@@ -473,7 +447,7 @@ public class Character extends GameObject {
     }
 
     public void dropObjects() {
-        useCarriedBody(45.0f, 50.0f);
+        throwObject(45.0f, 50.0f);
         dropTheCrown(-45.0f);
         // may drop some money
 
@@ -529,5 +503,77 @@ public class Character extends GameObject {
             hurtSound.play(1f);
         }
 
+    }
+
+
+
+    public actionProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    @Override
+    public void setCarrier(Character newCarrier) {
+        // the newCarrier use its object to take the new one
+        if (newCarrier == null){
+            if(this.Carrier !=null) {
+                this.Carrier.carriedObject = null;
+                ContactData dd = (ContactData) this.Carrier.currentHand.getUserData();
+                dd.deepFlush();
+                this.Carrier = null;
+            }
+            body.setType(BodyDef.BodyType.DynamicBody);
+            //FIXME: we should not make it Dynamic before to throw it ... (see throwObject()) !!!!
+        }
+        else {
+            if (newCarrier.carriedObject != null)
+                newCarrier.throwObject(45.0f, 50.0f);
+            this.Carrier = newCarrier;
+            newCarrier.carriedObject = this;
+            body.setType(BodyDef.BodyType.KinematicBody);
+            if (this.awakeState != AWAKE_STATE.DEAD & this.pickupState !=PICKUP_STATE.CHALLENGER) {
+                this.goToPickingUpState(PICKUP_STATE.CHALLENGED);
+                this.startProgressBar(Constants.MOVESTOFREE, 1, "A", 1);
+                newCarrier.goToPickingUpState(PICKUP_STATE.CHALLENGER);
+                newCarrier.startProgressBar(Constants.MOVESTOTHROW, 1, "Y", -1);
+            } else {
+                // if the player is dead we don't challenge it.
+                newCarrier.goToPickingUpState(PICKUP_STATE.PICKINGUP);
+                this.goToPickingUpState(PICKUP_STATE.NORMAL);
+            }
+            ContactData dd = (ContactData) this.myFeet.getUserData();
+            dd.deepFlush(); // to deepFlush
+        }
+    }
+
+    public void goToPickingUpState(Constants.PICKUP_STATE state) {
+        switch (state){
+            case CHALLENGED:
+                setMoveState(MOVE_STATE.PANICKING);
+                break;
+            case CHALLENGER:
+                weapon.goToAttackState(ATTACK_STATE.CARRYING);
+                break;
+            case PICKINGUP:
+                weapon.goToAttackState(ATTACK_STATE.CARRYING);
+                break;
+            case NORMAL:
+                break;
+
+        }
+        this.pickupState = state;
+
+    }
+
+    @Override
+    public Character getCarrier() {
+        return Carrier;
+    }
+
+    public Carriable getCarriedObject() {
+        return carriedObject;
+    }
+
+    public void setCrownBody(Body crownBody) {
+        this.crownBody = crownBody;
     }
 }

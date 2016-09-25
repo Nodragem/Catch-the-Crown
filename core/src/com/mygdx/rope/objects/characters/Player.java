@@ -8,13 +8,13 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.mygdx.rope.objects.Carriable;
 import com.mygdx.rope.objects.ControlProcessor;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Updatable;
 import com.mygdx.rope.objects.weapon.AttackManager;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.screens.Window;
-import com.mygdx.rope.util.Constants.JUMP_STATE;
 import com.mygdx.rope.util.Constants.MOVE_STATE;
 import com.mygdx.rope.util.Constants.AWAKE_STATE;
 import com.mygdx.rope.util.Constants.VIEW_DIRECTION;
@@ -163,24 +163,28 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     private void processActionInput(boolean isPressed) {
-        if(character.moveState == MOVE_STATE.PICKUPCHALLENGER){
+        if(character.pickupState == Constants.PICKUP_STATE.CHALLENGER){
             processChallenge(isPressed);
             return;
         }
         if(isPressed && !pickUpButtonPressed) { // basically, here you want a push request and not to pull.
             pickUpButtonPressed = true;
-            //if (!character.hasCarriedObject()) { // is that not equivalent to "is  not MOVE_STATE.PICKINGUP" ?
-            if (character.moveState == MOVE_STATE.NORMAL){
+            //if (!character.hasCarriedObject()) { // is that not equivalent to "is  not PICKUP_STATE.PICKINGUP" ?
+            if (character.pickupState == Constants.PICKUP_STATE.NORMAL){
                 sensorBuffer = (ContactData) character.currentHand.getUserData();
                 Array<Fixture> touchedFixtures = sensorBuffer.getTouchedFixtures();
                 for (Fixture touchedFixture : touchedFixtures) {
-                    if (touchedFixture.getUserData() != null) {
-                        character.setCarriedBody(touchedFixture.getBody()); // this will change the movestate to PICKINGUP or PICKUPCHALLENGER / PICKUPCHALLENGED
+                    GameObject touchedObject = (GameObject) touchedFixture.getBody().getUserData();
+                    if (touchedObject != null){
+                        if (touchedObject instanceof Carriable){
+                            character.pickUpObject((Carriable) touchedFixture.getBody().getUserData()); // this will change the movestate to PICKINGUP or CHALLENGER / CHALLENGED
+                            break;
+                        }
                     }
                 }
                 sensorBuffer = null;
-            } else if (character.moveState == MOVE_STATE.PICKINGUP){
-                character.useCarriedBody(currentAimingAngle, 260.0f);
+            } else if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
+                character.throwObject(currentAimingAngle, 260.0f);
             }
         }
         else if(!isPressed){
@@ -192,27 +196,40 @@ public class Player implements ControlProcessor, Updatable  {
         if(isPressed && !challengePressed) {
             challengePressed = true;
             challengePressCount += 1;
+            character.getProgressBar().increment();
             Gdx.app.debug("Press Challenge", "nb: " + challengePressCount);
-            if(character.moveState == MOVE_STATE.PICKUPCHALLENGED){
-                if (challengePressCount >= Constants.MOVESTOFREE-2) {
-//                    character.getCarrier().moveState = MOVE_STATE.THROWED;
-                    character.setCarriedBody(character.getCarrier().getBody());
-                    character.getCarrier().setCarriedBody(null);
-                    character.moveState = MOVE_STATE.NORMAL;
-//                    character.getCarrier().getBody().applyLinearImpulse(MathUtils.cos(currentAimingAngle) * 260.0f,
-//                            MathUtils.sin(currentAimingAngle) * 260.0f, 0.5f, 0.5f, true);
-                    character.useCarriedBody(Math.abs(currentAimingAngle)%MathUtils.PI+1 ,260.0f);
-                    challengePressCount = 0;
-                }
-                Gdx.app.debug("jumpEscape", "nb " + jumpButtonCount);
-            }
-            else {
-                if (challengePressCount >= Constants.MOVESTOFREE) {
-                    character.moveState = MOVE_STATE.NORMAL;
-                    character.useCarriedBody(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
-                    challengePressCount = 0;
-                }
-                Gdx.app.debug("smash it!", "nb " + jumpButtonCount);
+            switch (character.pickupState){
+                case CHALLENGED:
+                    if (challengePressCount >= Constants.MOVESTOFREE) {
+                        // if the challenged character get free, the role are exchange and the freed player throw the challenger
+                        // FIXME we probably want to change that, maybe we could exchange the challenge, until one get it.
+                        this.challengePressCount = 0;
+                        character.getProgressBar().reset();
+                        // do the same to the other character/player:
+                        character.getCarrier().getProgressBar().reset();
+                        character.getCarrier().getPlayer().challengePressCount = 0;
+                        // pickUpObject and throwOBject will change the pickupState
+                        character.pickUpObject(character.getCarrier()); // the role are exchanged
+                        character.setCarrier(null);
+                        character.throwObject(Math.abs(currentAimingAngle)%MathUtils.PI+1 ,2060.0f);
+//                        character.getCarrier().pickUpObject(null);
+
+                    }
+                    Gdx.app.debug("jumpEscape", "nb " + jumpButtonCount);
+                    break;
+                case CHALLENGER:
+                    if (challengePressCount >= Constants.MOVESTOTHROW) {
+                        this.challengePressCount = 0;
+                        character.getProgressBar().reset();
+                        // do the same to the other character/player:
+                        Character other = (Character)character.getCarriedObject();
+                        other.getPlayer().challengePressCount = 0;
+                        other.getProgressBar().reset();
+                        // throwOBject will change the pickupState
+                        character.throwObject(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
+                    }
+                    Gdx.app.debug("smash it!", "nb " + jumpButtonCount);
+                    break;
             }
         }
         else if (!isPressed && challengePressed){
@@ -221,15 +238,16 @@ public class Player implements ControlProcessor, Updatable  {
 
     }
 
+
     private void processShortAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
-        if (character.moveState == MOVE_STATE.PICKINGUP){
+        if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
             return;
         }
         character.getWeapon().shortDistanceAttack(isPressed, deltaTime);
     }
 
     private void processLongAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
-        if (character.moveState == MOVE_STATE.PICKINGUP){
+        if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
             return;
         }
         character.getWeapon().longDistanceAttack(isPressed, currentAimingAngle, isAiming, deltaTime);
@@ -237,13 +255,13 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     private void processJumpInput(boolean isPressed) {
-        if(character.moveState == MOVE_STATE.PICKUPCHALLENGED){
+        if(character.pickupState == Constants.PICKUP_STATE.CHALLENGED){
             processChallenge(isPressed);
             return;
         }
         if(isPressed){
-            if (character.jumpState == JUMP_STATE.GROUNDED | character.jumpState == JUMP_STATE.IDLE) { // here we want the state.
-                if(character.previousJumpState == JUMP_STATE.RISING)
+            if (character.moveState == Constants.MOVE_STATE.GROUNDED | character.moveState == MOVE_STATE.IDLE) { // here we want the state.
+                if(character.previousMoveState == Constants.MOVE_STATE.RISING)
                     return;
                 bodyVel.y = 0; // we cancel any force on Y before to apply our force.
                 // (especially useful for jumping immediately after a FALLINGSTATE, the grounded sensor is activated while we are still falling
@@ -255,7 +273,7 @@ public class Player implements ControlProcessor, Updatable  {
         else { // Jump Button is not Pressed
             if(jumpButtonPressed)
                 jumpButtonPressed = false;
-            if(character.jumpState == JUMP_STATE.RISING ) { // this block may should be outside the condition "if (jumpButtonPressed)", especially if you want to respect a minimal jump size.
+            if(character.moveState == Constants.MOVE_STATE.RISING ) { // this block may should be outside the condition "if (jumpButtonPressed)", especially if you want to respect a minimal jump size.
                 bodyVel.y = 0; // like that we come back to Falling state
                 objBody.setLinearVelocity(bodyVel);
             }

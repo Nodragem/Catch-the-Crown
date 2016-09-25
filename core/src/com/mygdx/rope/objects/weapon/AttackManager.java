@@ -111,7 +111,7 @@ public class AttackManager extends GameObject implements Launcher {
             shortAttackPressed = true;
             if (attackState != Constants.ATTACK_STATE.SHORTATTACK
                     && attackState != Constants.ATTACK_STATE.LONGATTACK
-                    && character.moveState == Constants.MOVE_STATE.NORMAL) {
+                    && character.pickupState == Constants.PICKUP_STATE.NORMAL) {
                 Gdx.app.debug("Lance", "short attack, state: "+attackState);
                 goToAttackState(SHORTATTACK);
                 if (mainBoxContact.isTouched())
@@ -122,11 +122,11 @@ public class AttackManager extends GameObject implements Launcher {
                     if (lastTouchedObj.getClass().equals(Character.class)) {  // should go in the Lance
                         Character p = (Character) lastTouchedObj;
                         p.addDamage(Constants.SLAPDAMAGE);
-                        p.goToConciousState(SLEEPING, givenSleep);
+                        p.goToConsciousState(SLEEPING, givenSleep);
                         Sound slaphit = gamescreen.assetManager.getRandom("slap_hit");
                         slaphit.play();
                         float ximpulse = 50.0f * ((character.getViewDirection() == Constants.VIEW_DIRECTION.RIGHT) ? 1 : -1);
-                        //p.moveState = Constants.MOVE_STATE.THROWED;
+                        //p.pickupState = Constants.PICKUP_STATE.THROWED;
                         //p.getBody().setTransform(p.getBody().getPosition().x, p.getBody().getPosition().y + 0.1f,0);
                         p.getBody().applyLinearImpulse(ximpulse, 50.0f, 0.5f, 0.5f, true);
                         p.addMarks(1);
@@ -152,7 +152,7 @@ public class AttackManager extends GameObject implements Launcher {
 
     public void longDistanceAttack(boolean isPressed, float angle, boolean isAiming, float deltaTime) {
         aimingAngle = angle;
-        if (attackState == Constants.ATTACK_STATE.SHORTATTACK || attackState == Constants.ATTACK_STATE.LONGATTACK || character.moveState != Constants.MOVE_STATE.NORMAL){
+        if (attackState == Constants.ATTACK_STATE.SHORTATTACK || attackState == Constants.ATTACK_STATE.LONGATTACK || character.pickupState != Constants.PICKUP_STATE.NORMAL){
             return;
         }
         if (!isPressed) {
@@ -189,6 +189,8 @@ public class AttackManager extends GameObject implements Launcher {
 
         }
     }
+
+
 
 
     public void deliverProjectile() {
@@ -259,15 +261,17 @@ public class AttackManager extends GameObject implements Launcher {
                 //position.set(body.getPosition());
                 if (current_animation.isAnimationFinished(stateTime)){
                     goToAttackState(NOTATTACKING);
-                    Gdx.app.debug("LAnce", "not attacking");
                 }
                 break;
             case SHORTATTACK:
                 if (current_animation.isAnimationFinished(stateTime)){
                     goToAttackState(NOTATTACKING);
-                    Gdx.app.debug("LAnce", "not attacking 2");
                 }
                 break;
+            case THROWING:
+                if (current_animation.isAnimationFinished(stateTime)){
+                    goToAttackState(NOTATTACKING);
+                }
             case NOTATTACKING:
                 break;
             case AIMING:
@@ -280,7 +284,7 @@ public class AttackManager extends GameObject implements Launcher {
     }
 
 
-    private void goToAttackState(Constants.ATTACK_STATE State) {
+    public void goToAttackState(Constants.ATTACK_STATE State) {
         // setOrigin move the texture only, it does not affect the Body
         // we need to shift the texture because the body needed to be shifted
         // in initFixture to get its origins where we wanted
@@ -318,9 +322,17 @@ public class AttackManager extends GameObject implements Launcher {
                 setAnimation("");
                 break;
             case CARRYING:
+                isVisible = true;
+                setOrigin(1.0f, 0.5f);
+                setAnimation("Carrying");
                 break;
             case CHARGE_READY:
                 setAnimation("Ready");
+                break;
+            case THROWING:
+                isVisible = true;
+                setOrigin(1.0f, 0.5f);
+                setAnimation("Throwing");
                 break;
         }
     }

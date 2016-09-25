@@ -1799,34 +1799,34 @@ Piaf_purple_Walking
   orig: 32, 32
   offset: 0, 0
   index: 6
-clock
+buttons_A
   rotate: false
   xy: 35, 3
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: -1
-confetti
+  index: 1
+buttons_A
   rotate: false
   xy: 135, 185
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: -1
-crown_small
+  index: 2
+buttons_B
   rotate: false
   xy: 235, 301
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: -1
-diamond_main
+  index: 1
+buttons_B
   rotate: false
   xy: 201, 267
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: 1
+  index: 2
 Piaf_purple_win_jump
   rotate: false
   xy: 203, 233
@@ -1841,13 +1841,13 @@ Piaf_purple_win_jump
   orig: 32, 32
   offset: 0, 0
   index: 2
-diamond_main
+buttons_X
   rotate: false
   xy: 219, 267
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: 2
+  index: 1
 Piaf_purple_win_jump_post
   rotate: false
   xy: 203, 165
@@ -1946,13 +1946,13 @@ Piaf_red_PickedUp
   orig: 32, 32
   offset: 0, 0
   index: 3
-gold_chest
+buttons_X
   rotate: false
   xy: 171, 169
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: -1
+  index: 2
 Piaf_red_PickedUp
   rotate: false
   xy: 237, 239
@@ -2450,30 +2450,86 @@ totem_SwitchingOFF
   orig: 32, 32
   offset: 0, 0
   index: 1
-heart_empty
+buttons_Y
   rotate: false
   xy: 611, 281
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: -1
-heart_full
+  index: 1
+buttons_Y
   rotate: false
   xy: 273, 43
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
-  index: -1
-heart_half
+  index: 2
+clock
   rotate: false
   xy: 511, 111
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-silver_chest
+confetti
   rotate: false
   xy: 545, 145
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+crown_small
+  rotate: false
+  xy: 579, 179
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+diamond_main
+  rotate: false
+  xy: 611, 263
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 1
+diamond_main
+  rotate: false
+  xy: 291, 43
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 2
+gold_chest
+  rotate: false
+  xy: 511, 93
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+heart_empty
+  rotate: false
+  xy: 611, 245
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+heart_full
+  rotate: false
+  xy: 309, 43
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+heart_half
+  rotate: false
+  xy: 511, 75
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+silver_chest
+  rotate: false
+  xy: 611, 227
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
