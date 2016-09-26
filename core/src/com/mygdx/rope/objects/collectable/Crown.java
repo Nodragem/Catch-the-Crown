@@ -67,28 +67,25 @@ public class Crown extends GameObject implements Carriable {
     }
 
     @Override
-    public void setCarrier(Character carrier) {
-        // FIXME we can probably factorise setCarrier and getCarried
-        if (carrier == null){
+    public void setCarrier(Character newCarrier) {
+        if (newCarrier == null){
+            // drop the crown
             this.body.setType(BodyDef.BodyType.DynamicBody);
             this.Carrier.getPlayer().addScore(-crownGoldValue);
             this.Carrier = null;
-            carrier.setCrownBody(body);
-            Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
-            stealCrown.play();
         }
         else if (this.Carrier == null) {
             if (neverTaken) {
-                carrier.getPlayer().addScore(Constants.BONUSCROWN);
+                newCarrier.getPlayer().addScore(Constants.BONUSCROWN);
                 for (Coins coins : linkedGroupCoins) {
                     coins.allowActivation(true);
                 }
                 neverTaken = false;
             }
-            this.Carrier = carrier;
+            this.Carrier = newCarrier;
             this.Carrier.getPlayer().addScore(crownGoldValue);
             this.body.setType(BodyDef.BodyType.KinematicBody);
-            carrier.setCrownBody(body);
+            newCarrier.setCrownBody(body);
             Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
             stealCrown.play();
         }

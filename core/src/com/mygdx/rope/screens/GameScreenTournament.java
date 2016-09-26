@@ -33,6 +33,7 @@ import com.mygdx.rope.objects.collectable.Coins;
 import com.mygdx.rope.objects.collectable.Crown;
 import com.mygdx.rope.objects.stationary.BlockFactory;
 import com.mygdx.rope.objects.traps.TrapFactory;
+import com.mygdx.rope.objects.weapon.AttackManager;
 import com.mygdx.rope.util.*;
 import com.mygdx.rope.util.InputHandler.InputProfile;
 import com.mygdx.rope.util.Constants.GAME_STATE;
@@ -42,7 +43,7 @@ import java.lang.String;
 import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
-	private static final boolean DEBUG_BOX2D = true;
+	private static final boolean DEBUG_BOX2D = false;
     private final RopeGame game;
     private TiledMap map;
     private ArrayMap <String, Player> playersList;
@@ -160,9 +161,14 @@ public class GameScreenTournament implements Screen {
         ArrayMap<String, String> colorProfiles = game.getColorProfiles();
         playersList = new ArrayMap<String, Player>(colorProfiles.size);
         for (int i = 0; i < inputProfiles.size; i++) {
-            Player player = new Player(inputProfiles.getKeyAt(i),
-                    new Character(this, new Vector2(15,15), "character", colorProfiles.getValueAt(i)),
+            Player player = new Player(
+                    inputProfiles.getKeyAt(i),
+                    new Character(this, new Vector2(15,15),
+                            "character", colorProfiles.getValueAt(i)),
                     inputProfiles.getValueAt(i), this);
+            player.getCharacter().setWeapon(
+                    new AttackManager(this, "lance", "attack_layer",
+                    colorProfiles.getValueAt(i)));
             player.getCharacter().setPosition(getSpawnPosition()); // spawners are place by the placeObjectsFromMap
             playersList.put(player.getName(), player);
         }
@@ -206,7 +212,7 @@ public class GameScreenTournament implements Screen {
                     Gdx.app.debug("TrapFactory: ", "Add Parent  Step 2: " + iterObject + "\n ID: " + iterObject.ID);
                     if (iterObject.ID != null && iterObject.ID.equals(gameObjectIntegerEntry.value)) {
                         try {
-                            gameObjectIntegerEntry.key.setParentBody(iterObject.getBody());
+                            gameObjectIntegerEntry.key.setParentBody(iterObject.getBody(), true);
                             Gdx.app.debug("TrapFactory: ", "Add Parent  Step 3");
                             break;
                         } catch (Exception e) {

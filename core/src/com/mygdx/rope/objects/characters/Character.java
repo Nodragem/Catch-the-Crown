@@ -60,7 +60,11 @@ public class Character extends GameObject implements  Carriable {
         player = null;
         lastGroundedBody = null;
         isKillable = true;
-        goToPickingUpState(PICKUP_STATE.NORMAL);
+        // to do that would ultimately asks us to re-do the rendering system :/
+        // and we dont want that now :D
+//        setWeapon(weapon);
+//         we need to init the weapon before to call goToPickingState
+//        goToPickingUpState(PICKUP_STATE.NORMAL);
         goToConsciousState(AWAKE, 0);
         setMoveState(MOVE_STATE.FALLING);
         previousMoveState = MOVE_STATE.FALLING;
@@ -333,7 +337,8 @@ public class Character extends GameObject implements  Carriable {
     }
 
     public void throwObject(float angle, float force){
-        weapon.goToAttackState(ATTACK_STATE.THROWING);
+        if (force > 50)
+            weapon.goToAttackState(ATTACK_STATE.THROWING);
         if (carriedObject != null) {
             if (carriedObject.getClass().equals(Character.class)) {
                 Character p = (Character) carriedObject;
@@ -413,13 +418,14 @@ public class Character extends GameObject implements  Carriable {
                 timerToAwakeState = 0;
                 Gdx.app.debug("Character", "Death Event");
                 respawnTime = RESPAWNTIME + marks*Constants.MARKPENALTY;
-                dropObjects();
                 for(Fixture fixt : body.getFixtureList()) {
                     ContactData data = (ContactData) fixt.getUserData();
                     if (data != null)
                         data.deepFlush(); // should be in the respawn function!!!
                 }
                 awakeState = state;
+                // must call dropObject once the awake state is DEAD, to avoid throwing
+//                dropObjects();
                 break;
             case SLEEPING:
                 if(awakeState == AWAKE) {
@@ -477,6 +483,13 @@ public class Character extends GameObject implements  Carriable {
 
     public void setWeapon(AttackManager weapon) {
         this.weapon = weapon;
+        this.weapon.setCharacter(this);
+        this.weapon.setParentBody(this.getBody(), false);
+        this.weapon.setPosition(new Vector2(position));
+        goToPickingUpState(PICKUP_STATE.NORMAL);
+        // /--> that is a little hack to avoid to redo the rendering system:
+        // if we ask the character to be created directly with a weapon,
+        // the weapon will be rendered behind him
     }
 
     public AttackManager getWeapon() {
@@ -501,6 +514,7 @@ public class Character extends GameObject implements  Carriable {
         if(f<0){
             Sound hurtSound = gamescreen.assetManager.getRandom("hurt");
             hurtSound.play(1f);
+            dropObjects();
         }
 
     }
@@ -535,6 +549,11 @@ public class Character extends GameObject implements  Carriable {
                 this.startProgressBar(Constants.MOVESTOFREE, 1, "A", 1);
                 newCarrier.goToPickingUpState(PICKUP_STATE.CHALLENGER);
                 newCarrier.startProgressBar(Constants.MOVESTOTHROW, 1, "Y", -1);
+            } else if (this.pickupState == PICKUP_STATE.CHALLENGER){
+                // if the newCarrier was CHALLENGED, we need to remove its panicked state,
+                // We do that in the call to goToPickingUpState()
+                newCarrier.goToPickingUpState(PICKUP_STATE.PICKINGUP);
+                this.goToPickingUpState(PICKUP_STATE.NORMAL);
             } else {
                 // if the player is dead we don't challenge it.
                 newCarrier.goToPickingUpState(PICKUP_STATE.PICKINGUP);
@@ -554,9 +573,12 @@ public class Character extends GameObject implements  Carriable {
                 weapon.goToAttackState(ATTACK_STATE.CARRYING);
                 break;
             case PICKINGUP:
+                if (pickupState == PICKUP_STATE.CHALLENGED)
+                    setMoveState(MOVE_STATE.FALLING);
                 weapon.goToAttackState(ATTACK_STATE.CARRYING);
                 break;
             case NORMAL:
+                weapon.goToAttackState(ATTACK_STATE.NOTATTACKING);
                 break;
 
         }

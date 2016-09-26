@@ -37,9 +37,9 @@ Règle de partie perdue (recommence leniveau) :
 
 ## Bugs:
 
-- [ ] check all the list of bugs
+- [x] check all the list of bugs
 
-- [ ] **[A]** fireball can stop and/or slow down...? probably a problem with collision
+- [x] **[A]** fireball can stop and/or slow down...? probably a problem with collision
 
 - [ ] **[A]** bug: sometimes the player revive with automatic damage per second.
 
@@ -51,33 +51,29 @@ Règle de partie perdue (recommence leniveau) :
 
 - [ ] **[B]** when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
 
-- [ ] **[TR]** Atanaska succeeded to replicate the bug of the flying prabbit: jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
+- [ ] **[B]** the bug of the flying prabbit
+  > Atanaska succeeded to replicate it; the prabbit's jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
+  - [x] I improve the matter a bit, when a Lance disappear under the feet of a prabit, the bug appeared: I simply flush the contact data of the lance when it is recalled.
+  - [ ] However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears.
+    > that is weird because I am flushing the pick too, and I even tried to add flushing each time the lance changes of state, but nothing seems to resolve this bug.
 
-- [ ] **[TR]** Automatically die after respawn, after spike death,
+- [ ] **[B]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
 
-- [ ] **[TR]** Apparently we can pick up moving platform ... which is not good,
 
-- [ ] **[TR]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
-
-- [ ] **[TR]** Lance can kill fireball,
-
-  > should we keep and improve that possibility?
-
-- [x] **[TR]** bug: the moving platform trajectory solver are still doing shit. The platforms dont always start at the same place.
 
 ## General Improvements:
 
-- [ ] **[A]** deactivate lances when the platform supporting them disappears.
+- [x] **[A]** deactivate lances when the platform supporting them disappears.
 
 - [ ] **[A]** the lance should deactivate the launcher
 
 - [ ] **[A]** Animations:
 
-  - [xx] Lances could have another appearance when fully loaded
+  - [ ] Lances could have another appearance when fully loaded
 
-  - [xx] Fireball explosion
+  - [x] Fireball explosion
 
-  - [xx] Picking up / Projecting character:
+  - [ ] Picking up / Projecting character:
 
     1. [x] the lifted prabbit should be panicked
     2. [x] the lifting prabbit should have his arm up?
@@ -85,9 +81,9 @@ Règle de partie perdue (recommence leniveau) :
 
       > we can use the progress bar in the GUI folder for the accoutn of how many time the button A/B have been pressed.
 
-    4. [x] Projection animation
+    4. [ ] Projection animation
 
-  - [xx] Golden Prabbit animations:
+  - [ ] Golden Prabbit animations:
 
     > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
     > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
@@ -99,7 +95,7 @@ Règle de partie perdue (recommence leniveau) :
     - [ ] add a layer in character class to add effects (here it will be a golden aura)
     - [ ] animate the golden aura
 
-  - [xx] Animate the flowers?
+  - [ ] Animate the flowers?
 
   - [ ] Animate the coins going to your wallet
 

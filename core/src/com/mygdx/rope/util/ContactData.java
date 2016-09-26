@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
  * Created by Nodragem on 11/05/2014.
  */
 public class ContactData {
-    private final Fixture observedFixture;
+    private final Fixture myFixture;
     public Constants.COLLIDER_TYPE myColliderType;
     public Array<Fixture> touchedFixtures;
     public Array<Body> ignoredBodies;
@@ -16,9 +16,9 @@ public class ContactData {
     private float lastImpulse;
 
     public ContactData(int capacity, Fixture fixture){
-        observedFixture = fixture;
+        myFixture = fixture;
         ignoredBodies = new Array<Body>(1);
-        observedFixture.setUserData(this);
+        myFixture.setUserData(this);
         myColliderType = Constants.COLLIDER_TYPE.SENSOR;
         this.capacity = capacity;
         touchedFixtures = new Array<Fixture>(capacity);
@@ -43,7 +43,7 @@ public class ContactData {
         for (Fixture touchedFixture : touchedFixtures) {
             ContactData d = (ContactData) touchedFixture.getUserData();
             if(d!=null)
-                d.removeTouchedFixtures(observedFixture);
+                d.removeTouchedFixtures(myFixture);
         }
         touchedFixtures.clear();
     }

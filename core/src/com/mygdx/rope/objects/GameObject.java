@@ -565,18 +565,41 @@ public class GameObject implements Updatable, Renderable {
         }
     }
 
-    public void setParentBody(Body parentBody) {
+    public void setParentBody(Body parentBody, Vector2 rposition, Float rangle) {
         this.parentBody = parentBody;
         if(parentBody != null) {
             GameObject parentObject = (GameObject) parentBody.getUserData();
             if(parentObject != null){
                 parentObject.addChild(this);
             }
-            rposition.set(
-                    MathUtils.atan2(body.getPosition().y - parentBody.getPosition().y,
-                                    body.getPosition().x - parentBody.getPosition().x) - parentBody.getAngle(),
-                    position.dst(parentBody.getPosition())); // angle, radius
-            rrotation = rotation - parentBody.getAngle();
+            if (rposition == null) {
+                this.rposition.set(
+                        MathUtils.atan2(body.getPosition().y - parentBody.getPosition().y,
+                                body.getPosition().x - parentBody.getPosition().x) - parentBody.getAngle(),
+                        position.dst(parentBody.getPosition())); // angle, radius
+            } else
+                this.rposition = rposition;
+            if(rangle == null)
+                rrotation = rotation - parentBody.getAngle();
+            else
+                rrotation = rangle;
+        }
+    }
+
+    public void setParentBody(Body parentBody, boolean override) {
+        this.parentBody = parentBody;
+        if(parentBody != null) {
+            GameObject parentObject = (GameObject) parentBody.getUserData();
+            if(parentObject != null){
+                parentObject.addChild(this);
+            }
+            if(override) {
+                this.rposition.set(
+                        MathUtils.atan2(body.getPosition().y - parentBody.getPosition().y,
+                                body.getPosition().x - parentBody.getPosition().x) - parentBody.getAngle(),
+                        position.dst(parentBody.getPosition())); // angle, radius
+                rrotation = rotation - parentBody.getAngle();
+            }
         }
     }
 

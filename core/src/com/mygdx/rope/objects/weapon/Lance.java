@@ -120,14 +120,14 @@ public class Lance extends GameObject {
         this.body.setLinearVelocity(0f, 0f);
         Body touchedBody = mainBoxContact.popTouchedFixtures().getBody();
         if (touchedBody != null) {
-            setParentBody(touchedBody);
+            setParentBody(touchedBody, true);
             isAttached = true;
             parentObject = (GameObject) touchedBody.getUserData();
             if (parentObject != null && parentObject instanceof com.mygdx.rope.objects.characters.Character) {
                 // FIXME: is it necessary to have the damage given in the collisio manager? is it the best design?
                 //we already do that in the collision manager
                 //parentObject.addDamage(givenDamage);
-                ((Character) parentObject).dropObjects();
+//                ((Character) parentObject).dropObjects();
 //                Sound hurtSound = gamescreen.assetManager.getRandom("hurt");
 //                hurtSound.play(0.5f);
                 goToGhostState();
@@ -200,7 +200,7 @@ public class Lance extends GameObject {
     public void use(Vector2 startPos, float angle, float force, float damageMultiplicator){
         Sound throwSound = gamescreen.assetManager.getRandom("lance_thrown");
         throwSound.play();
-        setParentBody(null);
+        setParentBody(null, true);
         givenDamage = damageMultiplicator*defaultDamage;
         goToWeaponState();
         setAnimation("Moving");
@@ -214,6 +214,8 @@ public class Lance extends GameObject {
     }
 
     public void goToWeaponState() {
+        mainBoxContact.deepFlush();
+        collisionStick.deepFlush();
         handleFilter.categoryBits = Constants.CATEGORY.get("Object");
         handleFilter.maskBits = Constants.MASK.get("Object");
         this.body.getFixtureList().get(0).setFilterData(handleFilter);

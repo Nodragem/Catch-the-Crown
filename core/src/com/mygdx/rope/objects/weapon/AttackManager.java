@@ -37,10 +37,10 @@ public class AttackManager extends GameObject implements Launcher {
     private boolean shortAttackPressed;
     private float aimingAngle;
 
-    public AttackManager(GameScreenTournament gm, Character p, Vector2 pos, String projectileDataID,
+    public AttackManager(GameScreenTournament gm, String projectileDataID,
                          String objectDataID, String color_texture) {
         // that actually a close range/ long range manager.
-        super(gm, pos.cpy(), new Vector2(1,1), 0, "No Init");
+        super(gm, new Vector2(0,0), new Vector2(1,1), 0, "No Init");
         initAnimation(objectDataID, color_texture);
         initFixture();
         mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
@@ -54,8 +54,6 @@ public class AttackManager extends GameObject implements Launcher {
         maxPower = 7.5f;
         defaultPower = 3.0f;
         powerLoad = defaultPower;
-        character = p;
-        parentBody = p.getBody();
         mainBoxContact.addBodyToIgnore(parentBody);
 
         rposition.x = 0.5f;
@@ -131,7 +129,7 @@ public class AttackManager extends GameObject implements Launcher {
                         p.getBody().applyLinearImpulse(ximpulse, 50.0f, 0.5f, 0.5f, true);
                         p.addMarks(1);
                         Gdx.app.debug("AttackManager: ", "Marking -- " + p.getMarks());
-                        p.dropObjects();
+//                        p.dropObjects();
                     }
                     else {
                         Sound slapmiss = gamescreen.assetManager.getRandom("slap_miss");
@@ -343,5 +341,9 @@ public class AttackManager extends GameObject implements Launcher {
     @Override
     public void setViewDirection(Constants.VIEW_DIRECTION viewDirection) {
         super.setViewDirection(viewDirection == Constants.VIEW_DIRECTION.LEFT? Constants.VIEW_DIRECTION.DOWN: Constants.VIEW_DIRECTION.UP);
+    }
+
+    public void setCharacter(Character character) {
+        this.character = character;
     }
 }
