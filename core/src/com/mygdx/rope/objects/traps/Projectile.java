@@ -58,8 +58,8 @@ public class Projectile extends GameObject implements Usable {
     @Override
     public Array<GameObject> onCollision(boolean dealDamage) {
 //        Gdx.audio.newSound(Gdx.files.internal("sounds/3.wav"));
-        current_sound = gamescreen.assetManager.getRandom("explosion_fireball");
-        current_sound.play();
+        soundCache = gamescreen.assetManager.getRandom("explosion_fireball");
+        soundCache.play();
         Gdx.app.debug("Projectile", "Collision Detected");
         body.setLinearVelocity(0f, 0f);
         body.setType(BodyDef.BodyType.KinematicBody);

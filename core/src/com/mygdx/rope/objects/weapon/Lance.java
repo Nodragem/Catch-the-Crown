@@ -112,8 +112,8 @@ public class Lance extends GameObject {
     }
 
     public void goToPlatformState() {
-        Sound soundLanceHit = gamescreen.assetManager.getRandom("lance_hit");
-        soundLanceHit.play();
+        soundCache = gamescreen.assetManager.getRandom("lance_hit");
+        soundCache.play();
         givenDamage = 0;
 
         this.body.setType(BodyDef.BodyType.KinematicBody);

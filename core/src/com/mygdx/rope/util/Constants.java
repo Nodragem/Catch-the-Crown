@@ -39,7 +39,7 @@ public class Constants {
     public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
     public static enum DAMAGE_STATE { IMMUNE,  NOT_IMMUNE}
-    public static enum MOVE_STATE {IDLE, GROUNDED, FALLING, RISING, PANICKING, THROWED}
+    public static enum MOVE_STATE {IDLE, GROUNDED, FALLING, RISING, PANICKING, THROWED, THROWING_CHARACTER}
     public static enum PICKUP_STATE {PICKINGUP, CHALLENGED, CHALLENGER, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.
     public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, CARRYING, AIMING, CHARGING, CHARGE_READY, THROWING}
     public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}

@@ -30,7 +30,7 @@ for (path, dirs, files) in os.walk(root_path):
     print dirs
     filtered_files = [f for f in files if ".png" in f]
     filtered_files = [f for f in filtered_files if f[0] != "X"]
-    print "PNG Files found:"    
+    print "PNG Files found:"
     print filtered_files
     print "----"
     for srcfile in filtered_files:

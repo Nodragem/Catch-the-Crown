@@ -43,7 +43,7 @@ import java.lang.String;
 import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
-	private static final boolean DEBUG_BOX2D = false;
+	private static final boolean DEBUG_BOX2D = true;
     private final RopeGame game;
     private TiledMap map;
     private ArrayMap <String, Player> playersList;

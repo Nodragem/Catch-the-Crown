@@ -4,10 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.Carriable;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.collectable.Crown;
@@ -27,6 +31,8 @@ public class Character extends GameObject implements  Carriable {
     public int marks;
     public Player player;
     public AttackManager weapon;
+    public Animation groundShock;
+    private float timeFXState;
     public MOVE_STATE previousMoveState;
     public MOVE_STATE moveState;
     public PICKUP_STATE pickupState;
@@ -50,6 +56,7 @@ public class Character extends GameObject implements  Carriable {
         this.color_texture = color_texture;
         progressBar = new actionProgressBar(game, this);
         initAnimation(objectDataID, color_texture);
+
         // FIXME: the initFixture should be data-driven
         initFixture();
         mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
@@ -126,6 +133,9 @@ public class Character extends GameObject implements  Carriable {
                 case PANICKING:
                     setAnimation("PickedUp");
                     break;
+                case THROWING_CHARACTER:
+                    setAnimation("Throwing");
+                    break;
             }
         }
     }
@@ -138,7 +148,9 @@ public class Character extends GameObject implements  Carriable {
         pixmap.setColor(1f, 1f, 1f, 1.0f);
         pixmap.fillRectangle(0, 0, 1, 2);
         MarkTexture =  new Texture(pixmap);
-
+        Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions("ground_shock");
+        groundShock = new Animation(0.25f, regions, Animation.PlayMode.NORMAL);
+        timeFXState = -1;
     }
 
     @Override
@@ -231,6 +243,10 @@ public class Character extends GameObject implements  Carriable {
             crownBody.setTransform(this.position.x,
                     this.position.y + this.dimension.y, 0);
         }
+        if (timeFXState >=0 && !groundShock.isAnimationFinished(timeFXState)) {
+            timeFXState += deltaTime;
+            Gdx.app.debug("Character", "FXState: "+groundShock.isAnimationFinished(timeFXState));
+        }
         return super.update(deltaTime);
 
     }
@@ -246,6 +262,11 @@ public class Character extends GameObject implements  Carriable {
             batch.draw(MarkTexture, position.x+0.15f*i, position.y+dimension.y + 0.2f, 0.1f, 0.2f);
             batch.setColor(1, 1, 1, 1); // markers in white
         }
+        if (timeFXState >=0 && !groundShock.isAnimationFinished(timeFXState)){
+            TextureRegion reg = groundShock.getKeyFrame(timeFXState);
+            batch.draw(reg, position.x, position.y, 0, 0, 1, 1, 1, 1, 0);
+            Gdx.app.debug("Character", "FXState draw: "+groundShock.isAnimationFinished(timeFXState));
+        }
 
     }
 
@@ -259,7 +280,7 @@ public class Character extends GameObject implements  Carriable {
                             goToConsciousState(DEAD, 0);
                             break;
                         }
-                        if(moveState!=MOVE_STATE.PANICKING) {
+                        if(moveState!=MOVE_STATE.PANICKING && moveState!=MOVE_STATE.THROWING_CHARACTER) {
                             ContactData feetSensor = (ContactData) myFeet.getUserData();
                             if (feetSensor.isTouched()) {
                                 lastGroundedBody = feetSensor.getTouchedFixtures().peek().getBody(); // returns the last item, but do not remove it
@@ -278,6 +299,17 @@ public class Character extends GameObject implements  Carriable {
                                     setMoveState(MOVE_STATE.RISING);
                                 else
                                     setMoveState(MOVE_STATE.FALLING);
+                            }
+                        } else if(moveState == MOVE_STATE.THROWING_CHARACTER){
+                            if (current_animation.isAnimationFinished(stateTime)){
+                                moveState = MOVE_STATE.FALLING;
+                                throwObject(
+                                        (getViewDirection()==VIEW_DIRECTION.LEFT?225:315)*MathUtils.degreesToRadians
+                                        ,2060.0f);
+                                getBody().setLinearVelocity(0, 0);
+                                ContactData feetSensor = (ContactData) myFeet.getUserData();
+                                feetSensor.deepFlush();
+                                getBody().setType(BodyDef.BodyType.DynamicBody);
                             }
                         }
 
@@ -337,10 +369,10 @@ public class Character extends GameObject implements  Carriable {
     }
 
     public void throwObject(float angle, float force){
-        if (force > 50)
-            weapon.goToAttackState(ATTACK_STATE.THROWING);
+
         if (carriedObject != null) {
-            if (carriedObject.getClass().equals(Character.class)) {
+            if (force > 50 && carriedObject.getClass().equals(Character.class)) {
+                weapon.goToAttackState(ATTACK_STATE.THROWING);
                 Character p = (Character) carriedObject;
                 p.setMoveState(MOVE_STATE.THROWED);
                 p.goToPickingUpState(PICKUP_STATE.NORMAL);
@@ -415,6 +447,11 @@ public class Character extends GameObject implements  Carriable {
                 break;
             case DEAD:
                 setAnimation("Death");
+                if(previousMoveState==MOVE_STATE.THROWED) {
+                    timeFXState = 0;
+                    soundCache = gamescreen.assetManager.getRandom("impact_to_ground");
+                    soundCache.play();
+                }
                 timerToAwakeState = 0;
                 Gdx.app.debug("Character", "Death Event");
                 respawnTime = RESPAWNTIME + marks*Constants.MARKPENALTY;
@@ -497,8 +534,8 @@ public class Character extends GameObject implements  Carriable {
     }
 
     public void registerKill(GameObject obj){
-        Sound killSound = gamescreen.assetManager.getRandom("laugh_kill");
-        killSound.play();
+        soundCache = gamescreen.assetManager.getRandom("laugh_kill");
+        soundCache.play();
         player.registerKill(obj);
     }
 
@@ -512,8 +549,8 @@ public class Character extends GameObject implements  Carriable {
     protected void addToLife(float f) {
         super.addToLife(f);
         if(f<0){
-            Sound hurtSound = gamescreen.assetManager.getRandom("hurt");
-            hurtSound.play(1f);
+            soundCache = gamescreen.assetManager.getRandom("hurt");
+            soundCache.play(1f);
             dropObjects();
         }
 

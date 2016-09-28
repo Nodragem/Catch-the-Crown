@@ -3,13 +3,16 @@
   {
     "character": {
       "texture_name": "Piaf",
-      "animation_names": ["Standing", "Walking", "Rising", "Falling",  "Death", "Stunned", "PickedUp"],
-      "animation_loops": ["LOOP", "LOOP", "LOOP", "LOOP", "NORMAL", "LOOP", "LOOP"],
-      "animation_spf": [0.5, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]
+      "animation_names": ["Standing", "Walking", "Rising", "Falling",  "Death", "Stunned", "PickedUp", "Throwing"],
+      "animation_loops": ["LOOP", "LOOP", "LOOP", "LOOP", "NORMAL", "LOOP", "LOOP", "NORMAL"],
+      "animation_spf": [0.5, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.1]
     },
     "fire_ball": {
       "dimensionx": 1.0,
-      "dimensiony": 0.5,
+      "dimensiony": 1.0,
+      "scalex": 0.33,
+      "scaley": 0.33,
+      "offsetx": 0.5,
       "isRotation": true,
       "bodyType": "DynamicBody",
       "texture_name": "fireball",

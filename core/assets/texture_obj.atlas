@@ -1000,20 +1000,20 @@ fireball_Offset
   orig: 32, 32
   offset: 0, 0
   index: 5
-launcher_Main
+ground_shock
   rotate: false
   xy: 573, 367
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: -1
-launcher_Onset
+  index: 1
+ground_shock
   rotate: false
   xy: 573, 333
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
+  index: 2
 stone_Activated
   rotate: false
   xy: 605, 435
@@ -1021,27 +1021,27 @@ stone_Activated
   orig: 32, 16
   offset: 0, 0
   index: 1
-launcher_Onset
+ground_shock
   rotate: false
   xy: 607, 401
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-launcher_Onset
+  index: 3
+ground_shock
   rotate: false
   xy: 607, 367
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-launcher_Onset
+  index: 4
+ground_shock
   rotate: false
   xy: 607, 333
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
+  index: 5
 stone_Activated
   rotate: false
   xy: 67, 171
@@ -1049,34 +1049,34 @@ stone_Activated
   orig: 32, 16
   offset: 0, 0
   index: 2
-moving_stone_center
+launcher_Main
   rotate: false
   xy: 69, 137
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-moving_stone_left
+launcher_Onset
   rotate: false
   xy: 69, 103
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: -1
-moving_stone_right
+  index: 1
+launcher_Onset
   rotate: false
   xy: 69, 69
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: -1
-moving_stone_rleft
+  index: 2
+launcher_Onset
   rotate: false
   xy: 69, 35
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: -1
+  index: 3
 stone_Activated
   rotate: false
   xy: 101, 171
@@ -1084,35 +1084,34 @@ stone_Activated
   orig: 32, 16
   offset: 0, 0
   index: 3
-moving_stone_rright
+launcher_Onset
   rotate: false
   xy: 103, 137
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: -1
-paper
+  index: 4
+moving_stone_center
   rotate: false
   xy: 103, 103
   size: 32, 32
-  split: 16, 15, 15, 16
   orig: 32, 32
   offset: 0, 0
   index: -1
-Piaf_blue_Death
+moving_stone_left
   rotate: false
   xy: 103, 69
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_blue_Death
+  index: -1
+moving_stone_right
   rotate: false
   xy: 103, 35
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
+  index: -1
 stone_SwitchingON
   rotate: false
   xy: 133, 237
@@ -1120,679 +1119,680 @@ stone_SwitchingON
   orig: 32, 16
   offset: 0, 0
   index: 1
-Piaf_blue_Death
+moving_stone_rleft
   rotate: false
   xy: 135, 203
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_blue_Falling
+  index: -1
+moving_stone_rright
   rotate: false
   xy: 267, 299
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_blue_Falling
+  index: -1
+paper
   rotate: false
   xy: 301, 299
   size: 32, 32
+  split: 16, 15, 15, 16
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_blue_Loosing
+  index: -1
+Piaf_blue_Death
   rotate: false
   xy: 335, 299
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_blue_Loosing
+Piaf_blue_Death
   rotate: false
   xy: 369, 299
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_blue_PickedUp
+Piaf_blue_Death
   rotate: false
   xy: 403, 299
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_blue_PickedUp
+  index: 3
+Piaf_blue_Falling
   rotate: false
   xy: 437, 299
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_blue_Falling
+  rotate: false
+  xy: 471, 299
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_blue_Loosing
+  rotate: false
+  xy: 505, 299
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_blue_Loosing
+  rotate: false
+  xy: 539, 299
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_blue_PickedUp
   rotate: false
-  xy: 471, 299
+  xy: 573, 299
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_blue_PickedUp
+  rotate: false
+  xy: 607, 299
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_blue_PickedUp
+  rotate: false
+  xy: 69, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 Piaf_blue_PickedUp
   rotate: false
-  xy: 505, 299
+  xy: 103, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_blue_Rising
   rotate: false
-  xy: 539, 299
+  xy: 169, 221
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_blue_Rising
   rotate: false
-  xy: 573, 299
+  xy: 169, 187
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_blue_Standing
   rotate: false
-  xy: 607, 299
+  xy: 639, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_blue_Walking
   rotate: false
-  xy: 607, 299
+  xy: 639, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_blue_Stunned
-  rotate: false
-  xy: 69, 1
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_blue_Stunned
-  rotate: false
-  xy: 103, 1
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_blue_Stunned
-  rotate: false
-  xy: 169, 221
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-Piaf_blue_Throwing
-  rotate: false
-  xy: 169, 187
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_blue_Throwing
-  rotate: false
-  xy: 639, 477
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_blue_Throwing
   rotate: false
   xy: 639, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_blue_Throwing
+  index: 1
+Piaf_blue_Stunned
   rotate: false
   xy: 673, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
-Piaf_blue_Throwing
+  index: 2
+Piaf_blue_Stunned
   rotate: false
   xy: 673, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 5
+  index: 3
 Piaf_blue_Throwing
   rotate: false
   xy: 707, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 6
-Piaf_blue_Walking
+  index: 1
+Piaf_blue_Throwing
   rotate: false
   xy: 707, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_blue_Walking
+  index: 2
+Piaf_blue_Throwing
   rotate: false
   xy: 741, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_blue_Walking
+  index: 3
+Piaf_blue_Throwing
   rotate: false
   xy: 741, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_blue_Walking
+  index: 4
+Piaf_blue_Throwing
   rotate: false
   xy: 775, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
-Piaf_blue_Walking
+Piaf_blue_Throwing
   rotate: false
   xy: 775, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
-Piaf_blue_win_jump
+Piaf_blue_Walking
   rotate: false
   xy: 809, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_blue_win_jump
+Piaf_blue_Walking
   rotate: false
   xy: 809, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_blue_win_jump_post
+Piaf_blue_Walking
   rotate: false
   xy: 843, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_blue_win_jump_post
+  index: 3
+Piaf_blue_Walking
   rotate: false
   xy: 843, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_blue_win_jump_pre
+  index: 5
+Piaf_blue_Walking
   rotate: false
   xy: 877, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_blue_win_jump_pre
+  index: 6
+Piaf_blue_win_jump
   rotate: false
   xy: 877, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_green_Death
+  index: 1
+Piaf_blue_win_jump
   rotate: false
   xy: 911, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_green_Death
+  index: 2
+Piaf_blue_win_jump_post
   rotate: false
   xy: 911, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_green_Death
+  index: 1
+Piaf_blue_win_jump_post
   rotate: false
   xy: 945, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_green_Falling
+  index: 2
+Piaf_blue_win_jump_pre
   rotate: false
   xy: 945, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_green_Falling
+Piaf_blue_win_jump_pre
   rotate: false
   xy: 979, 477
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_green_Loosing
+Piaf_green_Death
   rotate: false
   xy: 979, 443
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_green_Loosing
+Piaf_green_Death
   rotate: false
   xy: 641, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_green_PickedUp
+Piaf_green_Death
   rotate: false
   xy: 641, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_green_PickedUp
+  index: 3
+Piaf_green_Falling
   rotate: false
   xy: 675, 409
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_green_Falling
+  rotate: false
+  xy: 641, 341
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_green_Loosing
+  rotate: false
+  xy: 675, 375
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_green_Loosing
+  rotate: false
+  xy: 709, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_green_PickedUp
   rotate: false
-  xy: 641, 341
+  xy: 641, 307
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_green_PickedUp
+  rotate: false
+  xy: 675, 341
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_green_PickedUp
+  rotate: false
+  xy: 709, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 Piaf_green_PickedUp
   rotate: false
-  xy: 675, 375
+  xy: 743, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_green_Rising
   rotate: false
-  xy: 709, 409
+  xy: 675, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_green_Rising
   rotate: false
-  xy: 641, 307
+  xy: 709, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_green_Standing
   rotate: false
-  xy: 675, 341
+  xy: 743, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_green_Walking
   rotate: false
-  xy: 675, 341
+  xy: 743, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_green_Stunned
-  rotate: false
-  xy: 709, 375
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_green_Stunned
-  rotate: false
-  xy: 743, 409
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_green_Stunned
-  rotate: false
-  xy: 675, 307
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-Piaf_green_Throwing
-  rotate: false
-  xy: 709, 341
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_green_Throwing
-  rotate: false
-  xy: 743, 375
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_green_Throwing
   rotate: false
   xy: 777, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_green_Throwing
+  index: 1
+Piaf_green_Stunned
   rotate: false
   xy: 709, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
-Piaf_green_Throwing
+  index: 2
+Piaf_green_Stunned
   rotate: false
   xy: 743, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 5
+  index: 3
 Piaf_green_Throwing
   rotate: false
   xy: 777, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 6
-Piaf_green_Walking
+  index: 1
+Piaf_green_Throwing
   rotate: false
   xy: 811, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_green_Walking
+  index: 2
+Piaf_green_Throwing
   rotate: false
   xy: 743, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_green_Walking
+  index: 3
+Piaf_green_Throwing
   rotate: false
   xy: 777, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_green_Walking
+  index: 4
+Piaf_green_Throwing
   rotate: false
   xy: 811, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
-Piaf_green_Walking
+Piaf_green_Throwing
   rotate: false
   xy: 845, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
-Piaf_green_win_jump
+Piaf_green_Walking
   rotate: false
   xy: 777, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_green_win_jump
+Piaf_green_Walking
   rotate: false
   xy: 811, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_green_win_jump_post
+Piaf_green_Walking
   rotate: false
   xy: 845, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_green_win_jump_post
+  index: 3
+Piaf_green_Walking
   rotate: false
   xy: 879, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_green_win_jump_pre
+  index: 5
+Piaf_green_Walking
   rotate: false
   xy: 811, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_green_win_jump_pre
+  index: 6
+Piaf_green_win_jump
   rotate: false
   xy: 845, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_purple_Death
+  index: 1
+Piaf_green_win_jump
   rotate: false
   xy: 879, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_purple_Death
+  index: 2
+Piaf_green_win_jump_post
   rotate: false
   xy: 913, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_purple_Death
+  index: 1
+Piaf_green_win_jump_post
   rotate: false
   xy: 845, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_purple_Falling
+  index: 2
+Piaf_green_win_jump_pre
   rotate: false
   xy: 879, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_purple_Falling
+Piaf_green_win_jump_pre
   rotate: false
   xy: 913, 375
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_purple_Loosing
+Piaf_purple_Death
   rotate: false
   xy: 947, 409
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_purple_Loosing
+Piaf_purple_Death
   rotate: false
   xy: 879, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_purple_PickedUp
+Piaf_purple_Death
   rotate: false
   xy: 913, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_purple_PickedUp
+  index: 3
+Piaf_purple_Falling
   rotate: false
   xy: 947, 375
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_purple_Falling
+  rotate: false
+  xy: 913, 307
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_purple_Loosing
+  rotate: false
+  xy: 947, 341
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_purple_Loosing
+  rotate: false
+  xy: 947, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_purple_PickedUp
   rotate: false
-  xy: 913, 307
+  xy: 981, 409
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_purple_PickedUp
+  rotate: false
+  xy: 981, 375
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_purple_PickedUp
+  rotate: false
+  xy: 981, 341
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 Piaf_purple_PickedUp
   rotate: false
-  xy: 947, 341
+  xy: 981, 307
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_purple_Rising
   rotate: false
-  xy: 947, 307
+  xy: 641, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_purple_Rising
   rotate: false
-  xy: 981, 409
+  xy: 675, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_purple_Standing
   rotate: false
-  xy: 981, 375
+  xy: 709, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_purple_Walking
   rotate: false
-  xy: 981, 375
+  xy: 709, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_purple_Stunned
-  rotate: false
-  xy: 981, 341
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_purple_Stunned
-  rotate: false
-  xy: 981, 307
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_purple_Stunned
-  rotate: false
-  xy: 641, 273
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-Piaf_purple_Throwing
-  rotate: false
-  xy: 675, 273
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_purple_Throwing
-  rotate: false
-  xy: 709, 273
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_purple_Throwing
   rotate: false
   xy: 743, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_purple_Throwing
+  index: 1
+Piaf_purple_Stunned
   rotate: false
   xy: 777, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
-Piaf_purple_Throwing
+  index: 2
+Piaf_purple_Stunned
   rotate: false
   xy: 811, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 5
+  index: 3
 Piaf_purple_Throwing
   rotate: false
   xy: 845, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 6
-Piaf_purple_Walking
+  index: 1
+Piaf_purple_Throwing
   rotate: false
   xy: 879, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_purple_Walking
+  index: 2
+Piaf_purple_Throwing
   rotate: false
   xy: 913, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_purple_Walking
+  index: 3
+Piaf_purple_Throwing
   rotate: false
   xy: 947, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_purple_Walking
+  index: 4
+Piaf_purple_Throwing
   rotate: false
   xy: 981, 273
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
-Piaf_purple_Walking
+Piaf_purple_Throwing
   rotate: false
   xy: 201, 285
   size: 32, 32
@@ -1827,14 +1827,14 @@ buttons_B
   orig: 16, 16
   offset: 0, 0
   index: 2
-Piaf_purple_win_jump
+Piaf_purple_Walking
   rotate: false
   xy: 203, 233
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_purple_win_jump
+Piaf_purple_Walking
   rotate: false
   xy: 203, 199
   size: 32, 32
@@ -1848,104 +1848,104 @@ buttons_X
   orig: 16, 16
   offset: 0, 0
   index: 1
-Piaf_purple_win_jump_post
+Piaf_purple_Walking
   rotate: false
   xy: 203, 165
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_purple_win_jump_post
+  index: 3
+Piaf_purple_Walking
   rotate: false
   xy: 137, 151
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_purple_win_jump_pre
+  index: 5
+Piaf_purple_Walking
   rotate: false
   xy: 137, 117
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_purple_win_jump_pre
+  index: 6
+Piaf_purple_win_jump
   rotate: false
   xy: 137, 83
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_red_Death
+  index: 1
+Piaf_purple_win_jump
   rotate: false
   xy: 137, 49
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_red_Death
+  index: 2
+Piaf_purple_win_jump_post
   rotate: false
   xy: 137, 15
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_red_Death
+  index: 1
+Piaf_purple_win_jump_post
   rotate: false
   xy: 171, 131
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_red_Falling
+  index: 2
+Piaf_purple_win_jump_pre
   rotate: false
   xy: 171, 97
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_red_Falling
+Piaf_purple_win_jump_pre
   rotate: false
   xy: 171, 63
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_red_Loosing
+Piaf_red_Death
   rotate: false
   xy: 171, 29
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_red_Loosing
+Piaf_red_Death
   rotate: false
   xy: 205, 131
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_red_PickedUp
+Piaf_red_Death
   rotate: false
   xy: 205, 97
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_red_PickedUp
+  index: 3
+Piaf_red_Falling
   rotate: false
   xy: 205, 63
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_red_PickedUp
+  index: 1
+Piaf_red_Falling
   rotate: false
   xy: 205, 29
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
+  index: 2
 buttons_X
   rotate: false
   xy: 171, 169
@@ -1953,499 +1953,534 @@ buttons_X
   orig: 16, 16
   offset: 0, 0
   index: 2
-Piaf_red_PickedUp
+Piaf_red_Loosing
   rotate: false
   xy: 237, 239
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_red_Loosing
+  rotate: false
+  xy: 237, 205
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_red_PickedUp
+  rotate: false
+  xy: 237, 171
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_red_PickedUp
+  rotate: false
+  xy: 239, 137
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_red_PickedUp
+  rotate: false
+  xy: 239, 103
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
+Piaf_red_PickedUp
+  rotate: false
+  xy: 239, 69
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_red_Rising
   rotate: false
-  xy: 237, 205
+  xy: 239, 35
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_red_Rising
   rotate: false
-  xy: 237, 171
+  xy: 271, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_red_Standing
   rotate: false
-  xy: 239, 137
+  xy: 305, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_red_Walking
   rotate: false
-  xy: 239, 137
+  xy: 305, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_red_Stunned
-  rotate: false
-  xy: 239, 103
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_red_Stunned
-  rotate: false
-  xy: 239, 69
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_red_Stunned
-  rotate: false
-  xy: 239, 35
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-Piaf_red_Throwing
-  rotate: false
-  xy: 271, 265
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_red_Throwing
-  rotate: false
-  xy: 305, 265
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_red_Throwing
   rotate: false
   xy: 271, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_red_Throwing
+  index: 1
+Piaf_red_Stunned
   rotate: false
   xy: 339, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
-Piaf_red_Throwing
+  index: 2
+Piaf_red_Stunned
   rotate: false
   xy: 271, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 5
+  index: 3
 Piaf_red_Throwing
   rotate: false
   xy: 305, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 6
-Piaf_red_Walking
+  index: 1
+Piaf_red_Throwing
   rotate: false
   xy: 373, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_red_Walking
+  index: 2
+Piaf_red_Throwing
   rotate: false
   xy: 305, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_red_Walking
+  index: 3
+Piaf_red_Throwing
   rotate: false
   xy: 339, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_red_Walking
+  index: 4
+Piaf_red_Throwing
   rotate: false
   xy: 407, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
-Piaf_red_Walking
+Piaf_red_Throwing
   rotate: false
   xy: 339, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
-Piaf_red_win_jump
+Piaf_red_Walking
   rotate: false
   xy: 373, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_red_win_jump
+Piaf_red_Walking
   rotate: false
   xy: 441, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_red_win_jump_post
+Piaf_red_Walking
   rotate: false
   xy: 373, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_red_win_jump_post
+  index: 3
+Piaf_red_Walking
   rotate: false
   xy: 407, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_red_win_jump_pre
+  index: 5
+Piaf_red_Walking
   rotate: false
   xy: 475, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_red_win_jump_pre
+  index: 6
+Piaf_red_win_jump
   rotate: false
   xy: 407, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_yellow_Death
+  index: 1
+Piaf_red_win_jump
   rotate: false
   xy: 441, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_yellow_Death
+  index: 2
+Piaf_red_win_jump_post
   rotate: false
   xy: 509, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_yellow_Death
+  index: 1
+Piaf_red_win_jump_post
   rotate: false
   xy: 441, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_yellow_Falling
+  index: 2
+Piaf_red_win_jump_pre
   rotate: false
   xy: 475, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_yellow_Falling
+Piaf_red_win_jump_pre
   rotate: false
   xy: 543, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_yellow_Loosing
+Piaf_yellow_Death
   rotate: false
   xy: 475, 197
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_yellow_Loosing
+Piaf_yellow_Death
   rotate: false
   xy: 509, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_yellow_PickedUp
+Piaf_yellow_Death
   rotate: false
   xy: 577, 265
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_yellow_PickedUp
+  index: 3
+Piaf_yellow_Falling
   rotate: false
   xy: 509, 197
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_yellow_Falling
+  rotate: false
+  xy: 543, 231
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_yellow_Loosing
+  rotate: false
+  xy: 543, 197
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_yellow_Loosing
+  rotate: false
+  xy: 577, 231
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_yellow_PickedUp
   rotate: false
-  xy: 543, 231
+  xy: 577, 197
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+Piaf_yellow_PickedUp
+  rotate: false
+  xy: 273, 163
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+Piaf_yellow_PickedUp
+  rotate: false
+  xy: 273, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 Piaf_yellow_PickedUp
   rotate: false
-  xy: 543, 197
+  xy: 307, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_yellow_Rising
   rotate: false
-  xy: 577, 231
+  xy: 273, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_yellow_Rising
   rotate: false
-  xy: 577, 197
+  xy: 307, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 Piaf_yellow_Standing
   rotate: false
-  xy: 273, 163
+  xy: 341, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 Piaf_yellow_Walking
   rotate: false
-  xy: 273, 163
+  xy: 341, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 Piaf_yellow_Stunned
-  rotate: false
-  xy: 273, 129
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_yellow_Stunned
-  rotate: false
-  xy: 307, 163
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_yellow_Stunned
-  rotate: false
-  xy: 273, 95
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-Piaf_yellow_Throwing
-  rotate: false
-  xy: 307, 129
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-Piaf_yellow_Throwing
-  rotate: false
-  xy: 341, 163
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-Piaf_yellow_Throwing
   rotate: false
   xy: 273, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_yellow_Throwing
+  index: 1
+Piaf_yellow_Stunned
   rotate: false
   xy: 307, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
-Piaf_yellow_Throwing
+  index: 2
+Piaf_yellow_Stunned
   rotate: false
   xy: 341, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 5
+  index: 3
 Piaf_yellow_Throwing
   rotate: false
   xy: 375, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 6
-Piaf_yellow_Walking
+  index: 1
+Piaf_yellow_Throwing
   rotate: false
   xy: 307, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_yellow_Walking
+  index: 2
+Piaf_yellow_Throwing
   rotate: false
   xy: 341, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_yellow_Walking
+  index: 3
+Piaf_yellow_Throwing
   rotate: false
   xy: 375, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-Piaf_yellow_Walking
+  index: 4
+Piaf_yellow_Throwing
   rotate: false
   xy: 409, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
-Piaf_yellow_Walking
+Piaf_yellow_Throwing
   rotate: false
   xy: 341, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
-Piaf_yellow_win_jump
+Piaf_yellow_Walking
   rotate: false
   xy: 375, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-Piaf_yellow_win_jump
+Piaf_yellow_Walking
   rotate: false
   xy: 409, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-Piaf_yellow_win_jump_post
+Piaf_yellow_Walking
   rotate: false
   xy: 443, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_yellow_win_jump_post
+  index: 3
+Piaf_yellow_Walking
   rotate: false
   xy: 375, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-Piaf_yellow_win_jump_pre
+  index: 5
+Piaf_yellow_Walking
   rotate: false
   xy: 409, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-Piaf_yellow_win_jump_pre
+  index: 6
+Piaf_yellow_win_jump
   rotate: false
   xy: 443, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
-spikes_Main
+  index: 1
+Piaf_yellow_win_jump
   rotate: false
   xy: 477, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: -1
-spikes_Offset
+  index: 2
+Piaf_yellow_win_jump_post
   rotate: false
   xy: 409, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-spikes_Offset
+Piaf_yellow_win_jump_post
   rotate: false
   xy: 443, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-spikes_Onset
+Piaf_yellow_win_jump_pre
   rotate: false
   xy: 477, 129
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-spikes_Onset
+Piaf_yellow_win_jump_pre
   rotate: false
   xy: 511, 163
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
-totem_Activated
+spikes_Main
   rotate: false
   xy: 443, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
-totem_Activated
+  index: -1
+spikes_Offset
   rotate: false
   xy: 477, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+spikes_Offset
+  rotate: false
+  xy: 511, 129
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+spikes_Onset
+  rotate: false
+  xy: 545, 163
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+spikes_Onset
+  rotate: false
+  xy: 477, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 totem_Activated
   rotate: false
-  xy: 511, 129
+  xy: 511, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+totem_Activated
+  rotate: false
+  xy: 545, 129
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+totem_Activated
+  rotate: false
+  xy: 511, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 totem_Activated
   rotate: false
-  xy: 545, 163
+  xy: 545, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 totem_SwitchingON
   rotate: false
-  xy: 545, 163
+  xy: 545, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 totem_SwitchingOFF
   rotate: false
-  xy: 477, 61
+  xy: 545, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -2466,70 +2501,70 @@ buttons_Y
   index: 2
 clock
   rotate: false
-  xy: 511, 111
+  xy: 579, 179
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 confetti
   rotate: false
-  xy: 545, 145
+  xy: 611, 263
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 crown_small
   rotate: false
-  xy: 579, 179
+  xy: 291, 43
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 diamond_main
   rotate: false
-  xy: 611, 263
+  xy: 579, 161
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: 1
 diamond_main
   rotate: false
-  xy: 291, 43
+  xy: 611, 245
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: 2
 gold_chest
   rotate: false
-  xy: 511, 93
+  xy: 309, 43
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 heart_empty
   rotate: false
-  xy: 611, 245
+  xy: 579, 143
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 heart_full
   rotate: false
-  xy: 309, 43
+  xy: 611, 227
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 heart_half
   rotate: false
-  xy: 511, 75
+  xy: 327, 43
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 silver_chest
   rotate: false
-  xy: 611, 227
+  xy: 579, 125
   size: 16, 16
   orig: 16, 16
   offset: 0, 0

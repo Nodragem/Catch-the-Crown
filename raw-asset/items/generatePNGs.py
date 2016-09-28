@@ -4,7 +4,7 @@ from PIL import Image
 
 listfile = glob.glob("./*.png")
 for filename in listfile:
-    if "crown" not in filename:
+    if "crown" not in filename and "ground_shock" not in filename:
         os.remove(filename)
 
 output_path = ".\\"

@@ -31,6 +31,7 @@ public class GameObject implements Updatable, Renderable {
     public Integer ID = null;
     public Array<Float> color;
     public Constants.DAMAGE_STATE damageState;
+    protected Sound soundCache;
     public float currentImmunity;
     public float immunityReset;
     protected float givenDamage;
@@ -60,7 +61,6 @@ public class GameObject implements Updatable, Renderable {
 //    public Character Carrier = null;
     public Constants.ACTIVE_STATE activeState;
     public Constants.ACTIVE_STATE previousActiveState = null;
-    public Sound current_sound;
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 

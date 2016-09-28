@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -208,7 +209,7 @@ public class Player implements ControlProcessor, Updatable  {
                         // pickUpObject and throwOBject will change the pickupState
                         character.pickUpObject(character.getCarrier()); // the role are exchanged
                         character.setCarrier(null);
-                        character.throwObject(Math.abs(currentAimingAngle)%MathUtils.PI+1 ,2060.0f);
+                        character.throwObject(Math.abs(currentAimingAngle)%MathUtils.PI+1 ,45.0f);
 //                        character.getCarrier().pickUpObject(null);
 
                     }
@@ -223,7 +224,12 @@ public class Player implements ControlProcessor, Updatable  {
                         other.getPlayer().challengePressCount = 0;
                         other.getProgressBar().reset();
                         // throwOBject will change the pickupState
-                        character.throwObject(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
+//                        character.throwObject(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
+                        character.getBody().setType(BodyDef.BodyType.KinematicBody);
+                        character.getBody().setTransform(bodyPos.add(0, 1f), 0);
+                        character.getBody().setLinearVelocity(0, 0.5f);
+
+                        character.setMoveState(MOVE_STATE.THROWING_CHARACTER);
                     }
                     Gdx.app.debug("smash it!", "nb " + jumpButtonCount);
                     break;
