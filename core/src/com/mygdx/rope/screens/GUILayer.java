@@ -263,6 +263,7 @@ public class GUILayer {
                         getAnimation("Standing").
                         getKeyFrame(1),
                 0, 0, 32,14));
+        player.setUIBox(playersUIBox.peek());
     }
 
     public boolean removePlayer(String name){

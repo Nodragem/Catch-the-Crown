@@ -23,7 +23,7 @@ public class AttackManager extends GameObject implements Launcher {
 
     private Character character;
     private float shortAttackTime;
-    private Constants.ATTACK_STATE attackState;
+    public Constants.ATTACK_STATE attackState;
     //private GameScreenTournament myGameScreen;
     private float powerLoad;
     private float maxPower;
@@ -35,6 +35,7 @@ public class AttackManager extends GameObject implements Launcher {
     private float givenSleep;
     private GameObject lastTouchedObj;
     private boolean shortAttackPressed;
+    private Vector2 localStartingPoint;
     private float aimingAngle;
 
     public AttackManager(GameScreenTournament gm, String projectileDataID,
@@ -58,6 +59,7 @@ public class AttackManager extends GameObject implements Launcher {
 
         rposition.x = 0.5f;
         rposition.y = 0.5f;
+        localStartingPoint = new Vector2(-0.6f, 0.1f);
 
         shortAttackTime = 0.0f;
         givenSleep = 0.3f;
@@ -87,7 +89,7 @@ public class AttackManager extends GameObject implements Launcher {
     public void initFixture() {
         PolygonShape p = new PolygonShape();
         //p.setAsBox(dimension.x *0.2f, dimension.y *0.2f, new Vector2(dimension.x * 0.85f, dimension.y *0.0f), 0);
-        p.setAsBox(dimension.x *0.4f, dimension.y *0.2f, new Vector2(dimension.x * 0.5f, dimension.y *0.0f), 0);
+        p.setAsBox(dimension.x *0.2f, dimension.y *0.2f, new Vector2(dimension.x * 0.8f, dimension.y *0.0f), 0);
 //        p.setAsBox(dimension.x, dimension.y, new Vector2(dimension.x * 0.5f, dimension.y *0.0f), 0);
         FixtureDef fd = new FixtureDef();
         fd.shape = p;
@@ -194,7 +196,7 @@ public class AttackManager extends GameObject implements Launcher {
     public void deliverProjectile() {
         // WARNING angle in radians
         lancePool.get(currentLanceIndex).use(
-                getBody().getWorldCenter(), aimingAngle, powerLoad, powerLoad == maxPower ? 3.0f : 1.0f);
+                getBody().getWorldPoint(localStartingPoint), aimingAngle, powerLoad, powerLoad == maxPower ? 3.0f : 1.0f);
         currentLanceIndex = (currentLanceIndex + 1)%pool_size;
 //        if(currentLanceIndex == 0){ // we ran all the pool
 //            Gdx.app.debug("SimpleLauncher", "relaoding time");
@@ -278,7 +280,7 @@ public class AttackManager extends GameObject implements Launcher {
                 break;
 
         }
-        return false;
+        return todispose;
     }
 
 

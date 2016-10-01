@@ -37,24 +37,14 @@ Règle de partie perdue (recommence leniveau) :
 
 ## Bugs:
 
-- [x] check all the list of bugs
-
-- [x] **[A]** fireball can stop and/or slow down...? probably a problem with collision
-
-- [ ] **[A]** bug: sometimes the player revive with automatic damage per second.
-
-  > - In an attempt to debug, we replace flush() with the deepFlush() function in the isDead() function.
-  > - We can't test if it is effective.
-  > - I think that it is actually better to flush in the respawn function!!
-
-- [ ] **[A]** controller don't work after fullscreen
+- [ ] **[C]** controller don't work after fullscreen
 
 - [ ] **[B]** when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
 
-- [ ] **[B]** the bug of the flying prabbit
+- [ ] **[A]** the bug of the flying prabbit
   > Atanaska succeeded to replicate it; the prabbit's jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
   - [x] I improve the matter a bit, when a Lance disappear under the feet of a prabit, the bug appeared: I simply flush the contact data of the lance when it is recalled.
-  - [ ] However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears.
+  - [ ]  **[A]** However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears.
     > that is weird because I am flushing the pick too, and I even tried to add flushing each time the lance changes of state, but nothing seems to resolve this bug.
 
 - [ ] **[B]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
@@ -73,7 +63,7 @@ Règle de partie perdue (recommence leniveau) :
 
   - [x] Fireball explosion
 
-  - [ ] Picking up / Projecting character:
+  - [x] Picking up / Projecting character:
 
     1. [x] the lifted prabbit should be panicked
     2. [x] the lifting prabbit should have his arm up?
@@ -81,9 +71,9 @@ Règle de partie perdue (recommence leniveau) :
 
       > we can use the progress bar in the GUI folder for the accoutn of how many time the button A/B have been pressed.
 
-    4. [ ] Projection animation
+    4. [x] Projection animation
 
-  - [ ] Golden Prabbit animations:
+  - [x] Golden Prabbit animations:
 
     > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
     > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
@@ -91,18 +81,18 @@ Règle de partie perdue (recommence leniveau) :
     >   - When winning: simple aura, keeping the color of the prabbit
     >   - When winning and special conditions: Golden Prabbits.
 
-    - [ ] the yellow skin should be only used for the Golden Prabbit
-    - [ ] add a layer in character class to add effects (here it will be a golden aura)
-    - [ ] animate the golden aura
+    - [x] the yellow skin should be only used for the Golden Prabbit
+    - [x] add a layer in character class to add effects (here it will be a golden aura)
+    - [x] animate the golden aura
 
-  - [ ] Animate the flowers?
+  - [x] Animate the flowers?
 
-  - [ ] Animate the coins going to your wallet
+  - [x] Animate the coins going to your wallet
 
-  - [ ] Animate the crown:
+  - [x] Animate the crown:
 
-    - [ ] Write the amount of money going to the crown on the crown
-    - [ ] Make the crown bouncing/scaling each time it gets money
+    - [?] Write the amount of money going to the crown on the crown
+    - [x] Make the crown bouncing/scaling each time it gets money
 
 - [ ] **[A]** Sounds:
 
@@ -143,6 +133,8 @@ Règle de partie perdue (recommence leniveau) :
 
 ## Gameplay Ideas
 
+- **[A]** more you carry the crown more you get tired?
+
 - **[A]** to throw a player would kill him and multiply by two its fatigue marks (increasing respawn time).
 
   - If its fatigue marks were at max, then the thrown player go to LONG TERM K.O. (2 min? or never respawn?)
@@ -152,7 +144,6 @@ Règle de partie perdue (recommence leniveau) :
 
 - **[A]** player with crown can not attack (except slaps)
 
-- **[A]** crown carrier can't attack,
 - **[A]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
 - **[A]** double jump?
 - **[A]** reloading time after used 3 lances?
@@ -164,7 +155,8 @@ Règle de partie perdue (recommence leniveau) :
 
   > every 3 seconds
 
-- **[A]** lost of money when die/ revive? 15% of money to revive,
+- **[A]** lost of money when die/ revive? 15% of money to revive:
+  > may be the player could pay money to come back earlier!
 
   > to die from the super/burning lance would remove more money.
 
@@ -284,7 +276,20 @@ Règle de partie perdue (recommence leniveau) :
 
 # Changelog
 
+- [x] improve the lance sensor, so that the minimum distance where we can throw a lance while facing an object make the lance attach to that object (was passing through before)
+- [x] Decrease the thickness of the lance pick to allow it to pass in narrow paths
+
 ## Up to 13/09/2016
+
+- [x] check all the list of bugs
+
+- [x] **[A]** fireball can stop and/or slow down...? probably a problem with collision
+
+- [x] **[A]** bug: sometimes the player revive with automatic damage per second.
+
+  > - In an attempt to debug, we replace flush() with the deepFlush() function in the isDead() function.
+  > - We can't test if it is effective.
+  > - I think that it is actually better to flush in the respawn function!!
 
 - [x] add fireball explosion sound
 - [x] change immunity system and make it simpler so that it is easier to play a sound when injured

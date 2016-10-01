@@ -98,7 +98,7 @@ public class SimpleLauncher extends GameObject implements Triggerable {
             }
         }
         updateProjectileStartPoint();
-        return false;
+        return todispose;
 
     }
 

@@ -47,6 +47,7 @@ public class GameObject implements Updatable, Renderable {
     public ContactData mainBoxContact;
     protected int mainFixtureIndex;
 	public Animation current_animation;
+    private String currentAnimationName;
     protected ObjectMap<String, Animation> animations;
     private Constants.VIEW_DIRECTION viewDirection;
 	public Vector2 position;
@@ -61,11 +62,13 @@ public class GameObject implements Updatable, Renderable {
 //    public Character Carrier = null;
     public Constants.ACTIVE_STATE activeState;
     public Constants.ACTIVE_STATE previousActiveState = null;
+    protected boolean todispose;
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 
     public GameObject(GameScreenTournament game, Vector2 position, Vector2 dimension,
                       float angle, String objectDataID, Filter filter){ // angle in radians
+        todispose = false;
         gamescreen = game;
         color = new Array<Float>(new Float[]{1.0f,1.0f,1.0f,1.0f});
         children = new Array<GameObject>(1);
@@ -345,6 +348,7 @@ public class GameObject implements Updatable, Renderable {
 
     public void setAnimation(String animation_name){
         current_animation = animations.get(animation_name);
+        currentAnimationName = animation_name;
         if (current_animation == null)
             Gdx.app.error("GameObject.setAnimation()", "can't find animation "+animation_name);
 		stateTime = 0;
@@ -407,7 +411,7 @@ public class GameObject implements Updatable, Renderable {
                 break;
         }
         previousActiveState = activeState;
-        return checkIfToDestroy();
+        return checkIfToDestroy() || todispose;
 
 	}
 
@@ -474,6 +478,14 @@ public class GameObject implements Updatable, Renderable {
         this.position.set(v.x,v.y);
         //this.origin.set(v.x,v.y).add(originshift);
         this.body.setTransform(this.position, 0);
+    }
+
+    public void setPosition(Vector2 v, boolean resetSpeed) {
+        this.position.set(v.x,v.y);
+        //this.origin.set(v.x,v.y).add(originshift);
+        this.body.setTransform(this.position, 0);
+        if(resetSpeed)
+            this.body.setLinearVelocity(0, 0);
     }
 
     public void setOrigin(float x, float y) {
@@ -625,5 +637,22 @@ public class GameObject implements Updatable, Renderable {
 
     public Constants.VIEW_DIRECTION getViewDirection() {
         return viewDirection;
+    }
+
+    public ObjectMap<String,Animation> getAnimationSet() {
+        return animations;
+    }
+
+    public void setAnimationSet(ObjectMap<String, Animation> animations) {
+        this.animations = animations;
+        current_animation = animations.get(getCurrentAnimationName());
+    }
+
+    public String getCurrentAnimationName(){
+        return currentAnimationName;
+    }
+
+    public void setTodispose(boolean todispose) {
+        this.todispose = todispose;
     }
 }

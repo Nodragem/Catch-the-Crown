@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -43,7 +44,6 @@ import java.lang.String;
 import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
-	private static final boolean DEBUG_BOX2D = true;
     private final RopeGame game;
     private TiledMap map;
     private ArrayMap <String, Player> playersList;
@@ -79,8 +79,16 @@ public class GameScreenTournament implements Screen {
     private int victoryThreshold;
     private boolean randomLevel;
     public JsonValue objectDataBase;
+    private Character currentWinner;
+    protected ObjectMap<String, Animation> animationGoldenPrabbit;
+    protected ObjectMap<String, Animation> animationBufferPrabbit;
+    protected ObjectMap<String, Animation> animationGoldenWeapon;
+    protected ObjectMap<String, Animation> animationBufferWeapon;
+    private Character goldenPrabbit;
+    private boolean isDebugMode;
 
     public GameScreenTournament(RopeGame ropeGame){
+        isDebugMode = false;
         this.game = ropeGame;
         batch = ropeGame.getBatch();
         victoryThreshold = 3;
@@ -92,6 +100,7 @@ public class GameScreenTournament implements Screen {
             this.currentLevel = 0;
         this.camera = ropeGame.camera;
         objectDataBase = new JsonReader().parse(Gdx.files.internal("object_types.json"));
+
     }
 
     @Override
@@ -141,6 +150,16 @@ public class GameScreenTournament implements Screen {
         createPlayers();
         GUIlayer.updatePlayerList(playersList);
         setStateGame(GAME_STATE.PLAYED);
+
+        // Here we load the texture of the Golden Prabbit
+        // to avoid to reprogram all the animation importing, we simply create a prabbit:
+        Character GoldPrabbit = new Character(this, new Vector2(15,15), "character", "yellow");
+        GoldPrabbit.setWeapon(new AttackManager(this, "lance", "attack_layer", "yellow"));
+        animationGoldenPrabbit = GoldPrabbit.getAnimationSet();
+        animationGoldenWeapon = GoldPrabbit.getWeapon().getAnimationSet();
+        goldenPrabbit = null;
+        GoldPrabbit.setTodispose(true);
+        GoldPrabbit = null;
 
     }
 
@@ -276,9 +295,9 @@ public class GameScreenTournament implements Screen {
         }
         batch.end();
         map_renderer.render(foregroundLayers);
-        if (DEBUG_BOX2D)
+        if (isDebugMode)
             b2debug.render(b2world, camera.combined); // again the same as setProjectionMatrix
-        GUIlayer.renderUI(deltaTime, DEBUG_BOX2D);
+        GUIlayer.renderUI(deltaTime, isDebugMode);
 
 	}
 
@@ -304,6 +323,28 @@ public class GameScreenTournament implements Screen {
         if(theCrown.getCarrier() != null){
             groupScore += theCrown.getCrownGoldValue();
         }
+
+        // check whether there is a golden Prabbit
+        currentWinner = getWinner().getCharacter();
+        if (goldenPrabbit == null){
+            if(isTheWinnerGolden(currentWinner.getPlayer())) {
+                animationBufferPrabbit = currentWinner.getAnimationSet();
+                animationBufferWeapon = currentWinner.getWeapon().getAnimationSet();
+                currentWinner.setAnimationSet(animationGoldenPrabbit);
+                currentWinner.getWeapon().setAnimationSet(animationGoldenWeapon);
+                goldenPrabbit = currentWinner;
+                goldenPrabbit.goToGoldenState(true);
+            }
+        } else {
+            if(!isTheWinnerGolden(currentWinner.getPlayer()))
+            {
+                goldenPrabbit.setAnimationSet(animationBufferPrabbit);
+                goldenPrabbit.getWeapon().setAnimationSet(animationBufferWeapon);
+                goldenPrabbit.goToGoldenState(false);
+                goldenPrabbit = null;
+            }
+        }
+
         // b2world.step() can go before Player, but maybe better here,
         // cause Player changes the physics of characters and characters listen to their physical states to know their states
         b2world.step(deltaTime, 8, 3);
@@ -402,6 +443,28 @@ public class GameScreenTournament implements Screen {
                 winner = buffer;
         }
         return winner;
+    }
+
+    public boolean isTheWinnerGolden(Player winner){
+        /* if the current winner, without the crown, does not have more money than a looser
+           with the crown, the current winner is not gold
+           You should provide the winner */
+        boolean isWinnerGold = true;
+        float netWalletWinner = 0;
+        float potentialWalletCandidate = 0;
+        ArrayMap<String, Player> loosers = new ArrayMap<String, Player>(playersList);
+        loosers.removeValue(winner, true);
+        for (int i = 0; i < loosers.size; i++) {
+            Player candidate = loosers.getValueAt(i);
+            netWalletWinner = winner.hasTheCrown()?
+                    winner.getScore()-getCrownGoldValue():winner.getScore();
+            potentialWalletCandidate = candidate.hasTheCrown()?
+                    candidate.getScore():candidate.getScore()+getCrownGoldValue();
+            if (netWalletWinner <= potentialWalletCandidate)
+                isWinnerGold = false;
+        }
+
+        return isWinnerGold;
     }
 
     public String getMaxName(ArrayMap<String, Integer> map) {
@@ -524,6 +587,7 @@ public class GameScreenTournament implements Screen {
             if (Gdx.input.isKeyPressed(Keys.F)) enableFullScreen();
             if (Gdx.input.isKeyPressed(Keys.P)) stateGame = (stateGame == GAME_STATE.PAUSED)?GAME_STATE.PLAYED : GAME_STATE.PAUSED;
             if (Gdx.input.isKeyPressed(Keys.T)) this.timer -= 10;
+            if (Gdx.input.isKeyJustPressed(Keys.B)) this.isDebugMode = !isDebugMode;
             // should be replaced with an actionListenner (push request instead of pulling)
             // cause for now the game can pause and unpaused if we keep pressing.
         }

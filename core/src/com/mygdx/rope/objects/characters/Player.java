@@ -52,6 +52,7 @@ public class Player implements ControlProcessor, Updatable  {
     private Window currentWindow;
     private Window previousWindow;
     public float inputCoolDown;
+    private Vector2 UIBox;
 
     public Player(String name, Character character, InputProfile inputProfile, GameScreenTournament gameScreen) {
         this.gameScreen = gameScreen;
@@ -329,5 +330,13 @@ public class Player implements ControlProcessor, Updatable  {
         } else {
             killTable.put(obj, 1);
         }
+    }
+
+    public void setUIBox(Vector2 UIBox) {
+        this.UIBox = UIBox.cpy().scl(1/64f).add(5f,0.5f);
+    }
+
+    public Vector2 getUIBox() {
+        return new Vector2(UIBox);
     }
 }

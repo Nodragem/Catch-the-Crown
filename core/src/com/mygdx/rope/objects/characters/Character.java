@@ -1,7 +1,6 @@
 package com.mygdx.rope.objects.characters;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -32,7 +31,9 @@ public class Character extends GameObject implements  Carriable {
     public Player player;
     public AttackManager weapon;
     public Animation groundShock;
-    private float timeFXState;
+    public Animation goldenGlowing;
+    private float timeFrontFX;
+    private float timeBackFX;
     public MOVE_STATE previousMoveState;
     public MOVE_STATE moveState;
     public PICKUP_STATE pickupState;
@@ -50,6 +51,7 @@ public class Character extends GameObject implements  Carriable {
     private Texture MarkTexture;
     private actionProgressBar progressBar;
     private Character Carrier;
+
 
     public Character(GameScreenTournament game, Vector2 position, String objectDataID, String color_texture){
         super(game, position, new Vector2(1, 0.9f), 0, "No Init");
@@ -150,7 +152,10 @@ public class Character extends GameObject implements  Carriable {
         MarkTexture =  new Texture(pixmap);
         Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions("ground_shock");
         groundShock = new Animation(0.25f, regions, Animation.PlayMode.NORMAL);
-        timeFXState = -1;
+        timeFrontFX = -1;
+        regions = atlas.findRegions("golden_halo_back");
+        goldenGlowing = new Animation(0.25f, regions, Animation.PlayMode.LOOP);
+        timeBackFX = -1;
     }
 
     @Override
@@ -243,16 +248,22 @@ public class Character extends GameObject implements  Carriable {
             crownBody.setTransform(this.position.x,
                     this.position.y + this.dimension.y, 0);
         }
-        if (timeFXState >=0 && !groundShock.isAnimationFinished(timeFXState)) {
-            timeFXState += deltaTime;
-            Gdx.app.debug("Character", "FXState: "+groundShock.isAnimationFinished(timeFXState));
+        if (timeFrontFX >=0 && !groundShock.isAnimationFinished(timeFrontFX)) {
+            timeFrontFX += deltaTime;
+            Gdx.app.debug("Character", "FXState: "+groundShock.isAnimationFinished(timeFrontFX));
         }
+        if (timeBackFX >=0)
+            timeBackFX+= deltaTime;
         return super.update(deltaTime);
 
     }
 
     @Override
     public void render(SpriteBatch batch) {
+        if(timeBackFX >= 0){
+            TextureRegion reg = goldenGlowing.getKeyFrame(timeBackFX);
+            batch.draw(reg, position.x-0.5f, position.y-0.5f, 0, 0, 2, 2, 1, 1, 0);
+        }
         super.render(batch);
         for (int i = 0; i < Constants.MAXMARKS; i++) {
             if (i < marks)
@@ -262,16 +273,14 @@ public class Character extends GameObject implements  Carriable {
             batch.draw(MarkTexture, position.x+0.15f*i, position.y+dimension.y + 0.2f, 0.1f, 0.2f);
             batch.setColor(1, 1, 1, 1); // markers in white
         }
-        if (timeFXState >=0 && !groundShock.isAnimationFinished(timeFXState)){
-            TextureRegion reg = groundShock.getKeyFrame(timeFXState);
+        if (timeFrontFX >=0 && !groundShock.isAnimationFinished(timeFrontFX)){
+            TextureRegion reg = groundShock.getKeyFrame(timeFrontFX);
             batch.draw(reg, position.x, position.y, 0, 0, 1, 1, 1, 1, 0);
-            Gdx.app.debug("Character", "FXState draw: "+groundShock.isAnimationFinished(timeFXState));
         }
-
     }
 
     private void updateTheStateMachine(float deltaTime) {
-        gamescreen.addDebugText("\n " + getPlayer().getName() + " MOVE_STATE: " + moveState);
+//        gamescreen.addDebugText("\n " + getPlayer().getName() + " MOVE_STATE: " + moveState);
         switch (activeState) {
             case ACTIVATED:
                 switch (awakeState) {
@@ -404,8 +413,9 @@ public class Character extends GameObject implements  Carriable {
 
     @Override
     public boolean checkIfToDestroy() {
-        return false;
+        return todispose;
     }
+
 
     public float getTimeToSleep() {
         return timeToSleep;
@@ -448,7 +458,7 @@ public class Character extends GameObject implements  Carriable {
             case DEAD:
                 setAnimation("Death");
                 if(previousMoveState==MOVE_STATE.THROWED) {
-                    timeFXState = 0;
+                    timeFrontFX = 0;
                     soundCache = gamescreen.assetManager.getRandom("impact_to_ground");
                     soundCache.play();
                 }
@@ -634,5 +644,18 @@ public class Character extends GameObject implements  Carriable {
 
     public void setCrownBody(Body crownBody) {
         this.crownBody = crownBody;
+    }
+
+    @Override
+    public void setTodispose(boolean todispose) {
+        weapon.setTodispose(todispose);
+        super.setTodispose(todispose);
+    }
+
+    public void goToGoldenState(boolean b) {
+        if(b)
+            timeBackFX = 0;
+        else
+            timeBackFX = -1;
     }
 }

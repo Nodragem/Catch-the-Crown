@@ -3,6 +3,7 @@ package com.mygdx.rope.objects.collectable;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -23,12 +24,20 @@ public class Crown extends GameObject implements Carriable {
 //    private Character carrier;
     private float crownGoldValue;
     private Character Carrier;
+    private boolean bouncing;
+    private float interpolation;
+    private Vector2 bounceInSize;
+    private Vector2 standardSize;
     // a part of the gold goes in the crown pocket, the other part in the player pocket
     // the crown holder score is: crown gold pocket + its own gold.
 
     public Crown(GameScreenTournament game, Vector2 position, Array<Coins> coinGroups) {
         super(game, position);
+        bouncing = false;
+        interpolation = 0f;
         linkedGroupCoins = coinGroups;
+        bounceInSize = new Vector2(1.5f,1.5f);
+        standardSize = new Vector2(1,1);
         for (Coins linkedGroupCoin : linkedGroupCoins) {
             linkedGroupCoin.setLinkedCrown(this);
         }
@@ -63,6 +72,7 @@ public class Crown extends GameObject implements Carriable {
     }
 
     public void addGoldValue(float gold) {
+        bouncing = true;
         this.crownGoldValue += gold;
     }
 
@@ -83,6 +93,9 @@ public class Crown extends GameObject implements Carriable {
                 neverTaken = false;
             }
             this.Carrier = newCarrier;
+            for (Coins linkedGroupCoin : linkedGroupCoins) {
+                linkedGroupCoin.setCurrentDestination(newCarrier.getPlayer().getUIBox());
+            }
             this.Carrier.getPlayer().addScore(crownGoldValue);
             this.body.setType(BodyDef.BodyType.KinematicBody);
             newCarrier.setCrownBody(body);
@@ -100,7 +113,20 @@ public class Crown extends GameObject implements Carriable {
     @Override
     public boolean update (float deltaTime){
         super.update(deltaTime);
-        return false;
+        if (bouncing){
+            interpolation+=8*deltaTime;
+            if(interpolation>=2) {
+                interpolation = 0;
+                bouncing = false;
+            }
+            else if (interpolation < 1){
+                dimension.interpolate(bounceInSize, interpolation, Interpolation.circleIn);
+            } else if (interpolation < 2){
+                dimension.interpolate(standardSize, interpolation-1, Interpolation.circleOut);
+            }
+        }
+
+        return todispose;
 
 
     }

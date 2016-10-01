@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -28,6 +29,8 @@ public class Coins extends GameObject implements Triggerable {
     private Array<Vector2> positionCollectables = new Array<Vector2>();
     //private Array<Boolean> activated = new Array();
     private Array<Float> respawnTimeCollectables = new Array<Float>();
+    private Array<Float> travelCollectables = new Array<Float>();
+    private Vector2 currentDestination;
     private Array<Float> sizeCollectables = new Array<Float>();
     private Array<Animation> animationCollectables=new Array<Animation>();
     private Array <Float> valueCollectables = new Array<Float>();
@@ -41,10 +44,13 @@ public class Coins extends GameObject implements Triggerable {
     private boolean defaultON;
     final static JsonValue collectableInfo = new JsonReader().parse(Gdx.files.internal("object_types.json")).get("collectable_type");
     static ArrayMap<String, Animation> animOfCollectables;
+    private Vector2 positionCache;
+
 
     // we may want it to be compatible with the trap system
     public Coins(GameScreenTournament game, Vector2 position, TiledMapTileLayer collectableMap, ArrayMap<String, HubInterface> HubList) {
         super(game, position, new Vector2(0.5f,0.5f));
+        currentDestination = null;
         activationAllowed = false;
         coinsRespawnTime = Constants.COINSTIME;
         // note that the HUB resets the coins so that they go to their default ON value
@@ -127,6 +133,7 @@ public class Coins extends GameObject implements Triggerable {
         respawnTimeCollectables.add(0.0f);
         animationCollectables.add(animOfCollectables.get(typeName));
         valueCollectables.add(infoType.getFloat("value", 10));
+        travelCollectables.add(-1f);
         coinBox.setAsBox(size / 2.0f, size / 2.0f, new Vector2(corrected_x+size/2.0f, corrected_y+size/2.0f), 0);
         coinFixture.shape = coinBox;
         Fixture f = this.body.createFixture(coinFixture);
@@ -142,6 +149,7 @@ public class Coins extends GameObject implements Triggerable {
         positionCollectables.removeIndex(index);
         //activated.removeIndex(index);
         respawnTimeCollectables.removeIndex(index);
+        travelCollectables.removeIndex(index);
         animationCollectables.removeIndex(index);
         valueCollectables.removeIndex(index);
 
@@ -157,18 +165,29 @@ public class Coins extends GameObject implements Triggerable {
     public boolean update(float deltaTime){
         switch (activeState) {
             case ACTIVATED:
+                if (!activationAllowed)
+                    break;
                 characterWithCrown = linkedCrown.getCarrier();
-                if (characterWithCrown != null) {
-                    for (int i = 0; i < respawnTimeCollectables.size; i++) {
-                        if (respawnTimeCollectables.get(i) > 0) {
+                // the current Destination of the coins is update by the Crown, when it is picked up
+                for (int i = 0; i < respawnTimeCollectables.size; i++) {
+                    if (respawnTimeCollectables.get(i) >= 0) {
+                        if (characterWithCrown != null) {
                             ContactData data = (ContactData) body.getFixtureList().get(i).getUserData();
                             if (data.isTouchedBy(characterWithCrown.getBody().getFixtureList().get(0))) {
                                 respawnTimeCollectables.set(i, coinsRespawnTime);
                                 distributeGold(valueCollectables.get(i));
+                                travelCollectables.set(i, 0f);
                             }
-                        } else {
-                            respawnTimeCollectables.set(i, respawnTimeCollectables.get(i) + 1.0f * deltaTime);
                         }
+                    } else {
+                        respawnTimeCollectables.set(i, respawnTimeCollectables.get(i) + 1.0f * deltaTime);
+                    }
+
+                    if(travelCollectables.get(i)>=1){
+                        travelCollectables.set(i, -1f);
+                    }
+                    if(travelCollectables.get(i)>=0){
+                        travelCollectables.set(i, travelCollectables.get(i)+deltaTime);
                     }
                 }
                 break;
@@ -190,14 +209,21 @@ public class Coins extends GameObject implements Triggerable {
     }
 
     public void render(SpriteBatch batch) {
-        if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
+        if(isVisible && activationAllowed && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             for (int i = 0; i < positionCollectables.size; i++) {
-                if (respawnTimeCollectables.get(i) > 0) {
+                if (respawnTimeCollectables.get(i) >= 0 || travelCollectables.get(i)>=0) {
                     TextureRegion reg = null;
                     //Gdx.app.debug(TAG, "Key Frame: " + stateTime);
+                    if (travelCollectables.get(i)>=0) {
+                        positionCache = positionCollectables.get(i).cpy();
+                        positionCache.interpolate(currentDestination, travelCollectables.get(i), Interpolation.bounceOut);
+                    } else {
+                        positionCache = positionCollectables.get(i);
+                    }
                     reg = animationCollectables.get(i).getKeyFrame(stateTime);
                     batch.draw(reg.getTexture(), // we called this long draw() method just to get access the flip argument...
-                            positionCollectables.get(i).x, positionCollectables.get(i).y,
+                            positionCache.x,
+                            positionCache.y,
                             0, 0,
                             sizeCollectables.get(i), sizeCollectables.get(i),
                             1, 1,
@@ -229,5 +255,9 @@ public class Coins extends GameObject implements Triggerable {
     @Override
     public void triggerOFFActions(HubInterface hub) {
         goToDesactivation();
+    }
+
+    public void setCurrentDestination(Vector2 currentDestination) {
+        this.currentDestination = currentDestination;
     }
 }

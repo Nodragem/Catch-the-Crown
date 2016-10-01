@@ -58,7 +58,7 @@ public class Lance extends GameObject {
         // ---- create the pick Ficture:
         PolygonShape p = new PolygonShape();
         // p.setAsBox(dimension.x *0.4f, dimension.y *0.25f, new Vector2(dimension.x *0.4f, dimension.y *0.5f), 0);
-        p.setAsBox(dimension.x *0.3f, dimension.y *0.25f/2.75f, new Vector2(dimension.x *0.4f, dimension.y *0.0f), 0);
+        p.setAsBox(dimension.x *0.3f, dimension.y *0.25f/2.75f, new Vector2(dimension.x *0.55f, dimension.y *0.0f), 0);
         FixtureDef fd = new FixtureDef();
         fd.shape = p;
         fd.density = 10;
@@ -71,7 +71,7 @@ public class Lance extends GameObject {
         // ---- the main stick Fixture, which is the main contact box
         p = new PolygonShape();
 //        p.setAsBox(dimension.x *0.1f, dimension.y *0.5f, new Vector2(dimension.x * 0.9f, dimension.y *0.5f), 0);
-        p.setAsBox(dimension.x *0.075f, dimension.y *0.5f/2.75f, new Vector2(dimension.x * 0.9f, dimension.y *0.0f), 0);
+        p.setAsBox(dimension.x *0.075f, dimension.y *0.5f/3.5f, new Vector2(dimension.x * 0.9f, dimension.y *0.0f), 0);
         fd = new FixtureDef();
         fd.shape = p;
         fd.density = 40;
@@ -108,7 +108,7 @@ public class Lance extends GameObject {
         }
         // why do we need to flush at each frame?
         mainBoxContact.flush();
-        return isToDetroy;
+        return isToDetroy || todispose;
     }
 
     public void goToPlatformState() {
