@@ -63,6 +63,9 @@ public class GameObject implements Updatable, Renderable {
     public Constants.ACTIVE_STATE activeState;
     public Constants.ACTIVE_STATE previousActiveState = null;
     protected boolean todispose;
+    private float soundVol;
+    private float soundDelay;
+    private float soundTime;
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 
@@ -357,6 +360,14 @@ public class GameObject implements Updatable, Renderable {
     @Override
 	public boolean update(float deltaTime) {
         stateTime += deltaTime;
+        if (soundCache != null && soundTime > soundDelay){
+            soundDelay = 0;
+            soundTime = 0;
+            soundCache.play(soundVol);
+            soundCache = null;
+        } else {
+            soundTime+=deltaTime;
+        }
         // we update the position even when the object is not activated
         if (parentBody == null || body.getType() == BodyType.DynamicBody) {
             position.set(body.getPosition()).sub(origin); // the sub is particularly useful for the lances attached, because we changed their origin
@@ -461,7 +472,7 @@ public class GameObject implements Updatable, Renderable {
     }
 
     public void setColor(float r, float g, float b, float a){
-        color.set(0,r); color.set(1,g); color.set(2,b); color.set(2,a);
+        color.set(0,r); color.set(1,g); color.set(2,b); color.set(3,a);
     }
 
     public boolean checkIfToDestroy() {
@@ -655,4 +666,41 @@ public class GameObject implements Updatable, Renderable {
     public void setTodispose(boolean todispose) {
         this.todispose = todispose;
     }
+
+    public void playSound(String soundName) {
+        soundCache = gamescreen.assetManager.getRandom(soundName);
+        this.soundVol = 1f;
+        this.soundTime = 0;
+        this.soundDelay = 0;
+        soundCache.play(1f);
+        soundCache = null;
+
+    }
+
+    public void playSound(String soundName, float delay) {
+        soundCache = gamescreen.assetManager.getRandom(soundName);
+        this.soundVol = 1f;
+        this.soundTime = 0;
+        this.soundDelay = delay;
+
+    }
+    public void playSound(String soundName, float delay, float vol) {
+        soundCache = gamescreen.assetManager.getRandom(soundName);
+        this.soundVol = vol;
+        this.soundTime = 0;
+        this.soundDelay = delay;
+
+    }
+
+    public void playSoundIndex(String soundName, int index) {
+        soundCache = gamescreen.assetManager.get(soundName, index);
+        this.soundVol = 1f;
+        this.soundTime = 0;
+        this.soundDelay = 0;
+        soundCache.play(1f);
+        soundCache = null;
+
+    }
+
+
 }
