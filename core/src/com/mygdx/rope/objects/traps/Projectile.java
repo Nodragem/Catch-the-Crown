@@ -58,11 +58,9 @@ public class Projectile extends GameObject implements Usable {
     @Override
     public Array<GameObject> onCollision(boolean dealDamage) {
 //        Gdx.audio.newSound(Gdx.files.internal("sounds/3.wav"));
-        soundCache = gamescreen.assetManager.getRandom("explosion_fireball");
-        soundCache.play();
+        playSound("explosion_fireball");
         Gdx.app.debug("Projectile", "Collision Detected");
-        body.setLinearVelocity(0f, 0f);
-        body.setType(BodyDef.BodyType.KinematicBody);
+
         Gdx.app.debug("Projectile", "life before return damage: " + getLife());
         Array<GameObject> touchedObjects = super.onCollision(false);
         for (GameObject touchedObject: touchedObjects) {
@@ -106,8 +104,12 @@ public class Projectile extends GameObject implements Usable {
 
     public boolean checkIfToDestroy() {
         // FIXME: we should just rely on DEACTIVATED (some object would be permanent and would not be destroyed when DEACTIVATED)
-        if (life < 0 && activeState != Constants.ACTIVE_STATE.DESACTIVATED)
+        if (life < 0 && activeState != Constants.ACTIVE_STATE.DESACTIVATED){
+            body.setLinearVelocity(0f, 0f);
+            body.setType(BodyDef.BodyType.StaticBody);
             goToDesactivation();
+            body.setActive(false);
+        }
         return false;
     }
 }

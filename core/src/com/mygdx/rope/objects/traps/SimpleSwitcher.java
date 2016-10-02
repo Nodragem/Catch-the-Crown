@@ -91,11 +91,13 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
 
     private void switchON() {
         setAnimation("SwitchingON");
+        playSound("switcher_on");
         switchstate = Constants.SWITCHSTATE.ON;
     }
 
     private void switchOFF() {
         setAnimation("SwitchingOFF");
+        playSound("switcher_off");
         switchstate = Constants.SWITCHSTATE.OFF;
     }
 

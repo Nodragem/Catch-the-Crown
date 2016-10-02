@@ -208,11 +208,13 @@ public class MovingPlatform extends GameObject implements Triggerable {
         if(!platformAlwaysVisible)
             goToActivation();
         stopPlatform(false);
+        playSound("platform_activation");
     }
 
     @Override
     public void triggerOFFActions(HubInterface hub) {
         stopPlatform(true);
+        playSound("platform_deactivation");
         if(!platformAlwaysVisible)
             goToDesactivation();
     }

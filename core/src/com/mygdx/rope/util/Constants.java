@@ -33,7 +33,7 @@ public class Constants {
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}
-    public static enum TRAPSTATE {ON, OFF, RELOADING}
+    public static enum TRAPSTATE {ON, OFF, OBSTRUCTED, RELOADING}
     public static enum SWITCHSTATE {ON, OFF, ACTIVATED}
     public static enum VIEW_DIRECTION { LEFT, RIGHT, UP, DOWN}
     public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}

@@ -8,6 +8,8 @@ import com.badlogic.gdx.utils.Array;
  * Created by Nodragem on 11/05/2014.
  */
 public class ContactData {
+
+
     private final Fixture myFixture;
     public Constants.COLLIDER_TYPE myColliderType;
     public Array<Fixture> touchedFixtures;
@@ -111,5 +113,7 @@ public class ContactData {
         return myColliderType;
     }
 
-
+    public Fixture getMyFixture() {
+        return myFixture;
+    }
 }

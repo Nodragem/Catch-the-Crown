@@ -583,7 +583,7 @@ public class GameScreenTournament implements Screen {
             if (Gdx.input.isKeyPressed(Keys.PAGE_DOWN)) cameraHelper.addZoom(-camZoom);
             if (Gdx.input.isKeyPressed(Keys.END)) cameraHelper.setZoom(1);
             if (Gdx.input.isKeyPressed(Keys.ENTER)) cameraHelper.setTarget(cameraHelper.hasTarget() ? null : cameraTarget);
-            if (Gdx.input.isKeyPressed(Keys.R)) startNewLevel(listLevels.get(currentLevel));
+            if (Gdx.input.isKeyJustPressed(Keys.R)) startNewLevel(listLevels.get(currentLevel));
             if (Gdx.input.isKeyPressed(Keys.F)) enableFullScreen();
             if (Gdx.input.isKeyPressed(Keys.P)) stateGame = (stateGame == GAME_STATE.PAUSED)?GAME_STATE.PLAYED : GAME_STATE.PAUSED;
             if (Gdx.input.isKeyPressed(Keys.T)) this.timer -= 10;

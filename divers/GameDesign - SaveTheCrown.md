@@ -53,60 +53,7 @@ Règle de partie perdue (recommence leniveau) :
 
 ## General Improvements:
 
-- [x] **[A]** deactivate lances when the platform supporting them disappears.
-
-- [ ] **[A]** the lance should deactivate the launcher
-
-- [ ] **[A]** Animations:
-
-  - [ ] Lances could have another appearance when fully loaded
-
-  - [x] Fireball explosion
-
-  - [x] Picking up / Projecting character:
-
-    1. [x] the lifted prabbit should be panicked
-    2. [x] the lifting prabbit should have his arm up?
-    3. [x] a GUI appears to tell the players to press A as many time as they can
-
-      > we can use the progress bar in the GUI folder for the accoutn of how many time the button A/B have been pressed.
-
-    4. [x] Projection animation
-
-  - [x] Golden Prabbit animations:
-
-    > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
-    > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
-
-    >   - When winning: simple aura, keeping the color of the prabbit
-    >   - When winning and special conditions: Golden Prabbits.
-
-    - [x] the yellow skin should be only used for the Golden Prabbit
-    - [x] add a layer in character class to add effects (here it will be a golden aura)
-    - [x] animate the golden aura
-
-  - [x] Animate the flowers?
-
-  - [x] Animate the coins going to your wallet
-
-  - [x] Animate the crown:
-
-    - [?] Write the amount of money going to the crown on the crown
-    - [x] Make the crown bouncing/scaling each time it gets money
-
-- [ ] **[A]** Sounds:
-
-  - [x] fireball death sound and animation
-  - [x] sound for end of jumping
-  - [x] Switcher On/Off
-  - [x] Fireball launcher
-  - [c] Spikes
-
-    > not sure what it should sound like...
-
-  - [x] List the sounds to remove from the game
-
-  - [x] create a sounds importer/selector script
+- [ ]  Lance Burning Sound
 
 - [ ] **[B]** level menu
 
@@ -134,33 +81,28 @@ Règle de partie perdue (recommence leniveau) :
 ## Gameplay Ideas
 
 - **[A]** more you carry the crown more you get tired?
-
-- **[A]** to throw a player would kill him and multiply by two its fatigue marks (increasing respawn time).
-
-  - If its fatigue marks were at max, then the thrown player go to LONG TERM K.O. (2 min? or never respawn?)
-  - If the fatigue marks are at max, they are red and they swing with a sound, to indicate to other players that someone is ready to be LONG-TERM killed.
-
-    > Note that we wanted to do something else before, we wanted to make the thrown player killed with the max fatigues
-
-- **[A]** player with crown can not attack (except slaps)
-
-- **[A]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
-- **[A]** double jump?
-- **[A]** reloading time after used 3 lances?
-- **[A]** slow down character who carry something,
-
-  > should we slow down the crown carrier?
-
-- **[A]** dodging system?
-
-  > every 3 seconds
+- **[A]** collect:
+  - a Ruby give you 1 second of invicibility + treat one mark
+  - a Diamond give you 5 second of invicibility + treat all marks!
+- **[A]** to slap someone treats one mark,
 
 - **[A]** lost of money when die/ revive? 15% of money to revive:
   > may be the player could pay money to come back earlier!
 
   > to die from the super/burning lance would remove more money.
 
-- **[A]** collect a ruby give you 1 second of invicibility?
+- **[B]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
+- **[B]** double jump?
+- **[B]** reloading time after used 3 lances?
+- **[B]** slow down character who carry something,
+
+  > should we slow down the crown carrier?
+
+- **[C]** dodging system?
+
+  > every 3 seconds
+  >
+  > **Not sure that it is useful**
 
 - **[B]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
 
@@ -276,8 +218,87 @@ Règle de partie perdue (recommence leniveau) :
 
 # Changelog
 
+## Up to 02/10/2016
+
+- [x] **[A]** can throw Charged Lance, they pass through walls and they kill at once, removing money
+
+- [x] **[A]** to throw a player would kill him and multiply by two its fatigue marks (increasing respawn time).
+
+  - If its fatigue marks were at max, then the thrown player go to LONG TERM K.O. (2 min? or never respawn?)
+  - If the fatigue marks are at max, they are red and they swing with a sound, to indicate to other players that someone is ready to be LONG-TERM killed.
+
+    > Note that we wanted to do something else before, we wanted to make the thrown player killed with the max fatigues
+
+- [x] **[A]** player with crown can not attack (except slaps)
+
+- [x] **[A]** the lance should deactivate the launcher
+- [x] quick fix: we desactivate the body of fireball when they gotoDeactivation, so that the characters can walk into explosion.
+- [x] quick fix: we gotoDeactivation on Death (life < 0 ) and not on Collision, somehow, the collision does not alway works, so as least, it would die on a second Collision.
+
+- [x] **[A]** Animations:
+
+  - [x] Lances could have another appearance when fully loaded
+
+  - [x] Fireball explosion
+
+  - [x] Picking up / Projecting character:
+
+    1. [x] the lifted prabbit should be panicked
+    2. [x] the lifting prabbit should have his arm up?
+    3. [x] a GUI appears to tell the players to press A as many time as they can
+
+      > we can use the progress bar in the GUI folder for the accoutn of how many time the button A/B have been pressed.
+
+    4. [x] Projection animation
+
+  - [x] Golden Prabbit animations:
+
+    > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
+    > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
+
+    >   - When winning: simple aura, keeping the color of the prabbit
+    >   - When winning and special conditions: Golden Prabbits.
+
+    - [x] the yellow skin should be only used for the Golden Prabbit
+    - [x] add a layer in character class to add effects (here it will be a golden aura)
+    - [x] animate the golden aura
+
+  - [x] Animate the flowers?
+
+  - [x] Animate the coins going to your wallet
+
+  - [x] Animate the crown:
+
+    - [?] Write the amount of money going to the crown on the crown
+    - [x] Make the crown bouncing/scaling each time it gets money
+
+- [ ] **[A]** Sounds:
+
+  - [x] fireball death sound and animation
+  - [x] sound for end of jumping
+  - [x] Switcher On/Off
+  - [x] Fireball launcher
+  - [x] cannot shot
+  - [x] impact to ground when throwed
+  - [ ] lance Burning
+  - [x] platform activation, deactivation
+  - [x] respawn
+  - [x] step
+  - [x] throw_character
+  - [c] Spikes
+
+    > not sure what it should sound like...
+
+  - [x] List the sounds to remove from the game
+
+  - [x] create a sounds importer/selector script
+
+- [x] correct bug: the last throwed character stayed in the handContact after being throwed (so that we could teleport him to us by pressing the picking up button)
+- [x] improve slap sensor, so that it is the handContact and not the lanceSensor that decide whether an oppenent is reachable
+- [x] improve animation of the throwing, using interpolation :D
 - [x] improve the lance sensor, so that the minimum distance where we can throw a lance while facing an object make the lance attach to that object (was passing through before)
 - [x] Decrease the thickness of the lance pick to allow it to pass in narrow paths
+- [x] **[A]** deactivate lances when the platform supporting them disappears.
 
 ## Up to 13/09/2016
 
