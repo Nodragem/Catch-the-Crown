@@ -114,8 +114,8 @@ public class AttackManager extends GameObject implements Launcher {
                     && character.pickupState == Constants.PICKUP_STATE.NORMAL) {
                 Gdx.app.debug("Lance", "short attack, state: "+attackState);
                 goToAttackState(SHORTATTACK);
-                if (mainBoxContact.isTouched())
-                    lastTouchedObj = (GameObject) mainBoxContact.peekTouchedFixtures().getBody().getUserData();
+                if (character.getCurrentHandContact().isTouched())
+                    lastTouchedObj = (GameObject) character.getCurrentHandContact().peekTouchedFixtures().getBody().getUserData();
                 else
                     lastTouchedObj = null;
                 if (lastTouchedObj != null) {
@@ -152,15 +152,16 @@ public class AttackManager extends GameObject implements Launcher {
 
     public void longDistanceAttack(boolean isPressed, float angle, boolean isAiming, float deltaTime) {
         aimingAngle = angle;
-        if (attackState == Constants.ATTACK_STATE.SHORTATTACK || attackState == Constants.ATTACK_STATE.LONGATTACK || character.pickupState != Constants.PICKUP_STATE.NORMAL){
+        if (character.hasTheCrown() || attackState == Constants.ATTACK_STATE.SHORTATTACK || attackState == Constants.ATTACK_STATE.LONGATTACK || character.pickupState != Constants.PICKUP_STATE.NORMAL){
+            shortDistanceAttack(isPressed, deltaTime);
             return;
         }
         if (!isPressed) {
             if (powerLoad > defaultPower) {
-                if(mainBoxContact.isTouched()){ // cancel the attack if is touched
+                if(mainBoxContact.isTouched() && attackState != CHARGE_READY){ // cancel the attack if is touched
                     powerLoad = defaultPower;
-                    Sound s = gamescreen.assetManager.getRandom("cannot_shot");
-                    s.play();
+                    playSound("switch_on");
+
                 } else {
                     goToAttackState(LONGATTACK);
                     deliverProjectile();
@@ -196,7 +197,7 @@ public class AttackManager extends GameObject implements Launcher {
     public void deliverProjectile() {
         // WARNING angle in radians
         lancePool.get(currentLanceIndex).use(
-                getBody().getWorldPoint(localStartingPoint), aimingAngle, powerLoad, powerLoad == maxPower ? 3.0f : 1.0f);
+                getBody().getWorldPoint(localStartingPoint), aimingAngle, powerLoad, powerLoad == maxPower?3.0f:1.0f); // the damageMultiplicator is manager internally
         currentLanceIndex = (currentLanceIndex + 1)%pool_size;
 //        if(currentLanceIndex == 0){ // we ran all the pool
 //            Gdx.app.debug("SimpleLauncher", "relaoding time");

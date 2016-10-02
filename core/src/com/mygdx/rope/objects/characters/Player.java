@@ -13,7 +13,6 @@ import com.mygdx.rope.objects.Carriable;
 import com.mygdx.rope.objects.ControlProcessor;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.Updatable;
-import com.mygdx.rope.objects.weapon.AttackManager;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.screens.Window;
 import com.mygdx.rope.util.Constants.MOVE_STATE;
@@ -166,12 +165,16 @@ public class Player implements ControlProcessor, Updatable  {
             processChallenge(isPressed);
             return;
         }
+
         if(isPressed && !pickUpButtonPressed) { // basically, here you want a push request and not to pull.
             pickUpButtonPressed = true;
+            if(character.hasTheCrown()){
+                character.playSound("switch_on");
+                return;
+            }
             //if (!character.hasCarriedObject()) { // is that not equivalent to "is  not PICKUP_STATE.PICKINGUP" ?
             if (character.pickupState == Constants.PICKUP_STATE.NORMAL){
-                sensorBuffer = (ContactData) character.currentHand.getUserData();
-                Array<Fixture> touchedFixtures = sensorBuffer.getTouchedFixtures();
+                Array<Fixture> touchedFixtures = character.currentHandContact.getTouchedFixtures();
                 for (Fixture touchedFixture : touchedFixtures) {
                     GameObject touchedObject = (GameObject) touchedFixture.getBody().getUserData();
                     if (touchedObject != null){
@@ -183,7 +186,7 @@ public class Player implements ControlProcessor, Updatable  {
                 }
                 sensorBuffer = null;
             } else if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
-                character.throwObject(currentAimingAngle, 260.0f);
+                character.throwObject(currentAimingAngle, 40.0f);
             }
         }
         else if(!isPressed){
@@ -227,8 +230,10 @@ public class Player implements ControlProcessor, Updatable  {
                         // throwOBject will change the pickupState
 //                        character.throwObject(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
                         character.getBody().setType(BodyDef.BodyType.KinematicBody);
-                        character.getBody().setTransform(bodyPos.add(0, 1f), 0);
-                        character.getBody().setLinearVelocity(0, 0.5f);
+//                        character.getBody().setTransform(bodyPos.add(0, 1f), 0);
+//                        character.getBody().setLinearVelocity(0, 0.5f);
+//                        character.setTargetInterpolation(character.getBody().getLinearVelocity().x/3.0f, 1.2f);
+                        character.setTargetInterpolation(character.getViewDirection()==VIEW_DIRECTION.LEFT?1.2f:-1.2f+character.getBody().getLinearVelocity().x/30f, 1.2f);
 
                         character.setMoveState(MOVE_STATE.THROWING_CHARACTER);
                     }
@@ -244,16 +249,16 @@ public class Player implements ControlProcessor, Updatable  {
 
 
     private void processShortAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
-        if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
-            return;
-        }
+//        if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
+//            return;
+//        }
         character.getWeapon().shortDistanceAttack(isPressed, deltaTime);
     }
 
     private void processLongAttackInput(boolean isPressed, boolean isAiming, float deltaTime) {
-        if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
-            return;
-        }
+//        if (character.pickupState == Constants.PICKUP_STATE.PICKINGUP){
+//            return;
+//        }
         character.getWeapon().longDistanceAttack(isPressed, currentAimingAngle, isAiming, deltaTime);
 
     }

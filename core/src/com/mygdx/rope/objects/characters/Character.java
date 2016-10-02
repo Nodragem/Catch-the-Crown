@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -43,14 +44,19 @@ public class Character extends GameObject implements  Carriable {
     public Body lastGroundedBody;
     public Fixture myFeet;
     public Fixture myBodyFixture;
-    public Fixture currentHand;
-    private Fixture myLeftHand;
-    private Fixture myRightHand;
+
+
+    public ContactData currentHandContact;
+    private ContactData myLeftHandContact;
+    private ContactData myRightHandContact;
     public String name;
     public String color_texture;
     private Texture MarkTexture;
     private actionProgressBar progressBar;
     private Character Carrier;
+    private Vector2 targetInterpolation;
+//    private float stepTime;
+//    private float stepPeriod;
 
 
     public Character(GameScreenTournament game, Vector2 position, String objectDataID, String color_texture){
@@ -81,6 +87,9 @@ public class Character extends GameObject implements  Carriable {
         crownBody = null;
         timerToAwakeState = 0;
         timeToSleep = 0;
+
+//        stepPeriod = 0.2f;
+//        stepTime = 0f;
 	}
 
     @Override
@@ -93,12 +102,12 @@ public class Character extends GameObject implements  Carriable {
         filter = new Filter();
         filter.categoryBits = CATEGORY.get("Sensor");
         filter.maskBits = (short)( CATEGORY.get("Object") | CATEGORY.get("Scenery") | CATEGORY.get("Player") );
-        this.myLeftHand.setFilterData(filter);
+        this.myLeftHandContact.getMyFixture().setFilterData(filter);
 
         filter = new Filter();
         filter.categoryBits = CATEGORY.get("Sensor");
         filter.maskBits = (short)( CATEGORY.get("Object") | CATEGORY.get("Scenery") | CATEGORY.get("Player") );//remove the status object from AttackManager! <-- not clear :/
-        this.myRightHand.setFilterData(filter);
+        this.myRightHandContact.getMyFixture().setFilterData(filter);
 
         filter = new Filter();
         filter.categoryBits = CATEGORY.get("Sensor");
@@ -122,6 +131,7 @@ public class Character extends GameObject implements  Carriable {
                     break;
                 case GROUNDED:
                     setAnimation("Walking");
+                    playSoundIndex("step", 1);
                     myBodyFixture.setFriction(0.01f);
                     break;
                 case IDLE:
@@ -137,6 +147,7 @@ public class Character extends GameObject implements  Carriable {
                     break;
                 case THROWING_CHARACTER:
                     setAnimation("Throwing");
+                    playSound("throw_character", 0.3f);
                     break;
             }
         }
@@ -160,7 +171,7 @@ public class Character extends GameObject implements  Carriable {
 
     @Override
     public void initFixture(){
-        // main fixture, for collision
+        // --- main fixture, for collision
         Vector2[] vertices = new Vector2[6];
         Vector2 scaleVector = new Vector2(dimension.x/1.8f, dimension.y/1.25f);
         vertices[0] = new Vector2(0f  , 1f  ).scl(scaleVector).add((1-scaleVector.x)/2, (1-scaleVector.y)/2-0.12f);
@@ -182,6 +193,7 @@ public class Character extends GameObject implements  Carriable {
         p.dispose();
         mainFixtureIndex = 0;
 
+        // --- Fixture for the feet:
         p = new PolygonShape();
         p.setAsBox(dimension.x/4.5f, dimension.y/10, new Vector2(dimension.x / 2, 0), 0);
         fd = new FixtureDef();
@@ -193,7 +205,8 @@ public class Character extends GameObject implements  Carriable {
         myFeet = this.body.createFixture(fd);
         new ContactData(8, myFeet);
         p.dispose();
-        // fixture-sensor to detect object on the left of him
+
+        // Hand fixture-sensor to detect object on the left of him
         p = new PolygonShape();
         p.setAsBox(dimension.x /2.0f, dimension.y / 3.0f, new Vector2(dimension.x/2 - dimension.x/2, dimension.y / 2), 0);
         fd = new FixtureDef();
@@ -202,10 +215,10 @@ public class Character extends GameObject implements  Carriable {
         fd.restitution = 0.0f;
         fd.friction = 0.0f;
         fd.isSensor = true;
-        myLeftHand = this.body.createFixture(fd);
-        new ContactData(2, myLeftHand);
+        myLeftHandContact = new ContactData(2, this.body.createFixture(fd));
         p.dispose();
-        // fixture-sensor to detect object on the right of him
+
+        // Hand fixture-sensor to detect object on the right of him
         p = new PolygonShape();
         p.setAsBox(dimension.x /2.0f, dimension.y / 3.0f, new Vector2(dimension.x/2 + dimension.x/2, dimension.y / 2), 0);
         fd = new FixtureDef();
@@ -214,11 +227,10 @@ public class Character extends GameObject implements  Carriable {
         fd.restitution = 0.0f;
         fd.friction = 0.0f;
         fd.isSensor = true;
-        myRightHand = this.body.createFixture(fd);
-        new ContactData(2, myRightHand);
+        myRightHandContact = new ContactData(2, this.body.createFixture(fd));
         p.dispose();
         Gdx.app.debug("PlayerCreation", "MyBody: " +myBodyFixture +"MyFeet: " +myFeet);
-        currentHand = myRightHand;
+        currentHandContact = myRightHandContact;
         this.body.isBullet();
         this.body.setFixedRotation(true);
 
@@ -232,8 +244,17 @@ public class Character extends GameObject implements  Carriable {
         else{
             setColor(1, 1, 1, 1);
         }
+//        if (moveState == MOVE_STATE.GROUNDED){
+//            if (stepTime >=0){
+//                stepTime+=deltaTime;
+//            }
+//            if(stepTime>=stepPeriod){
+//                playSound("step");
+//                stepTime = 0;
+//            }
+//        }
         // that's updating the jump states used by the "animation updater" and the renderer:
-        currentHand = this.getViewDirection() == VIEW_DIRECTION.LEFT ? myLeftHand:myRightHand; // use by the renderer directly
+        currentHandContact = this.getViewDirection() == VIEW_DIRECTION.LEFT ? myLeftHandContact : myRightHandContact; // use by the renderer directly
         // Animation updater: (could be an outside component)
         updateTheStateMachine(deltaTime);
 
@@ -264,12 +285,21 @@ public class Character extends GameObject implements  Carriable {
             TextureRegion reg = goldenGlowing.getKeyFrame(timeBackFX);
             batch.draw(reg, position.x-0.5f, position.y-0.5f, 0, 0, 2, 2, 1, 1, 0);
         }
+        if (marks == MAXMARKS)
+            this.setColor(0.5f + 0.5f*MathUtils.cos((7*stateTime%MathUtils.PI2)), 0.2f, 0.2f, 1f);
+        else
+            this.setColor(1,1,1,1);
         super.render(batch);
         for (int i = 0; i < Constants.MAXMARKS; i++) {
-            if (i < marks)
-                batch.setColor(1,1,1,1); // markers in white
-            else
-                batch.setColor(0.4f, 0.4f, 0.4f, 1f); // not marked in grey
+            if (marks == MAXMARKS)
+                batch.setColor(1f, 0.2f, 0.2f, 1f);
+            else{
+                if (i < marks)
+                    batch.setColor(1,1,1,1); // markers in white
+                else
+                    batch.setColor(0.4f, 0.4f, 0.4f, 1f); // not marked in grey
+            }
+
             batch.draw(MarkTexture, position.x+0.15f*i, position.y+dimension.y + 0.2f, 0.1f, 0.2f);
             batch.setColor(1, 1, 1, 1); // markers in white
         }
@@ -310,8 +340,13 @@ public class Character extends GameObject implements  Carriable {
                                     setMoveState(MOVE_STATE.FALLING);
                             }
                         } else if(moveState == MOVE_STATE.THROWING_CHARACTER){
+                            setPosition(body.getPosition().interpolate(targetInterpolation,
+                                    stateTime/current_animation.getAnimationDuration(),
+                                    Interpolation.exp10Out));
+
                             if (current_animation.isAnimationFinished(stateTime)){
                                 moveState = MOVE_STATE.FALLING;
+
                                 throwObject(
                                         (getViewDirection()==VIEW_DIRECTION.LEFT?225:315)*MathUtils.degreesToRadians
                                         ,2060.0f);
@@ -337,6 +372,7 @@ public class Character extends GameObject implements  Carriable {
                         timerToAwakeState += deltaTime;
                         if (timerToAwakeState > respawnTime) {
 //                            goToConsciousState(AWAKE, 0);
+                            playSound("respawn");
                             goToDesactivation();
                         }
                         break;
@@ -381,8 +417,10 @@ public class Character extends GameObject implements  Carriable {
 
         if (carriedObject != null) {
             if (force > 50 && carriedObject.getClass().equals(Character.class)) {
-                weapon.goToAttackState(ATTACK_STATE.THROWING);
                 Character p = (Character) carriedObject;
+                weapon.goToAttackState(ATTACK_STATE.THROWING);
+
+
                 p.setMoveState(MOVE_STATE.THROWED);
                 p.goToPickingUpState(PICKUP_STATE.NORMAL);
             }
@@ -459,12 +497,22 @@ public class Character extends GameObject implements  Carriable {
                 setAnimation("Death");
                 if(previousMoveState==MOVE_STATE.THROWED) {
                     timeFrontFX = 0;
-                    soundCache = gamescreen.assetManager.getRandom("impact_to_ground");
-                    soundCache.play();
+                    playSound("impact_to_ground");
+                    if (marks==MAXMARKS) {
+                        respawnTime = RESPAWNTIME + 6*marks * Constants.MARKPENALTY;
+                    } else {
+                        respawnTime = RESPAWNTIME + marks * Constants.MARKPENALTY;
+                    }
+                }
+                else {
+                    if (marks==MAXMARKS) {
+                        respawnTime = RESPAWNTIME + 2*marks * Constants.MARKPENALTY;
+                    } else {
+                        respawnTime = RESPAWNTIME + marks * Constants.MARKPENALTY;
+                    }
                 }
                 timerToAwakeState = 0;
                 Gdx.app.debug("Character", "Death Event");
-                respawnTime = RESPAWNTIME + marks*Constants.MARKPENALTY;
                 for(Fixture fixt : body.getFixtureList()) {
                     ContactData data = (ContactData) fixt.getUserData();
                     if (data != null)
@@ -544,8 +592,7 @@ public class Character extends GameObject implements  Carriable {
     }
 
     public void registerKill(GameObject obj){
-        soundCache = gamescreen.assetManager.getRandom("laugh_kill");
-        soundCache.play();
+        playSound("laugh_kill");
         player.registerKill(obj);
     }
 
@@ -559,8 +606,7 @@ public class Character extends GameObject implements  Carriable {
     protected void addToLife(float f) {
         super.addToLife(f);
         if(f<0){
-            soundCache = gamescreen.assetManager.getRandom("hurt");
-            soundCache.play(1f);
+            playSound("hurt");
             dropObjects();
         }
 
@@ -575,11 +621,15 @@ public class Character extends GameObject implements  Carriable {
     @Override
     public void setCarrier(Character newCarrier) {
         // the newCarrier use its object to take the new one
+        if (awakeState == DEAD){
+            return;
+        }
+
         if (newCarrier == null){
             if(this.Carrier !=null) {
                 this.Carrier.carriedObject = null;
-                ContactData dd = (ContactData) this.Carrier.currentHand.getUserData();
-                dd.deepFlush();
+                Carrier.myLeftHandContact.deepFlush();
+                Carrier.myRightHandContact.deepFlush();
                 this.Carrier = null;
             }
             body.setType(BodyDef.BodyType.DynamicBody);
@@ -657,5 +707,17 @@ public class Character extends GameObject implements  Carriable {
             timeBackFX = 0;
         else
             timeBackFX = -1;
+    }
+
+    public ContactData getCurrentHandContact() {
+        return currentHandContact;
+    }
+
+    public void setCurrentHandContact(ContactData currentHandContact) {
+        this.currentHandContact = currentHandContact;
+    }
+
+    public void setTargetInterpolation(float x, float y) {
+        targetInterpolation = new Vector2(body.getPosition().x + x, body.getPosition().y + y);
     }
 }
