@@ -33,6 +33,8 @@ public class SimpleLauncher extends GameObject implements Triggerable {
     private int currentIndex = 0;
     private int pool_size;
     private Constants.TRAPSTATE trapstate;
+    private Constants.TRAPSTATE beforeObstruction;
+    private int nbObstruction;
 
     public SimpleLauncher(GameScreenTournament game, Vector2 position, Vector2 dimension, float rotation,
                           float intervalProjectile, float reloadTime, float impulse, int nb_pool, boolean defaultON,
@@ -43,12 +45,13 @@ public class SimpleLauncher extends GameObject implements Triggerable {
         * here, intervalProjectile is the time between delivering a new object,
         * while intervalOFF is how long the delivered object will stay ON.
         **/
-        body.setType(BodyDef.BodyType.StaticBody);
+//        body.setType(BodyDef.BodyType.StaticBody);
         timer = intervalProjectile+1;
         this.defaultON = defaultON;
         this.trapstate = Constants.TRAPSTATE.ON;
         pool_size = nb_pool;
         poolObj = new Array<Usable>(nb_pool);
+
 
         JsonValue infoProjectile = game.getObjectDataBase().get(objectDataIDOfProjectile);
 
@@ -135,14 +138,38 @@ public class SimpleLauncher extends GameObject implements Triggerable {
     @Override
     public void triggerONActions(HubInterface hub) {
         //goToActivation(); // play its animation
-        trapstate = Constants.TRAPSTATE.ON;
+        if(trapstate!= Constants.TRAPSTATE.OBSTRUCTED)
+            trapstate = Constants.TRAPSTATE.ON;
     }
 
     @Override
     public void triggerOFFActions(HubInterface hub) {
-        timer = intervalProjectile; // ready to fire next time
-        trapstate = Constants.TRAPSTATE.OFF; //do not disappear
+        if(trapstate!= Constants.TRAPSTATE.OBSTRUCTED) {
+            timer = intervalProjectile; // ready to fire next time
+            trapstate = Constants.TRAPSTATE.OFF; //do not disappear
+        }
     }
+
+
+    public void triggerOBSTRUCTEDActions(boolean toObstruct) {
+        //goToActivation(); // play its animation
+        if(toObstruct) {
+            if (nbObstruction == 0){
+                //beforeObstruction = trapstate;
+                trapstate = Constants.TRAPSTATE.OBSTRUCTED;
+            }
+            nbObstruction +=1;
+
+        } else {
+            nbObstruction -=1;
+            if (nbObstruction == 0){
+                reset();
+            }
+
+        }
+
+    }
+
 
     @Override
     public void render(SpriteBatch batch) {

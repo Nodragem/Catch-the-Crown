@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Character;
 import com.mygdx.rope.objects.traps.Launcher;
+import com.mygdx.rope.objects.traps.SimpleLauncher;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
@@ -32,6 +33,7 @@ public class Lance extends GameObject {
     private float defaultDamage;
     private GameObject parentObject;
     public Launcher user; // as for projectile
+    private boolean isBurning;
 
 
     public Lance(GameScreenTournament game, Vector2 position, float angle, String objectDataID, Launcher user) {
@@ -48,6 +50,7 @@ public class Lance extends GameObject {
         anchorPoint = new Vector2(1.2f, 0.125f);
         stateTime = 0;
         isVisible = false;
+        isKillable = false;
         defaultDamage = 34.0f;
         // the givenDamage (from GameObject) is defaultDamage times a multiplicator
 
@@ -88,6 +91,7 @@ public class Lance extends GameObject {
     @Override
     public boolean update(float deltaTime) {
         isToDetroy = super.update(deltaTime);
+
          if (!isAttached) {
              // FIXME: maybe we should override onCollision() instead
              // FIXME: maybe we should call onCollision in the box2d collision manager
@@ -108,13 +112,16 @@ public class Lance extends GameObject {
         }
         // why do we need to flush at each frame?
         mainBoxContact.flush();
-        return isToDetroy || todispose;
+        return todispose;
     }
 
     public void goToPlatformState() {
-        soundCache = gamescreen.assetManager.getRandom("lance_hit");
-        soundCache.play();
+        playSound("lance_hit");
         givenDamage = 0;
+        if(isBurning){
+            setAnimation("Moving");
+            isBurning = false;
+        }
 
         this.body.setType(BodyDef.BodyType.KinematicBody);
         this.body.setLinearVelocity(0f, 0f);
@@ -124,12 +131,6 @@ public class Lance extends GameObject {
             isAttached = true;
             parentObject = (GameObject) touchedBody.getUserData();
             if (parentObject != null && parentObject instanceof com.mygdx.rope.objects.characters.Character) {
-                // FIXME: is it necessary to have the damage given in the collisio manager? is it the best design?
-                //we already do that in the collision manager
-                //parentObject.addDamage(givenDamage);
-//                ((Character) parentObject).dropObjects();
-//                Sound hurtSound = gamescreen.assetManager.getRandom("hurt");
-//                hurtSound.play(0.5f);
                 goToGhostState();
             }else {
                 collisionStick.setMyColliderType(Constants.COLLIDER_TYPE.ONEWAY);
@@ -140,29 +141,12 @@ public class Lance extends GameObject {
                 pickFilter.maskBits = Constants.MASK.get("AttachedObject");
                 this.body.getFixtureList().get(1).setFilterData(pickFilter);
             }
+            if(parentObject!=null && parentObject instanceof SimpleLauncher){
+                ((SimpleLauncher) parentObject).triggerOBSTRUCTEDActions(true);
+            }
+
         }
-        //        if (!(parentObject instanceof com.mygdx.rope.objects.characters.Character)){
-//            // if it is not a character:
-//            //color.set(0, 0.0f);
-//            collisionStick.setMyColliderType(Constants.COLLIDER_TYPE.ONEWAY);
-//            handleFilter.categoryBits = Constants.CATEGORY.get("AttachedObject");
-//            handleFilter.maskBits = Constants.MASK.get("AttachedObject");
-//            this.body.getFixtureList().get(0).setFilterData(handleFilter);
-//            pickFilter.categoryBits = Constants.CATEGORY.get("AttachedObject");
-//            pickFilter.maskBits = Constants.MASK.get("AttachedObject");
-//            this.body.getFixtureList().get(1).setFilterData(pickFilter);
-//            isAttached = true;
-//        }
-//        else{
-//            goToGhostState();
-//            handleFilter.categoryBits = Constants.CATEGORY.get("AttachedObject");
-//            handleFilter.maskBits = 0; // you can't collide a lance which is attached to a character (that would have been funny, but not really playable :P )
-//            this.body.getFixtureList().get(0).setFilterData(handleFilter);
-//            pickFilter.categoryBits = Constants.CATEGORY.get("AttachedObject");
-//            pickFilter.maskBits = Constants.MASK.get("AttachedObject");
-//            this.body.getFixtureList().get(1).setFilterData(pickFilter);
-//            isAttached = true;
-//        }
+
     }
 
 
@@ -200,29 +184,53 @@ public class Lance extends GameObject {
     public void use(Vector2 startPos, float angle, float force, float damageMultiplicator){
         Sound throwSound = gamescreen.assetManager.getRandom("lance_thrown");
         throwSound.play();
+        if(parentObject!=null && parentObject instanceof SimpleLauncher){
+            ((SimpleLauncher) parentObject).triggerOBSTRUCTEDActions(false);
+        }
         setParentBody(null, true);
         givenDamage = damageMultiplicator*defaultDamage;
+        if (damageMultiplicator == 3.0f)
+            isBurning = true;
+        else
+            isBurning = false;
         goToWeaponState();
-        setAnimation("Moving");
+
+        goToActivation();
         body.setLinearVelocity(0, 0);
         body.setAngularVelocity(0);
         body.setTransform(startPos, angle);
-        this.body.applyForceToCenter(
-                new Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
-                        .scl(force*1000), true);
+        if (isBurning){ // goToWeaponState should have made it a kinematic body
+            // we want burning lance to go straight
+            body.setLinearVelocity(new Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
+                    .scl(force));
+
+        } else { // it is a dynamic body
+            this.body.applyForceToCenter(
+                    new Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
+                            .scl(force*1000), true);
+        }
+
 // FIXME: check if it could be a projectile implementing usable
     }
 
     public void goToWeaponState() {
         mainBoxContact.deepFlush();
         collisionStick.deepFlush();
+        if (isBurning) {
+            setAnimation("Burning");
+            body.setType(BodyDef.BodyType.KinematicBody);
+        }
+        else {
+            setAnimation("Moving");
+            body.setType(BodyDef.BodyType.DynamicBody);
+        }
         handleFilter.categoryBits = Constants.CATEGORY.get("Object");
         handleFilter.maskBits = Constants.MASK.get("Object");
         this.body.getFixtureList().get(0).setFilterData(handleFilter);
         pickFilter.categoryBits = Constants.CATEGORY.get("Weapon");
         pickFilter.maskBits =  Constants.MASK.get("Weapon"); //Constants.CATEGORY_PLAYER | Constants.CATEGORY_SCENERY;
         this.body.getFixtureList().get(1).setFilterData(pickFilter);
-        body.setType(BodyDef.BodyType.DynamicBody);
+
         isAttached = false;
         isVisible = true;
 
@@ -237,5 +245,6 @@ public class Lance extends GameObject {
     public void notifyKill(GameObject gameObject){
         user.notifyKill(gameObject);
     }
+
 
 }

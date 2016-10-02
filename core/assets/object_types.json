@@ -94,7 +94,11 @@
       "Category": "Sensor"
     },
     "simple_launcher": {
-      "texture_name": "launcher"
+      "texture_name": "launcher",
+      "bodyType": "StaticBody",
+      "sensor": false,
+      "Mask": "Scenery",
+      "Category": "Scenery"
     },
     "lance": {
       "texture_name": "Lance",
