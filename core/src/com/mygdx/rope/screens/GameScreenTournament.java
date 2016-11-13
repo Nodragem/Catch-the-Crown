@@ -69,7 +69,7 @@ public class GameScreenTournament implements Screen {
     private int[] foregroundLayers = { 2 };
     private int[] backgroundLayers = {0, 1};
     private Array<Vector2> playerSpawners;
-    private boolean fullscreen;
+    //private boolean fullscreen;
     public float timer; // ms
     private float groupScore;
     private Crown theCrown;
@@ -88,6 +88,7 @@ public class GameScreenTournament implements Screen {
     private boolean isDebugMode;
 
     public GameScreenTournament(RopeGame ropeGame){
+
         isDebugMode = false;
         this.game = ropeGame;
         batch = ropeGame.getBatch();
@@ -334,6 +335,7 @@ public class GameScreenTournament implements Screen {
                 currentWinner.getWeapon().setAnimationSet(animationGoldenWeapon);
                 goldenPrabbit = currentWinner;
                 goldenPrabbit.goToGoldenState(true);
+                makeAnnouncement(Constants.ANNOUNCEMENT.GOLDEN_PRABBIT, goldenPrabbit.getPlayer().getName(), "");
             }
         } else {
             if(!isTheWinnerGolden(currentWinner.getPlayer()))
@@ -584,7 +586,7 @@ public class GameScreenTournament implements Screen {
             if (Gdx.input.isKeyPressed(Keys.END)) cameraHelper.setZoom(1);
             if (Gdx.input.isKeyPressed(Keys.ENTER)) cameraHelper.setTarget(cameraHelper.hasTarget() ? null : cameraTarget);
             if (Gdx.input.isKeyJustPressed(Keys.R)) startNewLevel(listLevels.get(currentLevel));
-            if (Gdx.input.isKeyPressed(Keys.F)) enableFullScreen();
+            //if (Gdx.input.isKeyPressed(Keys.F)) enableFullScreen();
             if (Gdx.input.isKeyPressed(Keys.P)) stateGame = (stateGame == GAME_STATE.PAUSED)?GAME_STATE.PLAYED : GAME_STATE.PAUSED;
             if (Gdx.input.isKeyPressed(Keys.T)) this.timer -= 10;
             if (Gdx.input.isKeyJustPressed(Keys.B)) this.isDebugMode = !isDebugMode;
@@ -593,16 +595,7 @@ public class GameScreenTournament implements Screen {
         }
     }
 
-    private void enableFullScreen() {
-        if (fullscreen) {
-            Gdx.graphics.setDisplayMode(640, 320, false);
-            fullscreen = false;
-        } else {
-            Graphics.DisplayMode desktopDisplayMode = Gdx.graphics.getDesktopDisplayMode();
-            Gdx.graphics.setDisplayMode(desktopDisplayMode.width, desktopDisplayMode.height, true);
-            fullscreen = true;
-        }
-    }
+
 
     public void setDebugText(String debugText) {
         if(GUIlayer != null)
@@ -619,6 +612,10 @@ public class GameScreenTournament implements Screen {
             return GUIlayer.debugText;
         else
             return "";
+    }
+
+    public void makeAnnouncement(Constants.ANNOUNCEMENT announcement, String arg1, String arg2){
+        GUIlayer.makeAnnouncement(announcement, arg1, arg2);
     }
 
     public float getCrownGoldValue(){

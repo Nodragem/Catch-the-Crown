@@ -1,10 +1,7 @@
 package com.mygdx.rope;
 
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
@@ -28,6 +25,7 @@ import com.mygdx.rope.util.InputHandler.InputProfileKeyboard;
 public class RopeGame extends Game {
 
 	private MenuScreen menuScreen;
+	private boolean fullscreen;
 	private SpriteBatch batch;
 	public Array<String> levels;
 	public OrthographicCamera camera;
@@ -39,6 +37,7 @@ public class RopeGame extends Game {
 
 	@Override
 	public void create() {
+//		enableFullScreen();
 		batch = new SpriteBatch();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		levels = new Array<String>(1);
@@ -53,6 +52,16 @@ public class RopeGame extends Game {
 		setScreen(menuScreen);
 
 
+	}
+	private void enableFullScreen() {
+		if (fullscreen) {
+			Gdx.graphics.setDisplayMode(640, 320, false);
+			fullscreen = false;
+		} else {
+			Graphics.DisplayMode desktopDisplayMode = Gdx.graphics.getDesktopDisplayMode();
+			Gdx.graphics.setDisplayMode(desktopDisplayMode.width, desktopDisplayMode.height, true);
+			fullscreen = true;
+		}
 	}
 
 	private void retrieveLevelFrom(String levelPath, Array<Boolean> selected) {

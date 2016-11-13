@@ -2,7 +2,10 @@ package com.mygdx.rope.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -13,6 +16,7 @@ import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.objects.characters.Player;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.InputHandler.InputProfile;
+import com.sun.scenario.animation.shared.InterpolationInterval;
 
 /**
  * Created by Geoffrey on 30/03/2015.
@@ -51,13 +55,41 @@ public class GUILayer {
     private float offset_clock_x;
     private float progress_ratio;
     public String debugText;
+    public String announcementText;
     private ScoreTableWindow scoreTableWindow;
     private Constants.GUI_STATE previousGUIState;
     private SpriteBatch batch;
+    private float announceTime;
+    private GlyphLayout glyphLayout;
+    private Vector2 announcementTarget;
+    private Constants.ANNOUNCEMENT announcementState;
+    private TextureRegion backgroundAnnoucement;
+    private Vector2 announcementPos;
+    private Vector2 backgroundPos;
+    private Vector2 announcementStartPos;
+    private Vector2 backgroundStartPos;
 
 
     public GUILayer(GameScreenTournament gameScreen){
         batch = gameScreen.getBatch();
+        glyphLayout = new GlyphLayout();
+        announcementText = "";
+        announcementState = Constants.ANNOUNCEMENT.NONE;
+        announceTime = 0;
+        announcementTarget = new Vector2(0, 0);
+        announcementPos = new Vector2(0,0);
+        announcementStartPos = new Vector2(0,0);
+        backgroundStartPos = new Vector2(0,0);
+        backgroundPos = new Vector2(0,0);
+        Pixmap pixmap = new Pixmap((int) Constants.VIEWPORT_GUI_WIDTH, 64, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0, 0, 0, 0.3f);
+        pixmap.fillRectangle(0, 0, (int) Constants.VIEWPORT_GUI_WIDTH, 64);
+        pixmap.setColor(1, 0.3f, 0.2f, 0.7f);
+        pixmap.fillRectangle(0, 0, (int) Constants.VIEWPORT_GUI_WIDTH-10, 54);
+        backgroundAnnoucement = new TextureRegion(new Texture(pixmap));
+        pixmap.dispose();
+
+
         GUIstate = Constants.GUI_STATE.DISPLAY_GUI;
         this.gameScreen = gameScreen;
         players = new ArrayMap <String, Player>(4); //  empty
@@ -113,21 +145,6 @@ public class GUILayer {
         batch.setProjectionMatrix(cameraUI.combined);
         batch.begin();
         displayHUD(batch);
-//        if (previousGUIState != GUIstate){ // on change
-//            switch (GUIstate) {
-//                case DISPLAY_PAUSE:
-//                    pauseWindow.openWindow(gameScreen.getIndexPauser());
-//                    break;
-//                case DISPLAY_END:
-//                    if(previousGUIState == Constants.GUI_STATE.DISPLAY_PAUSE)
-//                        pauseWindow.closeWindow();
-//                    break;
-//                case DISPLAY_GUI:
-//                    if(previousGUIState == Constants.GUI_STATE.DISPLAY_PAUSE)
-//                        pauseWindow.closeWindow();
-//                    break;
-//            }
-//        }
         switch (GUIstate) {
             case DISPLAY_PAUSE:
                 if (pauseWindow != null) {
@@ -143,6 +160,7 @@ public class GUILayer {
             case DISPLAY_GUI:
                 break;
         }
+        renderAnnouncement(batch, deltaTime);
         if(DEBUG_MODE)
             renderDebug(batch);
         batch.end();
@@ -306,5 +324,53 @@ public class GUILayer {
 
     public void renderDebug(SpriteBatch batch) {
         font.draw(batch, debugText, Constants.VIEWPORT_GUI_WIDTH / 2, Constants.VIEWPORT_GUI_HEIGHT / 2);
+    }
+
+    public void renderAnnouncement(SpriteBatch batch, float deltaTime) {
+        announcementPos = announcementStartPos.cpy();
+        backgroundPos = backgroundStartPos.cpy();
+        announcementPos.interpolate(announcementTarget, Math.min((announceTime/2.0f)*5, 1), Interpolation.linear);
+        backgroundPos.interpolate(announcementTarget, Math.min((announceTime/2.0f)*5,1), Interpolation.linear);
+        if(announcementState != Constants.ANNOUNCEMENT.NONE) {
+            announceTime += deltaTime;
+            batch.draw(backgroundAnnoucement, backgroundPos.x-20.f, backgroundPos.y);
+            font.draw(batch, announcementText, announcementPos.x, announcementPos.y + 54);
+            if (announceTime > 2.0)
+                announcementState = Constants.ANNOUNCEMENT.NONE;
+        }
+
+    }
+
+    public void makeAnnouncement(Constants.ANNOUNCEMENT announcement, String player1, String player2) {
+        announceTime = 0;
+        announcementState = announcement;
+        announcementStartPos.set(-Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT / 2);
+        backgroundStartPos.set(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT / 2);
+        switch (announcement) {
+            case KO:
+                announcementText = player1 + " knocked out " + player2 + "!";
+                break;
+            case LONG_TERM_KO:
+                announcementText = "LONG TERM K.O. !";
+                break;
+            case CROWN:
+                announcementText = player1 + " took the Crown!";
+                break;
+            case GOLDEN_PRABBIT:
+                announcementText = player1 + " IS NOW GOLDEN!";
+                break;
+            case TIMER_ALMOST_OFF:
+                announcementText = player1 + " SECONDS LEFT!";
+                break;
+            case NONE:
+                announcementText = "";
+                break;
+            case WEAK_PRABBIT:
+                announcementText = player1 + " GOT VERY WEAK!";
+                break;
+        }
+        glyphLayout.setText(font, announcementText);
+        announcementTarget.set((Constants.VIEWPORT_GUI_WIDTH - glyphLayout.width) / 2, Constants.VIEWPORT_GUI_HEIGHT / 2);// contains the width of the current set text
+
     }
 }

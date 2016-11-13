@@ -100,6 +100,7 @@ public class Crown extends GameObject implements Carriable {
             this.body.setType(BodyDef.BodyType.KinematicBody);
             newCarrier.setCrownBody(body);
             Sound stealCrown = gamescreen.assetManager.getRandom("laugh_steal");
+            gamescreen.makeAnnouncement(Constants.ANNOUNCEMENT.CROWN, newCarrier.getPlayer().getName(), "");
             stealCrown.play();
         }
 

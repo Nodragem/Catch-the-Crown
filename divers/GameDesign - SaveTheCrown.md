@@ -35,25 +35,34 @@ Règle de partie perdue (recommence leniveau) :
 
 # TO-DO LIST:
 
+## Next Actions:
+
+- [ ] **[A]** more you carry the crown more you get tired? @gameplay
+- [ ] **[A]** a fully tired character could not carry the crown? (so that people need to abandon it at some point)
+- [ ] **[A]** collect: @gameplay
+  - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
+  - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
+- [ ] **[A]** to slap someone treats one mark, @gameplay
+- [ ] **[A]** marks may also influence the throwing challenge
+
+- [ ] **[A]** pay 5% of money to revive quicker: @gameplay
+  > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
+
+- [ ] **[A]** to die from the super/burning lance would remove 25% of money (50% if all marks).
+
+- [ ] **[B]** @bug when the player jumps, the last throwed lance disappears
+
 ## Bugs:
 
 - [ ] **[C]** controller don't work after fullscreen
 
 - [ ] **[B]** when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
 
-- [ ] **[A]** the bug of the flying prabbit
-  > Atanaska succeeded to replicate it; the prabbit's jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
-  - [x] I improve the matter a bit, when a Lance disappear under the feet of a prabit, the bug appeared: I simply flush the contact data of the lance when it is recalled.
-  - [ ]  **[A]** However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears.
-    > that is weird because I am flushing the pick too, and I even tried to add flushing each time the lance changes of state, but nothing seems to resolve this bug.
-
 - [ ] **[B]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
-
-
 
 ## General Improvements:
 
-- [ ]  Lance Burning Sound
+- [ ] **[B]** may want to mirror the challenge until one of the player lose?
 
 - [ ] **[B]** level menu
 
@@ -61,7 +70,7 @@ Règle de partie perdue (recommence leniveau) :
 
 - [ ] **[B]** use the launcher class in the AttackManager??
 
-- [ ] **[B]** the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
+- [x] **[B]** the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
 
 - [ ] **[C]** make background for the level,
 
@@ -80,21 +89,13 @@ Règle de partie perdue (recommence leniveau) :
 
 ## Gameplay Ideas
 
-- **[A]** more you carry the crown more you get tired?
-- **[A]** collect:
-  - a Ruby give you 1 second of invicibility + treat one mark
-  - a Diamond give you 5 second of invicibility + treat all marks!
-- **[A]** to slap someone treats one mark,
+- [ ] **[B]** to keep the super/burning lance ready would tire you (1 mark every 5s?).
 
-- **[A]** lost of money when die/ revive? 15% of money to revive:
-  > may be the player could pay money to come back earlier!
 
-  > to die from the super/burning lance would remove more money.
-
-- **[B]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
-- **[B]** double jump?
-- **[B]** reloading time after used 3 lances?
-- **[B]** slow down character who carry something,
+- **[C]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
+- **[C]** double jump?
+- **[C]** reloading time after used 3 lances?
+- **[C]** slow down character who carry something,
 
   > should we slow down the crown carrier?
 
@@ -104,12 +105,12 @@ Règle de partie perdue (recommence leniveau) :
   >
   > **Not sure that it is useful**
 
-- **[B]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+- **[C]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
 
-- **[B]** Usable/throwable object system (use the LanceManager, make it an ItemManager)
+- **[C]** Usable/throwable object system (use the LanceManager, make it an ItemManager)
 
-- **[B]** Modifier Object system (transient/constant?)
-- **[B]** lance locking system ?
+- **[C]** Modifier Object system (transient/constant?)
+- **[C]** lance locking system ?
 
   > useful for puzzles where we need to keep our lance on a switch
 
@@ -124,6 +125,10 @@ Règle de partie perdue (recommence leniveau) :
   > does not seem a good idea, but we do need something to get rid of the fatigue marks.
 
   > maybe an object could give temporarily the above effect to a player.
+
+- [ ] **[N]** lost of money when die/ revive? 15% of money to revive: @gameplay
+  > may be the player could pay money to come back earlier!
+  > to die from the super/burning lance would remove more money.
 
 # Further Ideas
 
@@ -217,6 +222,23 @@ Règle de partie perdue (recommence leniveau) :
 --------------------------------------------------------------------------------
 
 # Changelog
+
+## 15/10/2016:
+- [x] **[A]** @bug there are still bug when getting hurt/dead while carrying a character!!
+- [x] **[A]** Lance Burning Sound @general
+- [x] **[A]** make announcement texts (on GUI), with an anouncement sounds. @general
+  - [x] when people kills
+  - [x] when people take the crown
+  - [x] when people make a long term OK
+  - [x] when people become Gold
+  - [x] when people are weak
+- [x] **[A]** the bug of the flying prabbit @bug
+  > Atanaska succeeded to replicate it; the prabbit's jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
+  - [x] I improve the matter a bit, when a Lance disappear under the feet of a prabit, the bug appeared: I simply flush the contact data of the lance when it is recalled.
+  - [x] However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears.
+  > that is weird because I am flushing the pick too, and I even tried to add flushing each time the lance changes of state, but nothing seems to resolve this bug.
+
+  > --> the bug was cause by a mainBoxContact.flush(); at the end of Lance::update()
 
 ## Up to 02/10/2016
 

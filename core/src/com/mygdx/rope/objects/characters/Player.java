@@ -195,7 +195,7 @@ public class Player implements ControlProcessor, Updatable  {
     }
 
     private void processChallenge(boolean isPressed) {
-        if(isPressed && !challengePressed) {
+        if(isPressed && !challengePressed) { // newly pressed
             challengePressed = true;
             challengePressCount += 1;
             character.getProgressBar().increment();
@@ -204,14 +204,10 @@ public class Player implements ControlProcessor, Updatable  {
                 case CHALLENGED:
                     if (challengePressCount >= Constants.MOVESTOFREE) {
                         // if the challenged character get free, the role are exchange and the freed player throw the challenger
-                        // FIXME we probably want to change that, maybe we could exchange the challenge, until one get it.
-                        this.challengePressCount = 0;
-                        character.getProgressBar().reset();
-                        // do the same to the other character/player:
-                        character.getCarrier().getProgressBar().reset();
-                        character.getCarrier().getPlayer().challengePressCount = 0;
+                        // throwObject will reset the challenge and the progress bars
                         // pickUpObject and throwOBject will change the pickupState
-                        character.pickUpObject(character.getCarrier()); // the role are exchanged
+                        // -- the role are reserved
+                        character.pickUpObject(character.getCarrier());
                         character.setCarrier(null);
                         character.throwObject(Math.abs(currentAimingAngle)%MathUtils.PI+1 ,45.0f);
 //                        character.getCarrier().pickUpObject(null);
@@ -221,27 +217,17 @@ public class Player implements ControlProcessor, Updatable  {
                     break;
                 case CHALLENGER:
                     if (challengePressCount >= Constants.MOVESTOTHROW) {
-                        this.challengePressCount = 0;
-                        character.getProgressBar().reset();
-                        // do the same to the other character/player:
-                        Character other = (Character)character.getCarriedObject();
-                        other.getPlayer().challengePressCount = 0;
-                        other.getProgressBar().reset();
+                        // throwObject will take care of ending the challenge, and it will be called after the Interpolation animation
                         // throwOBject will change the pickupState
-//                        character.throwObject(currentAimingAngle ,260.0f ); // take care of throwing and changing the state of the other;
                         character.getBody().setType(BodyDef.BodyType.KinematicBody);
-//                        character.getBody().setTransform(bodyPos.add(0, 1f), 0);
-//                        character.getBody().setLinearVelocity(0, 0.5f);
-//                        character.setTargetInterpolation(character.getBody().getLinearVelocity().x/3.0f, 1.2f);
                         character.setTargetInterpolation(character.getViewDirection()==VIEW_DIRECTION.LEFT?1.2f:-1.2f+character.getBody().getLinearVelocity().x/30f, 1.2f);
-
                         character.setMoveState(MOVE_STATE.THROWING_CHARACTER);
                     }
                     Gdx.app.debug("smash it!", "nb " + jumpButtonCount);
                     break;
             }
         }
-        else if (!isPressed && challengePressed){
+        else if (!isPressed && challengePressed){ // newly unpressed
             challengePressed = false;
         }
 
@@ -335,6 +321,10 @@ public class Player implements ControlProcessor, Updatable  {
         } else {
             killTable.put(obj, 1);
         }
+        if (obj instanceof Character){
+            Player p2 = ((Character) obj).getPlayer();
+            gameScreen.makeAnnouncement(Constants.ANNOUNCEMENT.KO, getName(), p2.getName());
+        }
     }
 
     public void setUIBox(Vector2 UIBox) {
@@ -343,5 +333,9 @@ public class Player implements ControlProcessor, Updatable  {
 
     public Vector2 getUIBox() {
         return new Vector2(UIBox);
+    }
+
+    public void resetChallengePressCount() {
+        challengePressCount = 0;
     }
 }

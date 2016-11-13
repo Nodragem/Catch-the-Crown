@@ -1,5 +1,7 @@
 package com.mygdx.rope.desktop;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.mygdx.rope.RopeGame;
@@ -19,6 +21,9 @@ public class DesktopLauncher {
         cfg.title = "Catch the Crown!!";
         cfg.height = 640;
         cfg.width = 1280;
+//        cfg.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
+//        cfg.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
+//        cfg.fullscreen = true;
 		new LwjglApplication(new RopeGame(), cfg);
 	}
 }

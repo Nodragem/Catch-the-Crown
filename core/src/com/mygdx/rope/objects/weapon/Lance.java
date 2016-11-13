@@ -34,12 +34,14 @@ public class Lance extends GameObject {
     private GameObject parentObject;
     public Launcher user; // as for projectile
     private boolean isBurning;
+    private Sound burningSound;
 
 
     public Lance(GameScreenTournament game, Vector2 position, float angle, String objectDataID, Launcher user) {
         super(game, position, new Vector2(2.0f, 0.6875f), angle, "No Init");
         // \--> old size (1.5f, 0.25f)
         this.user = user;
+        burningSound = gamescreen.assetManager.getRandom("burning_lance");
         initAnimation(objectDataID, "");
         // FIXME: the initFixture should be data-driven
         initFixture();
@@ -92,6 +94,16 @@ public class Lance extends GameObject {
     public boolean update(float deltaTime) {
         isToDetroy = super.update(deltaTime);
 
+        if(isBurning & ((position.x < -2) |
+                (position.x > Constants.VIEWPORT_WIDTH + 2) |
+                (position.y < -2) |
+                (position.y > Constants.VIEWPORT_HEIGHT + 2))){
+            setAnimation("Moving");
+            isBurning = false;
+            body.setLinearVelocity(0,0);
+            burningSound.stop();
+        }
+
          if (!isAttached) {
              // FIXME: maybe we should override onCollision() instead
              // FIXME: maybe we should call onCollision in the box2d collision manager
@@ -110,8 +122,8 @@ public class Lance extends GameObject {
             goToGhostState();
             isVisible = false;
         }
-        // why do we need to flush at each frame?
-        mainBoxContact.flush();
+        // why do we need to flush at each frame? WARNING, that line was actually causing the flying prabbit bug!
+//        mainBoxContact.flush();
         return todispose;
     }
 
@@ -121,6 +133,7 @@ public class Lance extends GameObject {
         if(isBurning){
             setAnimation("Moving");
             isBurning = false;
+            burningSound.stop();
         }
 
         this.body.setType(BodyDef.BodyType.KinematicBody);
@@ -189,10 +202,13 @@ public class Lance extends GameObject {
         }
         setParentBody(null, true);
         givenDamage = damageMultiplicator*defaultDamage;
-        if (damageMultiplicator == 3.0f)
+        if (damageMultiplicator == 3.0f) {
             isBurning = true;
-        else
+            burningSound.loop();
+        }
+        else {
             isBurning = false;
+        }
         goToWeaponState();
 
         goToActivation();

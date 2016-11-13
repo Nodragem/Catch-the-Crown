@@ -403,6 +403,7 @@ public class Character extends GameObject implements  Carriable {
         }
         else{
             pickedObject.setCarrier(this);
+            pickedObject.getBody().setActive(false);
         }
 
     }
@@ -416,14 +417,24 @@ public class Character extends GameObject implements  Carriable {
     public void throwObject(float angle, float force){
 
         if (carriedObject != null) {
-            if (force > 50 && carriedObject.getClass().equals(Character.class)) {
-                Character p = (Character) carriedObject;
-                weapon.goToAttackState(ATTACK_STATE.THROWING);
-
-
-                p.setMoveState(MOVE_STATE.THROWED);
-                p.goToPickingUpState(PICKUP_STATE.NORMAL);
+            if (carriedObject.getClass().equals(Character.class)) {
+                Character other = (Character) carriedObject;
+                if (force > 50) {
+                    weapon.goToAttackState(ATTACK_STATE.THROWING);
+                    other.setMoveState(MOVE_STATE.THROWED);
+                    other.goToPickingUpState(PICKUP_STATE.NORMAL);
+                } else {
+                    weapon.goToAttackState(ATTACK_STATE.NOTATTACKING);
+                    other.setMoveState(MOVE_STATE.FALLING);
+                    other.goToPickingUpState(PICKUP_STATE.NORMAL);
+                }
+                this.getPlayer().resetChallengePressCount();
+                other.getPlayer().resetChallengePressCount();
+                this.getProgressBar().reset();
+                other.getProgressBar().reset();
+                // do the same to the other character/player:
             }
+            carriedObject.getBody().setActive(true);
             carriedObject.getBody().setType(BodyDef.BodyType.DynamicBody);
 //            carriedObject.getBody().applyLinearImpulse(MathUtils.cos(angle) * force,
 //                    MathUtils.sin(angle) * force, 0.5f, 0.5f, true);
@@ -495,18 +506,20 @@ public class Character extends GameObject implements  Carriable {
                 break;
             case DEAD:
                 setAnimation("Death");
+//                FIXME:: there are still bug when getting hurt while carrying a character!!
                 if(previousMoveState==MOVE_STATE.THROWED) {
                     timeFrontFX = 0;
                     playSound("impact_to_ground");
+                    gamescreen.makeAnnouncement(ANNOUNCEMENT.LONG_TERM_KO, "", "");
                     if (marks==MAXMARKS) {
-                        respawnTime = RESPAWNTIME + 6*marks * Constants.MARKPENALTY;
+                        respawnTime = RESPAWNTIME + 6*marks * Constants.MARKPENALTY; // thus the effect of mark max is to multiply by 3
                     } else {
-                        respawnTime = RESPAWNTIME + marks * Constants.MARKPENALTY;
+                        respawnTime = RESPAWNTIME + 2*marks * Constants.MARKPENALTY;
                     }
                 }
                 else {
                     if (marks==MAXMARKS) {
-                        respawnTime = RESPAWNTIME + 2*marks * Constants.MARKPENALTY;
+                        respawnTime = RESPAWNTIME + 3*marks * Constants.MARKPENALTY;
                     } else {
                         respawnTime = RESPAWNTIME + marks * Constants.MARKPENALTY;
                     }
@@ -550,6 +563,7 @@ public class Character extends GameObject implements  Carriable {
     public void dropObjects() {
         throwObject(45.0f, 50.0f);
         dropTheCrown(-45.0f);
+
         // may drop some money
 
     }
@@ -568,11 +582,15 @@ public class Character extends GameObject implements  Carriable {
 
     public void setMarks(int marks) {
         this.marks = Math.min(Constants.MAXMARKS, marks);
+        if (this.marks == MAXMARKS)
+            gamescreen.makeAnnouncement(ANNOUNCEMENT.WEAK_PRABBIT, this.getPlayer().getName(), null);
     }
 
     public void addMarks(int marks){
         this.marks += marks;
         this.marks = Math.min(Constants.MAXMARKS, this.marks);
+        if (this.marks == MAXMARKS)
+            gamescreen.makeAnnouncement(ANNOUNCEMENT.WEAK_PRABBIT, this.getPlayer().getName(), null);
 
     }
 
@@ -594,6 +612,7 @@ public class Character extends GameObject implements  Carriable {
     public void registerKill(GameObject obj){
         playSound("laugh_kill");
         player.registerKill(obj);
+
     }
 
     @Override
@@ -703,6 +722,7 @@ public class Character extends GameObject implements  Carriable {
     }
 
     public void goToGoldenState(boolean b) {
+
         if(b)
             timeBackFX = 0;
         else

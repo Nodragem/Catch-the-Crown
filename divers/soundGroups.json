@@ -1,0 +1,272 @@
+{
+    "burning_lance": [
+        {
+            "id": 1, 
+            "path": "sounds/burning_lance_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "cannot_shot": [
+        {
+            "id": 1, 
+            "path": "sounds/cannot_shot_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "coin": [
+        {
+            "id": 1, 
+            "path": "sounds/coin_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/coin_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "explosion_fireball": [
+        {
+            "id": 1, 
+            "path": "sounds/explosion_fireball_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "hurt": [
+        {
+            "id": 1, 
+            "path": "sounds/hurt_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/hurt_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 3, 
+            "path": "sounds/hurt_03.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "impact_to_ground": [
+        {
+            "id": 1, 
+            "path": "sounds/impact_to_ground_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/impact_to_ground_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "jump": [
+        {
+            "id": 1, 
+            "path": "sounds/jump_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/jump_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "lance_hit": [
+        {
+            "id": 1, 
+            "path": "sounds/lance_hit_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/lance_hit_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 3, 
+            "path": "sounds/lance_hit_03.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "lance_thrown": [
+        {
+            "id": 1, 
+            "path": "sounds/lance_thrown_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/lance_thrown_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "laugh_generic": [
+        {
+            "id": 1, 
+            "path": "sounds/laugh_generic_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/laugh_generic_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "laugh_kill": [
+        {
+            "id": 1, 
+            "path": "sounds/laugh_kill_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 3, 
+            "path": "sounds/laugh_kill_03.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 5, 
+            "path": "sounds/laugh_kill_05.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 6, 
+            "path": "sounds/laugh_kill_06.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 7, 
+            "path": "sounds/laugh_kill_07.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 8, 
+            "path": "sounds/laugh_kill_08.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "laugh_steal": [
+        {
+            "id": 1, 
+            "path": "sounds/laugh_steal_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 6, 
+            "path": "sounds/laugh_steal_06.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "launcher_arrow": [
+        {
+            "id": 1, 
+            "path": "sounds/launcher_arrow_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "launcher_fire_ball": [
+        {
+            "id": 2, 
+            "path": "sounds/launcher_fire_ball_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "lifting_up": [
+        {
+            "id": 1, 
+            "path": "sounds/lifting_up_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "platform_activation": [
+        {
+            "id": 1, 
+            "path": "sounds/platform_activation_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "platform_deactivation": [
+        {
+            "id": 2, 
+            "path": "sounds/platform_deactivation_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "respawn": [
+        {
+            "id": 1, 
+            "path": "sounds/respawn_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "slap_hit": [
+        {
+            "id": 1, 
+            "path": "sounds/slap_hit_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/slap_hit_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "slap_miss": [
+        {
+            "id": 1, 
+            "path": "sounds/slap_miss_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/slap_miss_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 3, 
+            "path": "sounds/slap_miss_03.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "step": [
+        {
+            "id": 1, 
+            "path": "sounds/step_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/step_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "switch_on": [
+        {
+            "id": 1, 
+            "path": "sounds/switch_on_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "switcher_off": [
+        {
+            "id": 1, 
+            "path": "sounds/switcher_off_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "switcher_on": [
+        {
+            "id": 1, 
+            "path": "sounds/switcher_on_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "throw_character": [
+        {
+            "id": 1, 
+            "path": "sounds/throw_character_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ]
+}

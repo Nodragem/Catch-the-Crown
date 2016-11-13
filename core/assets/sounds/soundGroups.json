@@ -1,4 +1,11 @@
 {
+    "burning_lance": [
+        {
+            "id": 1, 
+            "path": "sounds/burning_lance_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
     "cannot_shot": [
         {
             "id": 1, 

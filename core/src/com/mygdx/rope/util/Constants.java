@@ -11,6 +11,8 @@ public class Constants {
 	public static final float CROWNGOLDRATE = 0.333f;
     public static final float MARKPENALTY = 3f ;
 
+    public enum ANNOUNCEMENT {KO, LONG_TERM_KO, CROWN, GOLDEN_PRABBIT, TIMER_ALMOST_OFF, WEAK_PRABBIT, NONE}
+
 
     public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
     public static enum MENU_STATE {MAIN_MENU, STORY_MENU, TOURNAMENT_MENU, OPTION_MENU, CONTROL_MENU, QUIT_REQUEST}

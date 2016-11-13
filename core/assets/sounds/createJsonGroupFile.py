@@ -11,6 +11,7 @@ print "Ouput files to:", output_path
 
 ## clean up
 output_files = glob.glob(output_path+"\\*.wav")
+output_files += glob.glob(output_path+"\\*.json")
 print output_files
 for f in output_files:
     os.remove(f)
@@ -37,7 +38,7 @@ for filename in inputfilelist:
 dico = {}
 foldername =  output_path.split("\\")[-1]
 correctFiles = [name for name in os.listdir(output_path) if re.search("^\w*_\d*.wav", name)]
-with open("soundGroups.json", "wb") as outfile:
+with open(output_path+"\\soundGroups.json", "wb") as outfile:
     for filename in correctFiles:
         #filename = os.path.basename(filename)
         print filename
@@ -51,4 +52,5 @@ with open("soundGroups.json", "wb") as outfile:
         nitem["path"] = foldername + "/" + filename
         #nitem["parameters"] = {}
         dico[groupName].append(nitem)
+        # print dico[groupName]
     json.dump(dico, outfile, indent=4, sort_keys=True)
