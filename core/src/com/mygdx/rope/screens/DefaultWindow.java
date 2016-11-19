@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BooleanArray;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.util.Constants;
@@ -19,7 +20,9 @@ import com.mygdx.rope.util.InputHandler.InputProfile;
 public class DefaultWindow implements Window {
     public final GlyphLayout gLayout = new GlyphLayout();
     protected final SpriteBatch batch;
+    public Array<DefaultWindow> children;
     protected SpriteDrawable cursor;
+    BooleanArray toggled;
     private float textHeight;
     protected float titleYOffset;
     protected Vector2 winCenter;
@@ -52,6 +55,7 @@ public class DefaultWindow implements Window {
     protected GameScreenTournament gameScreen;
     protected boolean closingRequested;
     protected float ymargin;
+    private String colorToggled;
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font) {
         this.batch = batch;
@@ -60,9 +64,12 @@ public class DefaultWindow implements Window {
         previousWindow =null;
         this.font = font;
         this.viewport = viewport;
+        children = new Array<DefaultWindow>(1);
+
         this.titleText = "WindowTitle";
         colorTitle = "[#9E5D41]";
         colorSelected = "[#EE6655]";
+        colorToggled = "[#EEEE55]";
         closingRequested = false;
         titleYOffset = 0;
         Xspread = 0;
@@ -87,8 +94,9 @@ public class DefaultWindow implements Window {
         winTexture.scale(4.0f, 4.0f);
         xmargin = 30;
         ymargin = 0;
-        this.listActions = new Array<String>(1);
-        this.listActions.add("Exit");
+        Array <String> temp = new Array<String>(1);
+        temp.add("Exit");
+        setListActions(temp);
         this.selectedAction = 0;
         gLayout.setText(font, listActions.get(0));
         cumulatedTextWidth = new Array<Float>(2);
@@ -98,7 +106,7 @@ public class DefaultWindow implements Window {
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font, String[] listActions){
         this(batch, viewport, font);
-        this.listActions = new Array<String>(listActions);
+        setListActions(new Array<String>(listActions) );
         updateYPositions();
     }
 
@@ -110,6 +118,10 @@ public class DefaultWindow implements Window {
     public void setWinSize(Vector2 winSize){
         this.winSize = winSize;
 
+    }
+
+    public void toggleAction(int index){
+        toggled.set(index, !toggled.get(index));
     }
 
     public void updateYPositions(){ // to call when using YSpread of the text, after any change of the text,
@@ -132,8 +144,23 @@ public class DefaultWindow implements Window {
     }
 
     public void setListActions(Array<String> listActions) {
-        this.listActions = listActions;
+        this.listActions = new Array<String>(listActions);
         updateYPositions();
+        resizeToogleList();
+    }
+
+    public void addActionToList(String string){
+        this.listActions.add(string);
+        updateYPositions();
+        resizeToogleList();
+    }
+
+    public void resizeToogleList(){
+        this.toggled = new BooleanArray(this.listActions.size);
+        for (int i = 0; i < listActions.size; i++) {
+            this.toggled.add(false);
+        }
+
     }
 
     public Array<String> getListActions() {
@@ -142,11 +169,11 @@ public class DefaultWindow implements Window {
 
     @Override
     public void update(float deltaTime) {
-        if (selectionCoolDown > 0)
-            selectionCoolDown -= 5.0*deltaTime;
+         if (selectionCoolDown > 0)
+            selectionCoolDown -= 5.0 * deltaTime;
         else
             selectionCoolDown = 0;
-        if (inputProfile != null && !isClosed()){
+        if (inputProfile != null && !isClosed()) {
             currentMovingVector = inputProfile.getMovingVector();
             //gameScreen.setDebugText("7887"+currentMovingVector);
             processWindowMovingInput();
@@ -155,11 +182,10 @@ public class DefaultWindow implements Window {
             processPauseInput(inputProfile.getButtonState("Start"));
 
         }
-        if (closingRequested == true){
+        if (closingRequested == true) {
             closeWindow();
             closingRequested = false;
         }
-
     }
 
     @Override
@@ -178,6 +204,11 @@ public class DefaultWindow implements Window {
                         winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
                 cursor.draw(batch, winTopLeft.x - 5f - textHeight + xmargin + cumulatedTextWidth.get(i) * Xspread,
                         winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread) - textHeight, textHeight, textHeight);
+            } else if(toggled.get(i) == true){
+                gLayout.setText(font, colorToggled+listActions.get(i)+"[]");
+                font.draw(batch, gLayout,
+                        winTopLeft.x + 0.5f + xmargin + cumulatedTextWidth.get(i) * Xspread,
+                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
             } else {
                 gLayout.setText(font, "[WHITE]"+listActions.get(i)+"[]");
                 font.draw(batch, gLayout,
@@ -187,6 +218,9 @@ public class DefaultWindow implements Window {
 
         }
         font.getData().markupEnabled = false;
+        for (DefaultWindow child:children) {
+            child.render(delta);
+        }
 
     }
 
@@ -202,11 +236,13 @@ public class DefaultWindow implements Window {
         selectedAction = (selectedAction - 1) % listActions.size;
         if(selectedAction == -1)
             selectedAction = listActions.size - 1;
+        Gdx.app.debug("DefaultWindow", "select "+selectedAction);
     }
 
     @Override
     public void selectPreviousAction() {
         selectedAction = (selectedAction + 1) % listActions.size;
+        Gdx.app.debug("DefaultWindow", "select "+selectedAction);
     }
 
     @Override
@@ -234,6 +270,7 @@ public class DefaultWindow implements Window {
     @Override
     public void callBackWindow(){
         this.closed = false;
+        this.selectionCoolDown = 1;
     }
     @Override
     public int getActivePlayer() {
@@ -256,13 +293,14 @@ public class DefaultWindow implements Window {
             //inputProfile.setContext("Game");
             if(gameScreen!=null){ // that was the gamescreen which opens it
                 gameScreen.setStateGame(gameScreen.getPreviousStateGame());
+                inputProfile = null;
+                this.closed = true;
             }
         }
         else {
-            previousWindow.callBackWindow();
+            previousWindow.removeChild(this);
         }
-        inputProfile = null;
-        this.closed = true;
+
     }
 
     public void requestClosing(){
@@ -297,14 +335,39 @@ public class DefaultWindow implements Window {
 
     protected void processBackInput(boolean isPressed) {
         if (isPressed && selectionCoolDown == 0) {
-            this.closeWindow();
             selectionCoolDown=1;
+            requestClosing();
         }
     }
     protected void processPauseInput(boolean isPressed) {
         if (isPressed && selectionCoolDown == 0) {
             selectionCoolDown = 1;
             requestClosing();
+        }
+    }
+
+
+    public void addChild(DefaultWindow window){
+        children.add(window);
+        window.openWindow(this.inputProfile, this);
+        closed = true;
+    }
+
+    public void removeChild(DefaultWindow window){
+        window.inputProfile = null;
+        window.closed = true;
+        children.removeValue(window, true);
+        if (children.size < 1){
+            this.callBackWindow();
+        }
+    }
+
+    public void removeLastChild(){
+        DefaultWindow window = children.pop();
+        window.inputProfile = null;
+        window.closed = true;
+        if (children.size < 1){
+            this.callBackWindow();
         }
     }
 

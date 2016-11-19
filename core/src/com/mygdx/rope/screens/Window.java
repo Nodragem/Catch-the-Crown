@@ -21,4 +21,7 @@ public interface Window {
     Window getPreviousWindow();
     void requestClosing();
     boolean isClosed();
+    void removeLastChild();
+    void removeChild(DefaultWindow defaultWindow);
+    void addChild(DefaultWindow defaultWindow);
 }

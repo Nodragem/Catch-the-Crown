@@ -22,7 +22,7 @@ public class MainMenuWindow extends DefaultWindow {
         super(batch, viewport, font);
         this.menuScreen = menuScreen;
         setListActions(new Array(new String[]
-                {"Tournament Mode", "Adventure Mode", "Option","Control", "Quit"}));
+                {"Quick Start", "Tournament Mode", "Adventure Mode", "Option","Control", "Quit"}));
         //this.messageText = "\"Let's have \n a break ...\"";
         this.titleText = "MENU";
         //this.timer = 0;
@@ -34,12 +34,16 @@ public class MainMenuWindow extends DefaultWindow {
                 menuScreen.startTournament();
                 break;
             case 1:
+                addChild(new LevelSelectionWindow(this.menuScreen, this.batch, this.viewport, this.font));
+
                 break;
             case 2:
                 break;
             case 3:
                 break;
             case 4:
+                break;
+            case 5:
                 requestClosing();
                 menuScreen.dispose();
                 break;

@@ -651,7 +651,9 @@ public class Character extends GameObject implements  Carriable {
                 Carrier.myRightHandContact.deepFlush();
                 this.Carrier = null;
             }
+            // if the object is not carried anymore, it needs to becomes dynamics/activated again:
             body.setType(BodyDef.BodyType.DynamicBody);
+            body.setActive(true);
             //FIXME: we should not make it Dynamic before to throw it ... (see throwObject()) !!!!
         }
         else {

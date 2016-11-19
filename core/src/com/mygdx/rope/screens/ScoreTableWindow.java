@@ -106,7 +106,7 @@ public class ScoreTableWindow extends DefaultWindow {
             win_post_anim = new Animation(1.0f / 6.0f, regions, Animation.PlayMode.REVERSED);
         }
         for (int i = 0; i < players.size; i++) {
-            regions = GameObject.atlas.findRegions("Piaf_" + players.getValueAt(i).getCharacter().color_texture + "_loosing");
+            regions = GameObject.atlas.findRegions("Piaf_" + players.getValueAt(i).getCharacter().color_texture + "_Loosing");
             loser_anim.add(new Animation(1.0f / 2.0f, regions, Animation.PlayMode.LOOP));
         }
     }
@@ -241,15 +241,8 @@ public class ScoreTableWindow extends DefaultWindow {
     }
 
     @Override
-    protected void processPauseInput(boolean isPressed) {
-
+    protected void closeWindow() {
     }
-
-//    @Override
-//    protected void closeWindow() {
-//        inputProfile = null;
-//        this.closed = true;
-//    }
 
 
 }

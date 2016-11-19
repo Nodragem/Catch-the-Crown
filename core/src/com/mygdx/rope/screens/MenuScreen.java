@@ -1,11 +1,13 @@
 package com.mygdx.rope.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.BooleanArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.rope.RopeGame;
 import com.mygdx.rope.util.Constants;
@@ -14,7 +16,7 @@ import com.mygdx.rope.util.Constants;
  * Created by Geoffrey on 06/09/2015.
  */
 public class MenuScreen implements Screen {
-    private final RopeGame game;
+    public RopeGame game;
     private Constants.MENU_STATE menuState;
     private final SpriteBatch batch;
     private FitViewport viewport;
@@ -43,6 +45,14 @@ public class MenuScreen implements Screen {
     public void startTournament() {
         game.startTournament();
         mainMenuWindow.requestClosing();
+    }
+
+    public void updateLevelSelectionForTournament(BooleanArray levelSelected, boolean isRandom) {
+        game.updateLevelSelection(Constants.TOURNAMENT_LEVEL_PATH, levelSelected, isRandom);
+    }
+
+    public void prepareLevelForStory() {
+        game.updateLevelSelection(Constants.TOURNAMENT_LEVEL_PATH, null, false); //FIXME: should be a STORY LEVEL PATH
     }
 
     @Override

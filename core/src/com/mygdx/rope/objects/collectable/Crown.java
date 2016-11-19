@@ -81,6 +81,7 @@ public class Crown extends GameObject implements Carriable {
         if (newCarrier == null){
             // drop the crown
             this.body.setType(BodyDef.BodyType.DynamicBody);
+            this.body.setActive(true);
             this.Carrier.getPlayer().addScore(-crownGoldValue);
             this.Carrier = null;
         }

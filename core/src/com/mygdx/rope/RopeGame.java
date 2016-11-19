@@ -7,14 +7,8 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.mygdx.rope.objects.characters.*;
-import com.mygdx.rope.screens.DefaultWindow;
 import com.mygdx.rope.screens.GameScreenTournament;
-import com.mygdx.rope.screens.MainMenuWindow;
 import com.mygdx.rope.screens.MenuScreen;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.InputHandler.InputProfile;
@@ -36,15 +30,12 @@ public class RopeGame extends Game {
 
 
 	@Override
-	public void create() {
+	public void create() { // TODO: I think here we will provide the lastly played set of levels, for the quick start option
 //		enableFullScreen();
 		batch = new SpriteBatch();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		levels = new Array<String>(1);
-		//levels.add(Constants.LEVEL_01);
-        Array<Boolean> selectionLevels = new Array<Boolean>(2);
-        selectionLevels.add(true); //selectionLevels.add(true);selectionLevels.add(true);
-		retrieveLevelFrom(Constants.TOURNAMENT_LEVEL_PATH, selectionLevels);
+		updateLevelSelection(Constants.TOURNAMENT_LEVEL_PATH, null, false);
 		randomSelectionLevel = false;
         camera = new OrthographicCamera();
 		createProfiles();
@@ -64,21 +55,36 @@ public class RopeGame extends Game {
 		}
 	}
 
-	private void retrieveLevelFrom(String levelPath, Array<Boolean> selected) {
+	public void updateLevelSelection(String levelPath, BooleanArray levelSelected, boolean isRandom) {
+		randomSelectionLevel = isRandom;
 		JsonReader reader = new JsonReader();
-//		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/progressionLevels.json") );
-		JsonValue root = reader.parse(Gdx.files.internal(levelPath + "/testLevels.json") );
-        Gdx.app.debug("Path to level: ", ""+levelPath + "/testLevels.json");
-        String[] levelNames = root.get("levels").asStringArray();
-        boolean[] levelBlocked = root.get("unblocked").asBooleanArray();
-        if (levelNames != null  && levelBlocked != null && levelBlocked.length == levelNames.length && levelNames.length == selected.size){
-            for (int i = 0; i < selected.size; i++) {
-                if (selected.get(i) && levelBlocked[i])
-                    levels.add(levelPath+"/"+levelNames[i]+".tmx");
-				Gdx.app.debug("888", levelPath+"/"+levelNames[i]+".tmx");
-            }
+		JsonValue levelInfo = reader.parse(Gdx.files.internal(levelPath + "/Levels.json") );
+		Gdx.app.debug("Path to level: ", ""+levelPath + "/Levels.json");
+		String[] levelNames = levelInfo.get("levels").asStringArray();
+		BooleanArray levelBlocked = new BooleanArray(levelInfo.get("unblocked").asBooleanArray());
+		if (levelSelected == null) { // if there is no selected level, it takes the lastly saved selection
+            levelSelected = new BooleanArray(levelInfo.get("selected").asBooleanArray());
+            isRandom = levelInfo.get("random").asBoolean();
         }
+		if (levelNames != null  && levelBlocked != null && levelBlocked.size == levelNames.length && levelNames.length == levelSelected.size){
+			for (int i = 0; i < levelSelected.size; i++) {
+				if (levelSelected.get(i) && levelBlocked.get(i))
+					levels.add(levelPath+"/"+levelNames[i]+".tmx");
+				else
+					Gdx.app.error("RopeGame", "You manage to select an unlocked level !?");
+				Gdx.app.debug("888", levelPath+"/"+levelNames[i]+".tmx");
+			}
+		}
+		else{
+			Gdx.app.error("RopeGame", "Check if the list of selected levels is the same length as the list of levels.");
+		}
 	}
+
+	public void saveLevelSelection(String levelPath, BooleanArray levelSelected, boolean isRandom) {
+        // TODO: need to create an object/class LevelSelection with {isRandom, levelSelected, levelBlocked} as a mirror of the Json File.
+    }
+
+
 
 	public void startTournament() {
 		setScreen(new GameScreenTournament(this));

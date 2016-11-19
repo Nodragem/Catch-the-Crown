@@ -37,7 +37,7 @@ public class PauseWindow extends DefaultWindow {
         super.openWindow(inputProfile, gameScreen);
         Array<TextureAtlas.AtlasRegion> regions = null;
         regions = GameObject.atlas.findRegions("Piaf_" +
-                gameScreen.getPlayersList().getValueAt(icontroller).getCharacter().color_texture + "_loosing");
+                gameScreen.getPlayersList().getValueAt(icontroller).getCharacter().color_texture + "_Loosing");
         pauser_anim = new Animation(1.0f / 2.0f, regions, Animation.PlayMode.LOOP);
     }
 
