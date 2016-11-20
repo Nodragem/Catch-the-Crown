@@ -152,7 +152,8 @@ public class AttackManager extends GameObject implements Launcher {
 
     public void longDistanceAttack(boolean isPressed, float angle, boolean isAiming, float deltaTime) {
         aimingAngle = angle;
-        if (character.hasTheCrown() || attackState == Constants.ATTACK_STATE.SHORTATTACK || attackState == Constants.ATTACK_STATE.LONGATTACK || character.pickupState != Constants.PICKUP_STATE.NORMAL){
+        if (character.hasTheCrown() || attackState == Constants.ATTACK_STATE.SHORTATTACK ||
+                attackState == Constants.ATTACK_STATE.LONGATTACK || character.pickupState != Constants.PICKUP_STATE.NORMAL){
             shortDistanceAttack(isPressed, deltaTime);
             return;
         }
@@ -217,46 +218,6 @@ public class AttackManager extends GameObject implements Launcher {
         rotation = body.getAngle();
         position.set(body.getPosition()).sub(origin);
 
-//        switch(attackState){
-//            case LONGATTACK:
-//                //position.set(body.getPosition());
-//                if (current_animation != animations.get("Throwing")) {
-//                    setAnimation("Throwing");
-//                }
-//                else if (current_animation.isAnimationFinished(stateTime)){
-//                    goToAttackState(NOTATTACKING);
-//                    Gdx.app.debug("LAnce", "not attacking");
-//                }
-//                break;
-//            case SHORTATTACK:
-//                //position.set(body.getPosition());
-//                if(current_animation != animations.get("Slapping")) {
-//                    setAnimation("Slapping");
-//                }
-//                else if (current_animation.isAnimationFinished(stateTime)){
-//                    goToAttackState(NOTATTACKING);
-//                    Gdx.app.debug("LAnce", "not attacking 2");
-//                }
-//                break;
-//            case NOTATTACKING:
-//                // note that we can put the animation to null without
-//                // upsetting the renderer because the isVisible is at False when NOTATTACKING
-//                if(current_animation != null)
-//                    setAnimation("");
-//                //Gdx.app.debug("LAnce", "NOTATTACKING");
-//                break;
-//            case AIMING:
-//                if (current_animation != animations.get("Aiming")) {
-//                    setAnimation("Aiming");
-//                }
-//                break;
-//            case CHARGING:
-//                if (current_animation != animations.get("Charging")) {
-//                    setAnimation("Charging");
-//                }
-//                break;
-//
-//        }
         switch(attackState){
             case LONGATTACK:
                 //position.set(body.getPosition());

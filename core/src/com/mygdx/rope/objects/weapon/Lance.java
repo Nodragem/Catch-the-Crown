@@ -136,13 +136,21 @@ public class Lance extends GameObject {
             burningSound.stop();
         }
 
-        this.body.setType(BodyDef.BodyType.KinematicBody);
-        this.body.setLinearVelocity(0f, 0f);
+
         Body touchedBody = mainBoxContact.popTouchedFixtures().getBody();
+
         if (touchedBody != null) {
-            setParentBody(touchedBody, true);
-            isAttached = true;
-            parentObject = (GameObject) touchedBody.getUserData();
+            GameObject touchedObject = (GameObject) touchedBody.getUserData();
+            if(!(touchedObject instanceof Lance) || !children.contains(touchedObject, true)){
+                setParentBody(touchedBody, true);
+                isAttached = true;
+                parentObject = (GameObject) touchedBody.getUserData();
+                this.body.setType(BodyDef.BodyType.KinematicBody);
+                this.body.setLinearVelocity(0f, 0f);
+            } else {
+                goToDesactivation();
+            }
+
             if (parentObject != null && parentObject instanceof com.mygdx.rope.objects.characters.Character) {
                 goToGhostState();
             }else {
@@ -201,6 +209,7 @@ public class Lance extends GameObject {
             ((SimpleLauncher) parentObject).triggerOBSTRUCTEDActions(false);
         }
         setParentBody(null, true);
+        clearChildren();
         givenDamage = damageMultiplicator*defaultDamage;
         if (damageMultiplicator == 3.0f) {
             isBurning = true;
