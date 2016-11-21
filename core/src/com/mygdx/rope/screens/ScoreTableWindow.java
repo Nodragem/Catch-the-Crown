@@ -47,6 +47,8 @@ public class ScoreTableWindow extends DefaultWindow {
         this.selectedAction =1;
         this.gameScreen = gameScreen;
         this.titleText = "Score Table";
+        setSelectButton("Start");
+        messageText = "Press [Start] to select.";
 
         titleYOffset = 110;
         colorTitle = "[RED]";
@@ -64,7 +66,7 @@ public class ScoreTableWindow extends DefaultWindow {
         if(gameScreen.getStateGame() == Constants.GAME_STATE.TOURNAMENT_END)
             listActions.set(1, "Start a New Tournament");
         else
-            listActions.set(1, "Start new Round");
+            listActions.set(1, "Next Round");
         timer = 0;
         initWinLoseAnimation(scoreTable);
         columnStepY = (400.0f / gameScreen.getVictoryThreshold());
@@ -116,7 +118,7 @@ public class ScoreTableWindow extends DefaultWindow {
         timer += delta;
         super.render(delta);
         font.draw(batch, resultAnnouncement, winTopLeft.x, winTopLeft.y - 110); // 110 if the border size
-
+        posMessage.set(winCenter.x - gLayout.width/2.0f, winTopLeft.y - winSize.y - 40);
         font.getData().markupEnabled = true;
         TextureRegion region = null;
         for (int i = 0; i < players.size; i++) {

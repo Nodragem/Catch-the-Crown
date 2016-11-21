@@ -18,7 +18,6 @@ import com.mygdx.rope.util.InputHandler.InputProfile;
  * Created by Geoffrey on 29/08/2015.
  */
 public class PauseWindow extends DefaultWindow {
-    private final String messageText;
     //private GameScreenTournament gameScreen;
     private float timer;
 
@@ -30,6 +29,7 @@ public class PauseWindow extends DefaultWindow {
         this.messageText = "\"Let's have \n a break ...\"";
         this.titleText = "PAUSE";
         this.timer = 0;
+
 
     }
 
@@ -50,9 +50,9 @@ public class PauseWindow extends DefaultWindow {
     public void render(float delta){
         super.render(delta);
         TextureRegion region = null;
+        posMessage.set(winCenter.x - gLayout.width/2.0f, winTopLeft.y + 90);
         animePauser(batch, region);
-        gLayout.setText(font, messageText);
-        font.draw(batch, gLayout, winCenter.x - gLayout.width/2.0f, winTopLeft.y + 90); // 110 if the border size
+
     }
 
     @Override

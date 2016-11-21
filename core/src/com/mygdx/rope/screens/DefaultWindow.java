@@ -56,6 +56,9 @@ public class DefaultWindow implements Window {
     protected boolean closingRequested;
     protected float ymargin;
     private String colorToggled;
+    private String selectButton;
+    public String messageText;
+    public Vector2 posMessage;
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font) {
         this.batch = batch;
@@ -65,6 +68,9 @@ public class DefaultWindow implements Window {
         this.font = font;
         this.viewport = viewport;
         children = new Array<DefaultWindow>(1);
+        selectButton = "Select";
+        messageText = "";
+        posMessage = new Vector2(0, 0);
 
         this.titleText = "WindowTitle";
         colorTitle = "[#9E5D41]";
@@ -118,6 +124,10 @@ public class DefaultWindow implements Window {
     public void setWinSize(Vector2 winSize){
         this.winSize = winSize;
 
+    }
+
+    public void setSelectButton(String selectButton) {
+        this.selectButton = selectButton;
     }
 
     public void toggleAction(int index){
@@ -177,7 +187,7 @@ public class DefaultWindow implements Window {
             currentMovingVector = inputProfile.getMovingVector();
             //gameScreen.setDebugText("7887"+currentMovingVector);
             processWindowMovingInput();
-            processSelectInput(inputProfile.getButtonState("Select"));
+            processSelectInput(inputProfile.getButtonState(selectButton));
             processBackInput(inputProfile.getButtonState("Back"));
             processPauseInput(inputProfile.getButtonState("Start"));
 
@@ -221,6 +231,8 @@ public class DefaultWindow implements Window {
         for (DefaultWindow child:children) {
             child.render(delta);
         }
+        gLayout.setText(font, messageText);
+        font.draw(batch, gLayout, posMessage.x, posMessage.y); // 110 if the border size
 
     }
 

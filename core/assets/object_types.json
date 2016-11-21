@@ -141,20 +141,23 @@
       "size": 0.5,
       "offsetx": 0.25,
       "offsety": 0.25,
-      "value": 10
+      "value": 10,
+      "invicibility": 0
     },
     "ruby":{
       "size":0.5,
       "offsetx": 0.25,
       "offsety": 0.25,
-      "value": 50
+      "value": 50,
+      "invicibility": 1
     },
     "diamond":{
       "offsetx": 0.0,
       "offsety": 0.0,
       "scalex": 1,
       "scaley": 1,
-      "value": 200
+      "value": 500,
+      "invicibility": 5
     }
   }
 

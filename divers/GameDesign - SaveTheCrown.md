@@ -37,12 +37,17 @@ Règle de partie perdue (recommence leniveau) :
 
 ## Next Actions:
 
+- [ ] **[A]** change button for going to next round to start
+- [ ] **[A]** one side platform
+- [ ] **[A]** add tick-tock of the clock when 10 second lefts
+- [ ] **[A]** we need to have item to regenerate from fatigue:
+    - to take the crown would regenerate fatigue?
 - [ ] **[A]** more you carry the crown more you get tired? @gameplay
 - [ ] **[A]** a fully tired character could not carry the crown? (so that people need to abandon it at some point)
 - [ ] **[A]** collect: @gameplay
   - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
   - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
-- [ ] **[A]** to slap someone treats one mark, @gameplay
+- [ ] **[?]** to slap someone treats one mark, @gameplay
 - [ ] **[A]** marks may also influence the throwing challenge
 
 - [ ] **[A]** pay 5% of money to revive quicker: @gameplay
@@ -222,6 +227,12 @@ Règle de partie perdue (recommence leniveau) :
 --------------------------------------------------------------------------------
 
 # Changelog
+
+## 20/11/2016:
+- [x] bug with throwing object: need to setActivate(true) when throwing ^^ probably cause of an update of libGDX
+- [x] bug stackoverflow: when two lance collide and then we use on of the lance, we got a stackoverflow because they are both children of each other and start making recursive call to goToActivation.
+- [x] improvement: remove the children from the current parent when we used setParent(null)
+- [ ] lance goes to deactivation now when colliding with an other lance
 
 ## 15/10/2016:
 - [x] **[A]** @bug there are still bug when getting hurt/dead while carrying a character!!

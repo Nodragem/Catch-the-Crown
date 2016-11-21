@@ -585,6 +585,7 @@ public class GameObject implements Updatable, Renderable {
         if(children.size>0){
             for (GameObject child:children)
                 child.goToActivation();
+            // if you get a StackOverFlow here, it is probably because you have a parent that is the child of his child ^^
         }
     }
 
@@ -609,26 +610,49 @@ public class GameObject implements Updatable, Renderable {
         }
     }
 
-    public void setParentBody(Body parentBody, boolean override) {
-        this.parentBody = parentBody;
-        if(parentBody != null) {
-            GameObject parentObject = (GameObject) parentBody.getUserData();
-            if(parentObject != null){
-                parentObject.addChild(this);
+    public void setParentBody(Body newParentBody, boolean override) {
+
+        if(newParentBody != null) {
+            GameObject newParentObject = (GameObject) newParentBody.getUserData();
+            if(newParentObject != null && !newParentObject.children.contains(this, true)){
+                newParentObject.addChild(this);
             }
             if(override) {
                 this.rposition.set(
-                        MathUtils.atan2(body.getPosition().y - parentBody.getPosition().y,
-                                body.getPosition().x - parentBody.getPosition().x) - parentBody.getAngle(),
-                        position.dst(parentBody.getPosition())); // angle, radius
-                rrotation = rotation - parentBody.getAngle();
+                        MathUtils.atan2(body.getPosition().y - newParentBody.getPosition().y,
+                                body.getPosition().x - newParentBody.getPosition().x) - newParentBody.getAngle(),
+                        position.dst(newParentBody.getPosition())); // angle, radius
+                rrotation = rotation - newParentBody.getAngle();
             }
         }
+        else if (this.parentBody != null){ // i.e. if we want to replace an existing parent by no parent
+//            We need to remove the current object from the list of children of the previous parent.
+            GameObject currentParentObject = (GameObject) this.parentBody.getUserData();
+            if(currentParentObject != null ){
+                currentParentObject.removeChild(this);
+            }
+        }
+        this.parentBody = newParentBody;
+    }
+
+    public void removeChild(GameObject child) {
+        child.parentBody = null;
+        children.removeValue(child, true);
+    }
+
+    public void clearChildren() {
+        for (int i = 0; i < children.size; i++) {
+            GameObject child = children.get(i);
+            child.parentBody = null;
+        }
+        children.clear();
+
     }
 
     public Body getParentBody() {
         return parentBody;
     }
+
 
     public void addChild(GameObject gameObject){
         children.add(gameObject);
