@@ -1,7 +1,6 @@
 package com.mygdx.rope.objects.traps;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.EllipseMapObject;
@@ -36,21 +35,14 @@ public class TrapFactory {
         interactiveObject = mapLayer.getObjects().getByType(RectangleMapObject.class);
         GameObject newObject = null;
         ObjectMap <GameObject, Integer> toParent = new ObjectMap();
+        // the HUB object are circleObjects and the Path are lineObjects
+        // so that we are sure we are not iterating through them.
         for (RectangleMapObject obj: interactiveObject ) {
-            String nameObject = obj.getProperties().get("Object", String.class);
-            Integer ownID = obj.getProperties().get("id", Integer.class);
-            Gdx.app.debug("Trap Factory: ", "Build "+nameObject+" "+ownID);
-            String typeConnection = obj.getProperties().get("type", String.class);
-            String HubInID = obj.getProperties().get("Hub_in", null, String.class);
-            String HubOutID = obj.getProperties().get("Hub_out", null, String.class);
-            Integer parentID = Integer.parseInt(obj.getProperties().get("Parent", "-1", String.class));
 
-            if (typeConnection.equals("Triggerable")){
-               newObject = (GameObject) addTriggerable(mapLayer, obj, nameObject, HubInID);
-            }
-            else if (typeConnection.equals("Integrator")) {
-                newObject = (GameObject) addIntegrator(mapLayer, obj, nameObject, HubInID, HubOutID);
-            }
+            newObject = (GameObject) addInteractiveObject(mapLayer, obj);
+
+            Integer ownID = obj.getProperties().get("id", Integer.class);
+            Integer parentID = Integer.parseInt(obj.getProperties().get("Parent", "-1", String.class));
             if (newObject != null){
                 newObject.setID(ownID);
                 Gdx.app.debug("TrapFactory: ", "Add Parent Step 1, own ID: "+ownID);
@@ -76,17 +68,35 @@ public class TrapFactory {
         return listHubs;
     }
 
-    private Integrable addIntegrator(MapLayer mapLayer, RectangleMapObject rectangleObj, String nameObject, String HubInID, String HubOutID) {
-        Integrable newInteractiveObject = null;
+    private Triggerable addInteractiveObject(MapLayer mapLayer, RectangleMapObject rectangleObj) {
+        /* -------------------------------------------------------------------------------------------------
+        *  About: correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
+        *  Tiled map give the coordinate of the top-left corner of its object and libGDX translate those coor-
+        *  dinates to bottom-left corner origin just by adding +1 on the y-axis. That simplistic method do
+        *  not take in account rotation.
+        *  Thus we have to add 1 on y-axis to inverse the libGDX translation, and then we apply our own
+        *  translation taking in account the rotation.
+        *  Moreover, note that a rotation r in Tiled is a rotation -r in libGDX.
+        *
+        *  WARNING: not custom properties in Tiled starts with Uppercase in the GUI, but not here.
+        *  ------------------------------------------------------------------------------------------------- */
+        Triggerable newInteractiveObject = null;
+        float rotation;
+        Vector2 correctionPos;
+        String objectDataID = "";
+        String TypeObject = rectangleObj.getProperties().get("type", String.class);
+        String HubInID = rectangleObj.getProperties().get("Hub_in", null, String.class);
+        String HubOutID = rectangleObj.getProperties().get("Hub_out", null, String.class);
         Rectangle rectangle = convertToUnits(rectangleObj.getRectangle());
-        Gdx.app.debug("TrapFactory.addIntegrator()", "nameObject to add:"+ nameObject);
-        Constants.INTEGRATOR_TYPE typeObject = Constants.INTEGRATOR_TYPE.valueOf(nameObject.toUpperCase(Locale.ENGLISH));
-        if (typeObject != null) {
-            switch (typeObject) {
-                case SIMPLESWITCH:
-                    float rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class); // degree
+        Gdx.app.debug("TrapFactory.addInteractiveObject()", "Type of Object to add:" + TypeObject );
+        Constants.MAPOBJECT_TYPE TYPEOBJECT = Constants.MAPOBJECT_TYPE.valueOf(TypeObject.toUpperCase(Locale.ENGLISH));
+
+        if (TYPEOBJECT != null) {
+            switch (TYPEOBJECT) {
+                case SWITCH:
+                    rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class); // degree
                     int weight = Integer.parseInt(rectangleObj.getProperties().get("weight", String.class)); // all custom properties are strings in TileMap Editor
-                    String objectDataID = rectangleObj.getProperties().get("SwitcherType", "0", String.class);
+                    objectDataID = rectangleObj.getProperties().get("Subtype", "0", String.class);
                     boolean isEnabledByDefault = rectangleObj.getProperties().get("isEnabledByDefault", true, Boolean.class);
 
                     JsonValue objectInfo = null;
@@ -95,78 +105,31 @@ public class TrapFactory {
                     else
                         objectInfo = gameScreen.getObjectDataBase().get("totem_switch");
 
-                    float offset_y_all = objectInfo.getFloat("offsety_all", 0);
-                    Vector2 correctionPos = new Vector2(
-                            //  usual correction as see below in SPIKES || correction for the offset
+                    float text_offsety = objectInfo.getFloat("texture_offsety", 0);
+                    correctionPos = new Vector2(
+                            // FIXME: Check whether it can be/need to be implemented for other objects
+                            //  usual correction as see below in TRAP || correction for the offset
                             // -----------------------------------||-------------------------------------------|
-                            0 + MathUtils.cosDeg(-rotation - 90) + offset_y_all * MathUtils.sinDeg(-rotation),
-                            1 + MathUtils.sinDeg(-rotation-90) - offset_y_all * MathUtils.cosDeg(-rotation)
+                            0 + MathUtils.cosDeg(-rotation - 90) + text_offsety * MathUtils.sinDeg(-rotation),
+                            1 + MathUtils.sinDeg(-rotation-90) - text_offsety * MathUtils.cosDeg(-rotation)
                     );
 
                     newInteractiveObject = new SimpleSwitcher(gameScreen,
                             rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()),
                             -rotation, objectDataID, weight, isEnabledByDefault);
-//                    newInteractiveObject = new SimpleSwitcher(gameScreen,
-//                            rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()),
-//                            -rotation*MathUtils.degreesToRadians, texture_name, info, weight, isEnabledByDefault);
                     break;
-                case HOLDINGSWITCH:
-                    break;
-            }
-            currentHub = listHubs.get(HubOutID);
-            if (newInteractiveObject != null && currentHub != null) {
-                currentHub.addIntegrator(newInteractiveObject);
-                Gdx.app.debug("TrapFactory.addIntegrator()", nameObject+" added to "+listHubs.getKey(currentHub, true));
-            }
-            else
-                Gdx.app.debug("TrapFactory", "Type Integrable " + typeObject.toString() + " not found!");
-            // now integrator can be triggered:
-            currentHub = listHubs.get(HubInID);
-            if (newInteractiveObject != null && newInteractiveObject instanceof Triggerable && currentHub != null) {
-                currentHub.addTriggerable((Triggerable) newInteractiveObject);
-                Gdx.app.debug("TrapFactory.addTriggerable()", nameObject+" added to "+listHubs.getKey(currentHub, true));
-            }
-            else
-                Gdx.app.debug("TrapFactory", "Type Triggerable " + typeObject.toString() + " found! but weird problem in switch case...");
-        }
-        else {
-            Gdx.app.debug("TrapFactory", "Type Integrable " + typeObject.toString() + " not found!");
-        }
-        return newInteractiveObject;
-    }
-
-    private Triggerable addTriggerable(MapLayer mapLayer, RectangleMapObject rectangleObj, String nameObject, String HubID){
-        // FIXME: we can probably simplify the code,
-        // just extract the data from tiled, put it in an objectmap and passes it to the object constructor
-        Triggerable newInteractiveObject = null;
-        float rotation;
-        float intervalON;
-        boolean defaultON;
-        Vector2 correctionPos;
-        Rectangle rectangle = convertToUnits(rectangleObj.getRectangle());
-        Gdx.app.debug("TrapFactory.addTriggerable()", "nameObject to add:"+ nameObject);
-        Constants.TRIGGERABLE_TYPE typeObject = Constants.TRIGGERABLE_TYPE.valueOf(nameObject.toUpperCase(Locale.ENGLISH));
-        if (typeObject != null) {
-            switch (typeObject) {
-                case SPIKES:
-                    //float rotation = Float.parseFloat(rectangleObj.getProperties().get("myRotation", String.class));
-                    //float rotation = rectangleObj.getProperties().get("rotation", Float.class);
+                case TRAP:
                     rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class);
                     float intervalOFF =0;
                     if (rectangleObj.getProperties().get("intervalOFF", String.class) != null)
                         intervalOFF = Float.parseFloat(rectangleObj.getProperties().get("intervalOFF", String.class));
-                    intervalON =0;
+                    float intervalON =0;
                     if (rectangleObj.getProperties().get("intervalON", String.class) != null)
                         intervalON = Float.parseFloat(rectangleObj.getProperties().get("intervalON", String.class));
-                    defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
-                    //Gdx.app.debug("FactoryTrap", "RotationTiled String: "+ rectangleObj.getProperties().get("rotation", String.class)+"; myRotation: "+rotation );
+                    boolean defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
                     Gdx.app.debug("FactoryTrap", "RotationTiled Float: "+ rectangleObj.getProperties().get("rotation", Float.class)+"; myRotation "+rotation );
-                    /* Tiled map give the coordinate of the top-left corner of its object and libGDX translate those coordinates
-                    *   to bottom-left corner origin just by adding +1 on the y-axis. That simplistic method do not take in account rotation.
-                    *  Thus we have to add 1 on y-axis to inverse the libGDX translation, and then we apply our own translation taking in account the rotation
-                    *  Moreover, note that a rotation r in Tiled is a rotation -r in libGDX. */
+
                     correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
-                    //Vector2 correctionPos =  new Vector2(0,0);
                     newInteractiveObject = new Spikes(gameScreen, rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()) , -rotation, "spikes", intervalON, intervalOFF, defaultON);
                     break;
                 case LAUNCHER:
@@ -192,7 +155,7 @@ public class TrapFactory {
                     newInteractiveObject = new SimpleLauncher(gameScreen,rectangle.getPosition(new Vector2()).add(correctionPos),
                             rectangle.getSize(new Vector2()) , -rotation, intervalShoot, reloadTime, impulse, nbpool, defaultON, type_projectile );
                     break;
-                case MOVING_PLATFORM:
+                case PLATFORM:
                     rotation =0;
                     if (rectangleObj.getProperties().get("rotation", Float.class) != null)
                         rotation = rectangleObj.getProperties().get("rotation", Float.class);
@@ -200,7 +163,7 @@ public class TrapFactory {
                     Gdx.app.debug("FactoryTrap", "PLATFORM" );
                     Gdx.app.debug("FactoryTrap", "RotationTiled "+ rectangleObj.getProperties().get("Rotation", String.class)+"; myRotation "+0.0f );
                     String pathID = rectangleObj.getProperties().get("Path", String.class);
-                    String objectDataID = rectangleObj.getProperties().get("Object", String.class);
+                    objectDataID = rectangleObj.getProperties().get("Subtype", String.class);
                     float rotationSpeed =0;
                     if (rectangleObj.getProperties().get("rotationSpeed", String.class) != null)
                         rotationSpeed = Float.parseFloat(rectangleObj.getProperties().get("rotationSpeed", String.class));
@@ -208,23 +171,34 @@ public class TrapFactory {
                     MapObject path = mapLayer.getObjects().get(pathID);
                     defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
                     boolean alwaysVisible = Boolean.valueOf(rectangleObj.getProperties().get("alwaysVisible", "true", String.class));
-                    String color_texture = rectangleObj.getProperties().get("texture", "wood", String.class);
+//                    String color_texture = rectangleObj.getProperties().get("texture", "wood", String.class);
                     newInteractiveObject = new MovingPlatform(gameScreen,
                             rectangle.getPosition(new Vector2()).add(correctionPos),
                             rectangle.getSize(new Vector2()),-rotation, path, rotationSpeed, waitingTime,
-                            defaultON, alwaysVisible, objectDataID, color_texture);
+                            defaultON, alwaysVisible, objectDataID);
                     break;
             }
-            currentHub = listHubs.get(HubID);
-            if (newInteractiveObject != null && currentHub != null) {
-                currentHub.addTriggerable(newInteractiveObject);
-                Gdx.app.debug("TrapFactory.addTriggerable()", nameObject+" added to "+listHubs.getKey(currentHub, true));
+            currentHub = listHubs.get(HubOutID);
+            if (newInteractiveObject != null && newInteractiveObject instanceof Integrable && currentHub != null) {
+                currentHub.addIntegrator((Integrable) newInteractiveObject);
+                Gdx.app.debug("TrapFactory.addIntegrator()", TypeObject + " of Subtype " + objectDataID +
+                        " added to "+listHubs.getKey(currentHub, true));
             }
             else
-                Gdx.app.debug("TrapFactory", "Type Triggerable " + typeObject.toString() + " found! but weird problem in switch case...");
+                Gdx.app.debug("TrapFactory", "Type Integrable " + TYPEOBJECT.toString() + " not found!");
+            // now integrator can be triggered:
+            currentHub = listHubs.get(HubInID);
+            if (newInteractiveObject != null && newInteractiveObject instanceof Triggerable && currentHub != null) {
+                currentHub.addTriggerable((Triggerable) newInteractiveObject);
+                Gdx.app.debug("TrapFactory.addTriggerable()", TypeObject +" of Subtype " + objectDataID +
+                        " added to "+listHubs.getKey(currentHub, true));
+            }
+            else
+                Gdx.app.debug("TrapFactory", "Type Triggerable " + TYPEOBJECT.toString() +
+                        " found! but weird problem in switch case...");
         }
         else {
-            Gdx.app.debug("TrapFactory", "Type Triggerable " + typeObject.toString() + " not found!");
+            Gdx.app.debug("TrapFactory", "Type Integrable " + TYPEOBJECT.toString() + " not found!");
         }
         return newInteractiveObject;
     }

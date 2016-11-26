@@ -253,10 +253,10 @@ public class GameScreenTournament implements Screen {
             coingroups.add(new Coins(this, new Vector2(0,0), coinslayer, trapFactory.getListHubs()));
         }
         // Let's spawn the crown oand the Spawners:
-        MapObjects objects = map.getLayers().get("Entities").getObjects();
-        initObjectPositions(objects, "Spawner", playerSpawners);
+        MapObjects objects = map.getLayers().get("Spawners").getObjects();
+        initObjectPositions(objects, "Player", playerSpawners);
         Array<Vector2> posCrown = new Array<Vector2>(1);
-        initObjectPositions(objects,"Crown", posCrown);
+        initObjectPositions(objects, "Crown", posCrown);
         theCrown = new Crown(this, posCrown.first(), coingroups);
 
     }
@@ -269,8 +269,9 @@ public class GameScreenTournament implements Screen {
         Iterator<MapObject> objectIt = objects.iterator();
         while(objectIt.hasNext()) {
             MapObject object = objectIt.next();
-            Gdx.app.debug("initObj", name+" detected? "+ object.getName() );
-            if (object instanceof RectangleMapObject && object.getName().equals(name)) {
+            String subtype = object.getProperties().get("Subtype", String.class);
+            Gdx.app.debug("initObj", name+" detected? "+ subtype );
+            if (object instanceof RectangleMapObject && subtype.equals(name)) {
                 Gdx.app.debug("initObj", name+" detected");
                 RectangleMapObject rectangle = (RectangleMapObject) object;
                 Vector2 pos = rectangle.getRectangle().getPosition(new Vector2(0,0)).scl(1/Constants.TILES_SIZE);

@@ -43,16 +43,10 @@ public class MovingPlatform extends GameObject implements Triggerable {
 
     public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension,
                           float angle, MapObject path, float angularSpeed, float waitingTime, boolean defaultON,
-                          boolean alwaysVisible, String objectDataID, String color_texture) {
-        // FIXME: 1
-        // instead of Overriding I could just do a simple GameObject Factory which
-        // would use the GameObject constructor to give the Fixture, the filter and the animation definition to GameObject.
-        // Further more, the Factory could also set up the Body Type and give an animation of switching off or on.
-        // The only thing missing to GameObject is float "damage", which if it is > 0 is called and removed from the other object --> We tried to do something
+                          boolean alwaysVisible, String objectDataID) {
         // FIXME: 2 - should we put the data from TiledMap into a json / hashmap?
-        super(game, position, dimension, angle, "No Init");
-        initAnimation(objectDataID, color_texture);
-        initFixture();
+        super(game, position, dimension, angle, objectDataID);
+        // Note that the dimension, position and angle are given by the Factory, from the TiledMap
         mainBoxContact = new ContactData(10, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
         initCollisionMask();
         this.platformAlwaysVisible = alwaysVisible;
@@ -60,11 +54,13 @@ public class MovingPlatform extends GameObject implements Triggerable {
         this.waitingTime = waitingTime;
         body.getFixtureList().get(0).setFriction(1.0f);
 
-        /* ---- we need to adjust the position of the body because the body center is placed
-        on the left-bottom corner of the tiled map object by libGDX.
-        That is caused by the fact that we create the body with a center on
-        the left-bottom corner of the GameObject -- see initFixture().
-        That is the only way to rotate the body on its center. */
+        /* Libgdx body.setTransform() will places the **center** of the body to a new position because
+         we made the body centered on the lef-bottom corner of GameObject to allow centered rotation.
+        Also, GameObject and TileMap object give us the position of their left-bottom corner
+        Because of that, we need to compute where is the center of the TileMap object to place the body
+        This is very similar to the part setParentBody() and the position.sub(origin) in update(), although here our 'parent' is
+        the position of the Tiledmap object*/
+        // we use temporarily the origin to code the center of the TiledMap object
         origin.x = dimension.x/2f;
         origin.y = dimension.y/2f;
         correctionRadius = (float) Math.sqrt(Math.pow(origin.x, 2) + Math.pow(origin.y, 2));
@@ -73,10 +69,12 @@ public class MovingPlatform extends GameObject implements Triggerable {
         float oy = correctionRadius * MathUtils.sin(this.rotation+correctionAngle);
         body.setTransform(body.getPosition().x+ox, body.getPosition().y+oy, this.rotation);
 
+        // the origin is used to remember the difference in pos between the texture/object and the body
+        // we make a small offset compared to the usual difference between object and body
+        // the body will be slightly inside the texture, so that the prabbit feet are above the 1st pixel row.
         setOrigin(dimension.x/2, 0.45f);
-        Gdx.app.debug("Platform", "Platform in creation!, origin ="+ origin.x + "; "+origin.y);
-        body.setType(BodyDef.BodyType.KinematicBody);
-        //body.getFixtureList().get(0).setSensor(true);
+        // FIXME: we should be able to use the body_offsetx system instead of that
+
         this.angularSpeed = angularSpeed;
         this.speed = new Vector2(0,0);
         stopped = false;
@@ -101,7 +99,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     @Override
-    public void initCollisionMask() {
+    public void initCollisionMask() { // override the default / prototype object
         Filter defaultFilter = new Filter();
         defaultFilter.categoryBits = Constants.CATEGORY.get("Scenery");
         defaultFilter.maskBits = Constants.MASK.get("Scenery");
@@ -109,7 +107,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     }
 
     @Override
-    public void initAnimation(){
+    public void initAnimation(){ // override the default / prototype object
         Pixmap pixmap2 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
         pixmap2.setColor(0.7f, 0.2f, 0.3f, 1.0f);
         pixmap2.fillRectangle(0, 0, 32, 32);
@@ -117,6 +115,21 @@ public class MovingPlatform extends GameObject implements Triggerable {
         animations.put("Main", new Animation(1.0f/2.0f, region));
         setAnimation("Main");
     }
+
+    @Override
+    public void initFixture() { // override the default / prototype object
+        PolygonShape p = new PolygonShape();
+        p.setAsBox(dimension.x / 2.0f, dimension.y / 2.0f, new Vector2(0, 0), 0);
+        FixtureDef fd = new FixtureDef();
+        fd.shape = p;
+        fd.density = 50;
+        fd.restitution = 0.0f;
+        fd.friction = 0.5f;
+        //fd.isSensor = isSensor;
+        this.body.createFixture(fd);
+        p.dispose();
+    }
+
     @Override
     public void initAnimation(String objectDataID, String color_texture){
         super.initAnimation(objectDataID, color_texture);
@@ -152,19 +165,6 @@ public class MovingPlatform extends GameObject implements Triggerable {
 
     }
 
-    public void initFixture() {
-        PolygonShape p = new PolygonShape();
-        p.setAsBox(dimension.x / 2.0f, dimension.y / 2.0f, new Vector2(0, 0), 0);
-        FixtureDef fd = new FixtureDef();
-        fd.shape = p;
-        fd.density = 50;
-        fd.restitution = 0.0f;
-        fd.friction = 0.5f;
-        //fd.isSensor = isSensor;
-        this.body.createFixture(fd);
-        p.dispose();
-    }
-
     @Override
     public boolean update(float deltaTime){
         if(!stopped) {
@@ -179,8 +179,8 @@ public class MovingPlatform extends GameObject implements Triggerable {
         }
         super.update(deltaTime);
 
-        // that position the
-        position.set(body.getPosition()).sub(origin);
+        // we don't need it anymore, that is already in the super.update()
+        //        position.set(body.getPosition()).sub(origin);
 
         gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(origin.x*10.0f)/10.0f) + ", "
                                             +(float) (Math.round(origin.y*10.0f)/10.0f));

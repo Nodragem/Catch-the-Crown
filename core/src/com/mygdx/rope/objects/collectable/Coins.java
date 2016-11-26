@@ -125,7 +125,7 @@ public class Coins extends GameObject implements Triggerable {
     public void addCoin(int x, int y, String typeName){
         JsonValue infoType = collectableInfo.get(typeName);
 //        Gdx.app.debug("addCoin: ", "infoType: "+ infoType);
-        float size = infoType.getFloat("scalex", 0.5f);
+        float size = infoType.getFloat("body_scalex", 0.5f);
         float corrected_x = x + (1 - size)/2f;
         float corrected_y = y + (1 - size)/2f;
         positionCollectables.add(new Vector2(corrected_x, corrected_y));

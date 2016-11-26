@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+ <objecttype name="Trap" color="#ca0000">
+  <property name="Hub_in" type="string"/>
+  <property name="Parent" type="int"/>
+  <property name="Subtype" type="string"/>
+  <property name="Triggerable" type="bool"/>
+  <property name="defaultON" type="bool"/>
+  <property name="intervalOFF" type="float"/>
+  <property name="intervalON" type="float"/>
+ </objecttype>
+ <objecttype name="Switch" color="#ff5500">
+  <property name="Hub_in" type="string"/>
+  <property name="Hub_out" type="string"/>
+  <property name="Parent" type="int"/>
+  <property name="Subtype" type="string"/>
+  <property name="isEnableByDefault" type="bool"/>
+  <property name="weight" type="float"/>
+ </objecttype>
+ <objecttype name="HUB" color="#55ff00">
+  <property name="Threshold" type="float" default="0.5"/>
+ </objecttype>
+ <objecttype name="Spawner" color="#707070">
+  <property name="Type" type="string" default="Player"/>
+ </objecttype>
+ <objecttype name="Platform" color="#3fd8fa">
+  <property name="Hub_in" type="string"/>
+  <property name="Path" type="string"/>
+  <property name="Speed" type="float"/>
+  <property name="Subtype" type="string"/>
+  <property name="alwaysVisible" type="bool"/>
+  <property name="defaultON" type="bool"/>
+  <property name="rotationSpeed" type="float"/>
+  <property name="waitingTime" type="float"/>
+ </objecttype>
+ <objecttype name="Launcher" color="#ff0000">
+  <property name="Child" type="string"/>
+  <property name="Parent" type="string"/>
+  <property name="Subtype" type="string"/>
+  <property name="impulse" type="float"/>
+  <property name="intervalShoot" type="float"/>
+  <property name="pool" type="int"/>
+  <property name="reloadTime" type="float"/>
+ </objecttype>
+</objecttypes>

@@ -46,8 +46,7 @@ public class Constants {
     public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, CARRYING, AIMING, CHARGING, CHARGE_READY, THROWING}
     public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}
     public static enum COLLIDER_TYPE {STICKY, SENSOR, HURTABLE, ONEWAY, CROWN}
-    public static enum TRIGGERABLE_TYPE {SPIKES, LAUNCHER, MOVING_PLATFORM}
-    public static enum INTEGRATOR_TYPE {INVISIBLESWITCH, SIMPLESWITCH, HOLDINGSWITCH}
+    public static enum MAPOBJECT_TYPE {TRAP, LAUNCHER, PLATFORM, SWITCH}
 
 
     public static final ArrayMap<String, Short> CATEGORY = new ArrayMap<String, Short>();

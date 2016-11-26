@@ -2,31 +2,25 @@
 
 ## To-Do:
 
-[ ] the spire of the prabit does not follow spire-switches once it hits them (when they move) 
-[ ] try make it work on HTML5
-[ ] try to do one way (single ticket) platforms,
-[ ] the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
-[ ] if a character pass the threshold at which he will win even without the crown, he get a golden glare. (that may cancel the previous point: add something on the wealthest character to recognize it quickly)
+
+[x] if a character pass the threshold at which he will win even without the crown, he get a golden glare. (that may cancel the previous point: add something on the wealthest character to recognize it quickly)
 [-] sound effects: see other file for details,
-[-] make the competition system for throwing each other when someone is picked up,
+[x] make the competition system for throwing each other when someone is picked up,
         [x] system made,
-        [ ] add graphical feedback,
-[ ] boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+        [x] add graphical feedback,
+[+] boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
 [x] Menu - restart/resume/quit/preference,
-[ ] make background for the level,
-[ ] Gold distribution: you see the money going from the place it's picked up to the chest of the player,
-[ ] keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
-[ ] marking exchange system idea: when slap you get rid of one mark and give one to the opponent,
-[ ] marks could be stars, and when you get five of them they rotate around you head.
+[+] make background for the level,
+[x] Gold distribution: you see the money going from the place it's picked up to the chest of the player,
+[+] keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
+[+] marking exchange system idea: when slap you get rid of one mark and give one to the opponent,
+
 
 
 
 
 ## Bug list:
 
-[ ] bug: Atanaska succeeded to replicate the bug of the flying prabbit: jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
-[ ] bug: controller don't work after fullscreen
-[ ] bug: when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
 [x] bug: the spire-switches are not at the good location when they are upward/downward
 [x] bug: the moving platform trajectory solver are still doing shit. The platforms dont always start at the same place.
 	it seems to be ok, now. Although I don't remember correcting it.

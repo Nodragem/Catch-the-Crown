@@ -39,7 +39,6 @@ public class Lance extends GameObject {
 
     public Lance(GameScreenTournament game, Vector2 position, float angle, String objectDataID, Launcher user) {
         super(game, position, new Vector2(2.0f, 0.6875f), angle, "No Init");
-        // \--> old size (1.5f, 0.25f)
         this.user = user;
         burningSound = gamescreen.assetManager.getRandom("burning_lance");
         initAnimation(objectDataID, "");
@@ -47,14 +46,15 @@ public class Lance extends GameObject {
         initFixture();
         mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
         initCollisionMask();
-        setOrigin(0.0f, 0.34f);
-//        setTransform(position.x, position.y, angle);
-        anchorPoint = new Vector2(1.2f, 0.125f);
+        // the origin is used to remember the offset of the body (see initFixture) with the GameObject:
+        setOrigin(1.0f, 0.34f); // that is the dimension divided by 2 (see Vector2(2.0f, 0.6875f) above)
+        // FIXME: we should manage the setOrigin in the GameObject class, with the body_offsety/x
         stateTime = 0;
         isVisible = false;
         isKillable = false;
-        defaultDamage = 34.0f;
         // the givenDamage (from GameObject) is defaultDamage times a multiplicator
+        defaultDamage = 34.0f;
+
 
     }
 
@@ -62,28 +62,28 @@ public class Lance extends GameObject {
     public void initFixture() {
         // ---- create the pick Ficture:
         PolygonShape p = new PolygonShape();
-        // p.setAsBox(dimension.x *0.4f, dimension.y *0.25f, new Vector2(dimension.x *0.4f, dimension.y *0.5f), 0);
-        p.setAsBox(dimension.x *0.3f, dimension.y *0.25f/2.75f, new Vector2(dimension.x *0.55f, dimension.y *0.0f), 0);
+        // Note that we offset the fixtures, so that the body is centered on the bottom-left corner of the GameObject
+        // that is why the center of the fist fixture is on (0, 0) (the bottom left corner)
+        p.setAsBox(dimension.x *0.3f, dimension.y *0.25f/2.75f, new Vector2(dimension.x * 0f, dimension.y *0.0f), 0);
         FixtureDef fd = new FixtureDef();
         fd.shape = p;
         fd.density = 10;
         fd.restitution = 0.0f;
         fd.friction = 0.0f;
-        //fd.isSensor = true;
         this.body.createFixture(fd);
+
         collisionStick = new ContactData(8, this.body.getFixtureList().get(0));
         p.dispose();
-        // ---- the main stick Fixture, which is the main contact box
+        // ---- create the stick Fixture, which is the main contact box
         p = new PolygonShape();
-//        p.setAsBox(dimension.x *0.1f, dimension.y *0.5f, new Vector2(dimension.x * 0.9f, dimension.y *0.5f), 0);
-        p.setAsBox(dimension.x *0.075f, dimension.y *0.5f/3.5f, new Vector2(dimension.x * 0.9f, dimension.y *0.0f), 0);
+        p.setAsBox(dimension.x *0.075f, dimension.y *0.5f/3.5f, new Vector2(dimension.x * 0.35f, dimension.y *0.0f), 0);
         fd = new FixtureDef();
         fd.shape = p;
         fd.density = 40;
         fd.restitution = 0.0f;
         fd.friction = 0.0f;
-        //fd.isSensor = true;
         this.body.createFixture(fd);
+
         this.body.getFixtureList().get(1).setSensor(true);
         this.body.setBullet(true);
         p.dispose();

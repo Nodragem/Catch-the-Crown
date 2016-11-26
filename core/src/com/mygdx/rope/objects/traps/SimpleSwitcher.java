@@ -37,7 +37,7 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
         this.myWeight = weight;
         this.isActiveByDefault = isEnabledByDefault;
         switchOFF();
-        this.body.setType(BodyDef.BodyType.StaticBody);
+//        this.body.setType(BodyDef.BodyType.StaticBody);
 
     }
 

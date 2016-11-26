@@ -1,3 +1,91 @@
+# TO-DO LIST:
+
+## Next Actions:
+
+- [ ] @level @gameplay try to do one way (single ticket) platforms,
+- [x] @level @general the physical size of platform should be independent from the texture size
+(the character does not touch the wood platforms)
+- [ ] @bug we got the prabbit with panicking animation while in normal state at some point, but can't replicate it easily
+- [ ] @bug when there is a draw, the second best has his columns going up. It should not.
+- [ ] @bug when using the throwing power, people can get *out of the level* and they can't play anymore.
+
+- [ ] @sound @gameplay add tick-tock of the clock when 10 second lefts
+- [ ] @graphics show visual feedback that some money is going to the crown
+- [ ] @level make level 2
+  - [x] homogeneize the origin system
+  - [x] make platform data-driven
+  - [x] use/make ObjectType in Tiled map editor
+
+- [ ] @gameplay crown rate may need to be lower
+- [ ] @sounds Voice for announcements is mandatory
+- [ ] @gameplay it seems that it is too easy to only press 4 times B to do a long term KO:
+  > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level).
+- [ ] @gameplay pay 5-15% of money to revive quicker:
+  > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
+  > to die from the super/burning lance would remove more money.
+- [ ] @gameplay to die from the super/burning lance would remove 25% of money (50% if all marks).
+  > make animation of money going from one to the other character
+
+- [ ] @menu **[B]** level menu
+- [ ] @menu **[B]** option menu
+- [x] @menu change button for going to next round to start
+- [ ] @menu make state machine system to be able to progress to left-right-up-bottom direction between buttons
+
+- [ ] @gameplay we need to have item to regenerate from fatigue:
+    - to take the crown would regenerate fatigue?
+- [ ] @gameplay more you carry the crown more you get tired?
+  - [ ] get tired if you're not collecting money while carrying the crown
+  - [ ] a fully tired character could not carry the crown? (so that people need to abandon it at some point)
+  - [ ] collect:
+  - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
+  - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
+
+## Maybe:
+- [ ]  @gameplay to slap someone treats one mark,
+  > does not seem a good idea, but we do need something to get rid of the fatigue marks.
+  > maybe an object could give temporarily the above effect to a player.
+- [ ] @graphics could we add blood?
+- [ ] @sound Small music:
+  - [ ] Winning small music,
+  - [ ] No winner small music,
+- [ ] @bug when the player jumps, the last throwed lance disappears
+- [ ] @bug when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
+- [ ] @bug Lance are bouncing on wall sometimes? (it is a bullet, no solution found),
+- [ ] @general keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
+- [ ] @general make background for the level,
+- [ ] @general use the launcher class in the AttackManager??
+- [ ] @gameplay may want to mirror the challenge until one of the player lose?
+- [ ] @general try make it work on HTML5
+- [ ] @gameplay marks may also influence the throwing challenge
+- [ ] @gameplay [B] to keep the super/burning lance ready would tire you (1 mark every 5s?).
+- [ ] @gameplay [C] we could have a switch to respawn the gold coin, instead of an automatic respawn.
+- [ ] @gameplay [C] double jump?
+- [ ] @gameplay [C] reloading time after used 3 lances?
+- [ ] @gameplay [C] slow down character who carry something,
+  > should we slow down the crown carrier?
+- [ ] @gameplay [C] dodging system?
+  > every 3 seconds
+  > **Not sure that it is useful**
+- [ ] @gameplay [C] boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+- [ ] @gameplay [C] Usable/throwable object system (use the LanceManager, make it an ItemManager)
+- [ ] @gameplay [C] Modifier Object system (transient/constant?)
+- [ ] @gameplay [C] lance locking system ?
+  > useful for puzzles where we need to keep our lance on a switch
+- [ ] @gameplay [C] lance are locked when touched the other player,
+  > why? what does that add to the gameplay?
+- [ ] @gameplay [C] do bridges with the Lances??
+
+## Further Ideas
+
+- Combination down+B to take/drop an object (make things more difficult to project someone)
+- Combination down+B to pick downward if lance is the current object?
+- we could lock our lances (not come back to the magic pool)
+- can lock the lastly used Lance, (can lock more than one Lance)
+- can hang to a wall with a Lance,
+- can pick the Lance on the ground and stand on it (in balance)
+- sprint button
+- dash/dodge
+
 # Description
 
 ## Tournament mode:
@@ -32,121 +120,6 @@ Règle de partie perdue (recommence leniveau) :
 4. Si les conditions de succès nesont pas réunis (seuil fixé)
 
 --------------------------------------------------------------------------------
-
-# TO-DO LIST:
-
-## Next Actions:
-
-- [ ] **[A]** change button for going to next round to start
-- [ ] **[A]** one side platform
-- [ ] **[A]** add tick-tock of the clock when 10 second lefts
-- [ ] **[A]** we need to have item to regenerate from fatigue:
-    - to take the crown would regenerate fatigue?
-- [ ] **[A]** more you carry the crown more you get tired? @gameplay
-- [ ] **[A]** a fully tired character could not carry the crown? (so that people need to abandon it at some point)
-- [ ] **[A]** collect: @gameplay
-  - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
-  - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
-- [ ] **[?]** to slap someone treats one mark, @gameplay
-- [ ] **[A]** marks may also influence the throwing challenge
-
-- [ ] **[A]** pay 5% of money to revive quicker: @gameplay
-  > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
-
-- [ ] **[A]** to die from the super/burning lance would remove 25% of money (50% if all marks).
-
-- [ ] **[B]** @bug when the player jumps, the last throwed lance disappears
-
-## Bugs:
-
-- [ ] **[C]** controller don't work after fullscreen
-
-- [ ] **[B]** when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
-
-- [ ] **[B]** bug Lance: why bouncing on wall sometimes? (it is a bullet, no solution found),
-
-## General Improvements:
-
-- [ ] **[B]** may want to mirror the challenge until one of the player lose?
-
-- [ ] **[B]** level menu
-
-- [ ] **[B]** option menu
-
-- [ ] **[B]** use the launcher class in the AttackManager??
-
-- [x] **[B]** the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
-
-- [ ] **[C]** make background for the level,
-
-- [ ] **[C]** keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
-
-- [ ] **[C]** try to do one way (single ticket) platforms,
-
-- [ ] **[B]** could we add blood?
-
-- [ ] **[C]** Small music:
-
-  - [ ] Winning small music,
-  - [ ] No winner small music,
-
-- [ ] **[C]** try make it work on HTML5
-
-## Gameplay Ideas
-
-- [ ] **[B]** to keep the super/burning lance ready would tire you (1 mark every 5s?).
-
-
-- **[C]** we could have a switch to respawn the gold coin, instead of an automatic respawn.
-- **[C]** double jump?
-- **[C]** reloading time after used 3 lances?
-- **[C]** slow down character who carry something,
-
-  > should we slow down the crown carrier?
-
-- **[C]** dodging system?
-
-  > every 3 seconds
-  >
-  > **Not sure that it is useful**
-
-- **[C]** boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
-
-- **[C]** Usable/throwable object system (use the LanceManager, make it an ItemManager)
-
-- **[C]** Modifier Object system (transient/constant?)
-- **[C]** lance locking system ?
-
-  > useful for puzzles where we need to keep our lance on a switch
-
-- **[C]** lance are locked when touched the other player,
-
-  > why? what does that add to the gameplay?
-
-- **[C]** do bridges with the Lances??
-
-- **[C]** marking exchange system idea: when slap you get rid of one mark and give one to the opponent,
-
-  > does not seem a good idea, but we do need something to get rid of the fatigue marks.
-
-  > maybe an object could give temporarily the above effect to a player.
-
-- [ ] **[N]** lost of money when die/ revive? 15% of money to revive: @gameplay
-  > may be the player could pay money to come back earlier!
-  > to die from the super/burning lance would remove more money.
-
-# Further Ideas
-
-## Moves Ideas:
-
-- Combination down+B to take/drop an object (make things more difficult to project someone)
-- Combination down+B to pick downward if lance is the current object?
-- we could lock our lances (not come back to the magic pool)
-- can lock the lastly used Lance, (can lock more than one Lance)
-- can hang to a wall with a Lance,
-- can pick the Lance on the ground and stand on it (in balance)
-- sprint button
-- dash/dodge
 
 ## Level design idea:
 
@@ -229,6 +202,8 @@ Règle de partie perdue (recommence leniveau) :
 # Changelog
 
 ## 20/11/2016:
+- [ ] @bug controller don't work after fullscreen:
+  > can't be solved
 - [x] bug with throwing object: need to setActivate(true) when throwing ^^ probably cause of an update of libGDX
 - [x] bug stackoverflow: when two lance collide and then we use on of the lance, we got a stackoverflow because they are both children of each other and start making recursive call to goToActivation.
 - [x] improvement: remove the children from the current parent when we used setParent(null)

@@ -51,7 +51,7 @@ public class GameObject implements Updatable, Renderable {
     protected ObjectMap<String, Animation> animations;
     private Constants.VIEW_DIRECTION viewDirection;
 	public Vector2 position;
-	public Vector2 rposition; // in polar coordinate
+	public Vector2 rposition; // in polar coordinate (radius, angle)
 	public Vector2 dimension;
 	public Vector2 origin;
 	public Vector2 scale;
@@ -87,10 +87,10 @@ public class GameObject implements Updatable, Renderable {
         timeStepDamage = 0.0f;
         World b2world = game.getB2World();
         this.viewDirection = Constants.VIEW_DIRECTION.RIGHT;
-        //Gdx.app.debug("ObjGame", "Position: "+position);
         this.dimension = dimension;
-//        origin = new Vector2(0.5f,0.5f); // the origin is really at the origin
-        origin = new Vector2(0f,0f); // the origin is really at the origin
+        //the origin is used to remember the difference in pos between the texture/object and the body
+        // we usually need to offset the body from the object when we want to rotate the body on its center, see Lance, MovingPlatform, etc...
+        origin = new Vector2(0f,0f);
         scale = new Vector2(1, 1);
         this.position = position; // position and rotation may be not useful and redundant with the body
         this.rposition = new Vector2(0,0);
@@ -177,13 +177,13 @@ public class GameObject implements Updatable, Renderable {
         PolygonShape p = new PolygonShape();
         dimension.x = info.getFloat("dimensionx", dimension.x);
         dimension.y = info.getFloat("dimensiony", dimension.y);
-        float scaleX = info.getFloat("scalex", 1f); // if you prefer to get the fixture dimension as a scale of the object dimension. usefull for switcher
-        float scaleY =  info.getFloat("scaley", 1f);
-        float scale_offsetX = info.getFloat("scale_offsetx", 0f); // if you prefer to get the fixture dimension as a scale of the object dimension. usefull for switcher
-        float scale_offsetY =  info.getFloat("scale_offsety", 0f);
-        float offsetx = info.getFloat("offsetx", 0.5f);
-        float offsety = info.getFloat("offsety", 0.5f);
-        p.setAsBox(scaleX*dimension.x / 2.0f + scale_offsetX,
+        float scaleX = info.getFloat("body_scalex", 1f); // if you prefer to get the fixture dimension as a scale of the object dimension. usefull for switcher
+        float scaleY =  info.getFloat("body_scaley", 1f);
+        float scale_offsetX = info.getFloat("body_scale_offsetx", 0f); //  usefull for the spikes (we want an absolute distance from the border)
+        float scale_offsetY =  info.getFloat("body_scale_offsety", 0f);
+        float offsetx = info.getFloat("body_offsetx", 0.5f);
+        float offsety = info.getFloat("body_offsety", 0.5f);
+        p.setAsBox(scaleX * dimension.x / 2.0f + scale_offsetX,
                 scaleY * dimension.y / 2.0f + scale_offsetY,
                 new Vector2(offsetx*dimension.x , offsety* dimension.y), 0);
         FixtureDef fd = new FixtureDef();
@@ -618,11 +618,12 @@ public class GameObject implements Updatable, Renderable {
                 newParentObject.addChild(this);
             }
             if(override) {
+                rrotation = body.getAngle() - newParentBody.getAngle();
                 this.rposition.set(
                         MathUtils.atan2(body.getPosition().y - newParentBody.getPosition().y,
                                 body.getPosition().x - newParentBody.getPosition().x) - newParentBody.getAngle(),
-                        position.dst(newParentBody.getPosition())); // angle, radius
-                rrotation = rotation - newParentBody.getAngle();
+                        body.getPosition().dst(newParentBody.getPosition())); // angle, radius
+
             }
         }
         else if (this.parentBody != null){ // i.e. if we want to replace an existing parent by no parent
