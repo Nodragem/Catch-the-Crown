@@ -1,0 +1,21 @@
+GameObject.setAnimation(): can't find animation SwitchingOFF
+Hub: notifyTriggerables(false) --> [com.mygdx.rope.objects.traps.SimpleLauncher@7835a6df, com.mygdx.rope.objects.traps.SimpleLauncher@d8d4cbe]
+Character: moveState from GROUNDED to RISING
+Character: moveState from RISING to FALLING
+Switcher: : Touched
+Character: moveState from FALLING to GROUNDED
+Hub: notifyTriggerables(true) --> [com.mygdx.rope.objects.traps.MovingPlatform@12d55e4, com.mygdx.rope.objects.traps.MovingPlatform@446f854f, com.mygdx.rope.objects.traps.MovingPlatform@489b40a6, com.mygdx.rope.objects.traps.MovingPlatform@45b1f6fc, com.mygdx.rope.objects.traps.MovingPlatform@2ed819db, com.mygdx.rope.objects.traps.Spikes@78e31b89, com.mygdx.rope.objects.traps.Spikes@2db55914, com.mygdx.rope.objects.traps.SimpleSwitcher@7d79344b, com.mygdx.rope.objects.traps.Spikes@34469958, com.mygdx.rope.objects.traps.Spikes@1d922d41, com.mygdx.rope.objects.traps.SimpleSwitcher@12180c1, com.mygdx.rope.objects.collectable.Coins@4aba18a0, com.mygdx.rope.objects.collectable.Coins@2101aa53]
+Hub: list of integrators: [com.mygdx.rope.objects.traps.SimpleSwitcher@41ded2a9, com.mygdx.rope.objects.traps.SimpleSwitcher@46a45e7f, com.mygdx.rope.objects.traps.SimpleSwitcher@5c413113]
+Spikes: GoToActivation()
+Spikes: GoToActivation()
+Spikes: GoToActivation()
+Exception in thread "LWJGL Application" com.badlogic.gdx.utils.GdxRuntimeException: java.lang.StackOverflowError
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication$1.run(LwjglApplication.java:127)
+Caused by: java.lang.StackOverflowError
+	at com.badlogic.gdx.physics.box2d.World.deactivateBody(World.java:370)
+	at com.badlogic.gdx.physics.box2d.Body.setActive(Body.java:728)
+	at com.mygdx.rope.objects.GameObject.setActivate(GameObject.java:553)
+	at com.mygdx.rope.objects.GameObject.goToDesactivation(GameObject.java:570)
+	at com.mygdx.rope.objects.GameObject.goToDesactivation(GameObject.java:574)
+	at com.mygdx.rope.objects.GameObject.goToDesactivation(GameObject.java:574)
+	at com.mygdx.rope.objects.GameObject.goToDesactivation(GameObject.java:574)

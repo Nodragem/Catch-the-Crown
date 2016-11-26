@@ -3,26 +3,26 @@
 	"sound_volume": 100,
 	"players": [
 		{
-          "name": "Geoffrey",
+          "name": "TheBitch",
           "color": "purple",
           "input": "controller",
           "id_input": 1
 		},
       {
-          "name": "Kacper",
-          "color": "green",
+          "name": "TheRedWizard",
+          "color": "red",
           "input": "controller",
           "id_input": 2
       },
       {
-          "name": "Robert",
+          "name": "TheKingSlayer",
           "color": "blue",
           "input": "controller",
           "id_input": 3
       },
       {
           "name": "My Clone",
-          "color": "red",
+          "color": "green",
           "input": "controller",
           "id_input": 4
       }

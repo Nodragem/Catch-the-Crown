@@ -512,14 +512,14 @@ public class Character extends GameObject implements  Carriable {
                     playSound("impact_to_ground");
                     gamescreen.makeAnnouncement(ANNOUNCEMENT.LONG_TERM_KO, "", "");
                     if (marks==MAXMARKS) {
-                        respawnTime = RESPAWNTIME + 6*marks * Constants.MARKPENALTY; // thus the effect of mark max is to multiply by 3
+                        respawnTime = RESPAWNTIME + 4*marks * Constants.MARKPENALTY; // thus the effect of mark max is to multiply by 3
                     } else {
                         respawnTime = RESPAWNTIME + 2*marks * Constants.MARKPENALTY;
                     }
                 }
                 else {
                     if (marks==MAXMARKS) {
-                        respawnTime = RESPAWNTIME + 3*marks * Constants.MARKPENALTY;
+                        respawnTime = RESPAWNTIME + 2*marks * Constants.MARKPENALTY;
                     } else {
                         respawnTime = RESPAWNTIME + marks * Constants.MARKPENALTY;
                     }

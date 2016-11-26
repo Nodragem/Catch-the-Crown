@@ -92,7 +92,7 @@ public class GameScreenTournament implements Screen {
         isDebugMode = false;
         this.game = ropeGame;
         batch = ropeGame.getBatch();
-        victoryThreshold = 3;
+        victoryThreshold = 2;
         this.listLevels = ropeGame.getLevels();
         this.randomLevel = ropeGame.isRandomSelectionLevel();
         if (randomLevel)
