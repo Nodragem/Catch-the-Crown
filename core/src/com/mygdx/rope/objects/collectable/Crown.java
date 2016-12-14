@@ -88,6 +88,7 @@ public class Crown extends GameObject implements Carriable {
         else if (this.Carrier == null) {
             if (neverTaken) {
                 newCarrier.getPlayer().addScore(Constants.BONUSCROWN);
+                gamescreen.makeAnnouncement(Constants.ANNOUNCEMENT.FIRSTCROWN, "", "");
                 for (Coins coins : linkedGroupCoins) {
                     coins.allowActivation(true);
                 }

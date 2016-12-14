@@ -19,11 +19,11 @@ public class DesktopLauncher {
 
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         cfg.title = "Catch the Crown!!";
-        cfg.height = 1080;
-        cfg.width = 1920;
-        cfg.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
-        cfg.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
-        cfg.fullscreen = true;
+        cfg.height = 1080/2;
+        cfg.width = 1920/2;
+//        cfg.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
+//        cfg.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
+//        cfg.fullscreen = true;
 		new LwjglApplication(new RopeGame(), cfg);
 	}
 }

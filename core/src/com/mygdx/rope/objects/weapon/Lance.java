@@ -54,6 +54,7 @@ public class Lance extends GameObject {
         isKillable = false;
         // the givenDamage (from GameObject) is defaultDamage times a multiplicator
         defaultDamage = 34.0f;
+        damageType = Constants.DAMAGE_TYPE.LANCE;
 
 
     }
@@ -94,10 +95,7 @@ public class Lance extends GameObject {
     public boolean update(float deltaTime) {
         isToDetroy = super.update(deltaTime);
 
-        if(isBurning & ((position.x < -2) |
-                (position.x > Constants.VIEWPORT_WIDTH + 2) |
-                (position.y < -2) |
-                (position.y > Constants.VIEWPORT_HEIGHT + 2))){
+        if(isBurning & isOutSide(2)){
             setAnimation("Moving");
             isBurning = false;
             body.setLinearVelocity(0,0);
@@ -203,6 +201,7 @@ public class Lance extends GameObject {
     }
 
     public void use(Vector2 startPos, float angle, float force, float damageMultiplicator){
+        damageType = Constants.DAMAGE_TYPE.LANCE;
         Sound throwSound = gamescreen.assetManager.getRandom("lance_thrown");
         throwSound.play();
         if(parentObject!=null && parentObject instanceof SimpleLauncher){
@@ -213,6 +212,7 @@ public class Lance extends GameObject {
         givenDamage = damageMultiplicator*defaultDamage;
         if (damageMultiplicator == 3.0f) {
             isBurning = true;
+            damageType = Constants.DAMAGE_TYPE.BURNING_LANCE;
             burningSound.loop();
         }
         else {

@@ -60,7 +60,8 @@ public class TrapFactory {
         Array<EllipseMapObject> HubsDescription;
         HubsDescription = mapLayer.getObjects().getByType(EllipseMapObject.class);
         for(EllipseMapObject ellipse: HubsDescription){
-            listHubs.put(ellipse.getProperties().get("ID", String.class), new SimpleHub(gameScreen));
+            boolean silent = Boolean.parseBoolean(ellipse.getProperties().get("isSilent", "true", String.class));
+            listHubs.put(ellipse.getProperties().get("ID", String.class), new SimpleHub(gameScreen, silent));
         }
     }
 
@@ -156,18 +157,14 @@ public class TrapFactory {
                             rectangle.getSize(new Vector2()) , -rotation, intervalShoot, reloadTime, impulse, nbpool, defaultON, type_projectile );
                     break;
                 case PLATFORM:
-                    rotation =0;
-                    if (rectangleObj.getProperties().get("rotation", Float.class) != null)
-                        rotation = rectangleObj.getProperties().get("rotation", Float.class);
+                    rotation = Float.parseFloat(rectangleObj.getProperties().get("rotation", "0", String.class));
                     correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
                     Gdx.app.debug("FactoryTrap", "PLATFORM" );
                     Gdx.app.debug("FactoryTrap", "RotationTiled "+ rectangleObj.getProperties().get("Rotation", String.class)+"; myRotation "+0.0f );
                     String pathID = rectangleObj.getProperties().get("Path", String.class);
                     objectDataID = rectangleObj.getProperties().get("Subtype", String.class);
-                    float rotationSpeed =0;
-                    if (rectangleObj.getProperties().get("rotationSpeed", String.class) != null)
-                        rotationSpeed = Float.parseFloat(rectangleObj.getProperties().get("rotationSpeed", String.class));
-                    float waitingTime = Float.parseFloat(rectangleObj.getProperties().get("Wait", String.class));
+                    float rotationSpeed = Float.parseFloat(rectangleObj.getProperties().get("rotationSpeed", "0", String.class));
+                    float waitingTime = Float.parseFloat(rectangleObj.getProperties().get("waitingTime", "0", String.class));
                     MapObject path = mapLayer.getObjects().get(pathID);
                     defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
                     boolean alwaysVisible = Boolean.valueOf(rectangleObj.getProperties().get("alwaysVisible", "true", String.class));

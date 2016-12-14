@@ -2,9 +2,9 @@ package com.mygdx.rope.screens;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -86,9 +86,11 @@ public class GameScreenTournament implements Screen {
     protected ObjectMap<String, Animation> animationBufferWeapon;
     private Character goldenPrabbit;
     private boolean isDebugMode;
+    private boolean timeOutMusic;
+    private Music musicTimer;
 
     public GameScreenTournament(RopeGame ropeGame){
-
+        timeOutMusic = false;
         isDebugMode = false;
         this.game = ropeGame;
         batch = ropeGame.getBatch();
@@ -119,7 +121,8 @@ public class GameScreenTournament implements Screen {
             //gameViewport.update(gameViewport.getScreenWidth(), gameViewport.getScreenHeight());
             gameViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
-
+        musicTimer = assetManager.get("stressful_timer_m", 0);
+        musicTimer.setLooping(false);
         cameraHelper = new CameraHelper();
         cameraHelper.setTarget(cameraTarget);
         GUIlayer = new GUILayer(this); // is empty (no players)
@@ -131,6 +134,8 @@ public class GameScreenTournament implements Screen {
 
     public void startNewLevel(String levelname){
         groupScore = 0;
+        if(musicTimer.isPlaying())
+            musicTimer.stop();
 
         GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
         timer = Constants.STARTTIMER;
@@ -143,7 +148,7 @@ public class GameScreenTournament implements Screen {
 
         b2world = new World(new Vector2(0, -9.81f), true);
         b2world.setAutoClearForces(true);
-        b2world.setContactListener(new MyContactListener());
+        b2world.setContactListener(new CollisionManager());
 
         map =  new TmxMapLoader().load(levelname);
         map_renderer = new OrthogonalTiledMapRenderer(map, 1/Constants.TILES_SIZE); // is it here I tell him I want 32 pixels = 1 unit
@@ -304,6 +309,8 @@ public class GameScreenTournament implements Screen {
 	}
 
     public void update(float deltaTime){
+
+
         groupScore = 0;
         for (int i = 0; i < playersList.size; i++) {
             // players update is done after objects update, cause they need to know the state of their character to process the input.
@@ -312,6 +319,9 @@ public class GameScreenTournament implements Screen {
         }
         if (this.stateGame != GAME_STATE.PLAYED){
             return;
+        }
+        if (timer < 30 & !timeOutMusic){
+            musicTimer.play();
         }
         // Check if end of the round:
         timer -= deltaTime;
@@ -646,11 +656,17 @@ public class GameScreenTournament implements Screen {
                         stringPlayerEntry.value.inputCoolDown = 1f;
                         stringPlayerEntry.value.getInputProfile().setContext("Game");
                     }
+                    if(previousStateGame==GAME_STATE.PAUSED & !musicTimer.isPlaying() & timeOutMusic)
+                        musicTimer.play();
                     break;
                 case PAUSED:
                     GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_PAUSE);
+                    if(previousStateGame==GAME_STATE.PLAYED & musicTimer.isPlaying())
+                        musicTimer.pause();
                     break;
                 case ROUND_END:
+                    if(musicTimer.isPlaying())
+                        musicTimer.stop();
                     proceedToEndOfRoundAction();
                     GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_END);
                     break;

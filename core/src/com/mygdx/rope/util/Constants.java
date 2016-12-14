@@ -11,7 +11,8 @@ public class Constants {
 	public static final float CROWNGOLDRATE = 0.333f;
     public static final float MARKPENALTY = 3f ;
 
-    public enum ANNOUNCEMENT {KO, LONG_TERM_KO, CROWN, GOLDEN_PRABBIT, TIMER_ALMOST_OFF, WEAK_PRABBIT, NONE}
+    public enum ANNOUNCEMENT {KO, LONG_TERM_KO, CROWN, GOLDEN_PRABBIT, TIMER_ALMOST_OFF, WEAK_PRABBIT, FIRSTCROWN, NONE,
+    BURNING_KO, SLAP_KO}
 
 
     public static enum GAME_STATE {PLAYED, PAUSED, ROUND_END, TOURNAMENT_END}
@@ -20,7 +21,7 @@ public class Constants {
     public static final int MOVESTOFREE = 2;
     public static final int MOVESTOTHROW = 4;
     public static final int MAXMARKS = 5;
-    public static final float BONUSCROWN = 0;
+    public static final float BONUSCROWN = 100;
     public static final float GOLDENDLEVEL = 3500;//500000;
     public static final float GOLDVALUE = 10;
 	public static final String TEXTURE_ATLAS_OBJECTS = "nothing-yet.pack";
@@ -31,7 +32,7 @@ public class Constants {
     public static final float RESPAWNTIME = 5.0f;
     public static final float SLAPDAMAGE = 8.4f;
     public static final float COINSTIME = - 20.0f;
-    public static final float STARTTIMER = 5*60;//2*60; //10*60; //2*60; // 2*60; // 2 minutes
+    public static final float STARTTIMER = 60*5;//2*60; //10*60; //2*60; // 2*60; // 2 minutes
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}
@@ -41,11 +42,12 @@ public class Constants {
     public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
     public static enum DAMAGE_STATE { IMMUNE,  NOT_IMMUNE}
+    public static enum DAMAGE_TYPE {BURNING_LANCE, LANCE, SLAP, CRUSHING, NONE, TRAP}
     public static enum MOVE_STATE {IDLE, GROUNDED, FALLING, RISING, PANICKING, THROWED, THROWING_CHARACTER}
     public static enum PICKUP_STATE {PICKINGUP, CHALLENGED, CHALLENGER, NORMAL} // note that if you are picking up a character, you are in picked-up challenge.
     public static enum ATTACK_STATE{SHORTATTACK, LONGATTACK, NOTATTACKING, CARRYING, AIMING, CHARGING, CHARGE_READY, THROWING}
     public static enum AWAKE_STATE {AWAKE, SLEEPING, DEAD}
-    public static enum COLLIDER_TYPE {STICKY, SENSOR, HURTABLE, ONEWAY, CROWN}
+    public static enum COLLIDER_TYPE {STICKY, SENSOR, AIMING_POINTER, ONEWAY, CROWN}
     public static enum MAPOBJECT_TYPE {TRAP, LAUNCHER, PLATFORM, SWITCH}
 
 

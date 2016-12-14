@@ -89,7 +89,8 @@ public class ScoreTableWindow extends DefaultWindow {
         //debug:
         // winnerIndex = 2;
         //numberOfWinners =1;
-        numberOfWinners = gameScreen.getNumberOfWinners(scoreTable); // we should just have one winner normally, but a draw between two or more players is possible!
+        numberOfWinners = gameScreen.getNumberOfWinners(scoreTable);
+        // we should just have one winner normally, but a draw between two or more players is possible!
         Array<TextureAtlas.AtlasRegion> regions = null;
         Gdx.app.debug("Table Of Score:", "" + numberOfWinners);
         resultAnnouncement = "Seems We got a Draw!";
@@ -122,7 +123,7 @@ public class ScoreTableWindow extends DefaultWindow {
         font.getData().markupEnabled = true;
         TextureRegion region = null;
         for (int i = 0; i < players.size; i++) {
-            if (i == winnerIndex)
+            if (i == winnerIndex && numberOfWinners == 1)
                 animeWinner(batch, region, i, 60);
             else
                 animeLooser(batch, region, i, 60);

@@ -70,7 +70,9 @@ public class Player implements ControlProcessor, Updatable  {
         character.setPlayer(this);
     }
 
-
+    public Vector2 getCurrentMovingVector() {
+        return currentMovingVector;
+    }
 
     @Override
     public Character getCharacter() {
@@ -220,7 +222,9 @@ public class Player implements ControlProcessor, Updatable  {
                         // throwObject will take care of ending the challenge, and it will be called after the Interpolation animation
                         // throwOBject will change the pickupState
                         character.getBody().setType(BodyDef.BodyType.KinematicBody);
-                        character.setTargetInterpolation(character.getViewDirection()==VIEW_DIRECTION.LEFT?1.2f:-1.2f+character.getBody().getLinearVelocity().x/30f, 1.2f);
+                        character.setTargetInterpolation(character.getViewDirection()==VIEW_DIRECTION.LEFT?
+                                1.2f:-1.2f+character.getBody().getLinearVelocity().x/30f, 1.2f);
+
                         character.setMoveState(MOVE_STATE.THROWING_CHARACTER);
                     }
                     Gdx.app.debug("smash it!", "nb " + jumpButtonCount);
@@ -322,8 +326,10 @@ public class Player implements ControlProcessor, Updatable  {
             killTable.put(obj, 1);
         }
         if (obj instanceof Character){
-            Player p2 = ((Character) obj).getPlayer();
-            gameScreen.makeAnnouncement(Constants.ANNOUNCEMENT.KO, getName(), p2.getName());
+            //Player p2 = ((Character) obj).getPlayer();
+            Character killedCharacter = (Character) obj;
+            killedCharacter.lastKiller = getName();
+            //gameScreen.makeAnnouncement(Constants.ANNOUNCEMENT.KO, getName(), p2.getName());
         }
     }
 

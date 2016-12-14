@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.characters;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -30,6 +31,7 @@ public class Character extends GameObject implements  Carriable {
     private float respawnTime;
     public int marks;
     public Player player;
+    public DAMAGE_TYPE killedBy;
     public AttackManager weapon;
     public Animation groundShock;
     public Animation goldenGlowing;
@@ -42,7 +44,7 @@ public class Character extends GameObject implements  Carriable {
     private Carriable carriedObject;
     private Body crownBody;
     public Body lastGroundedBody;
-    public Fixture myFeet;
+    public ContactData myFeet;
     public Fixture myBodyFixture;
 
 
@@ -55,12 +57,14 @@ public class Character extends GameObject implements  Carriable {
     private actionProgressBar progressBar;
     private Character Carrier;
     private Vector2 targetInterpolation;
+    public String lastKiller;
 //    private float stepTime;
 //    private float stepPeriod;
 
 
     public Character(GameScreenTournament game, Vector2 position, String objectDataID, String color_texture){
         super(game, position, new Vector2(1, 0.9f), 0, "No Init");
+        killedBy = null;
         this.color_texture = color_texture;
         progressBar = new actionProgressBar(game, this);
         initAnimation(objectDataID, color_texture);
@@ -68,6 +72,7 @@ public class Character extends GameObject implements  Carriable {
         // FIXME: the initFixture should be data-driven
         initFixture();
         mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
+//        mainBoxContact.setMyColliderType(COLLIDER_TYPE.AIMING_POINTER);
         initCollisionMask();
         respawnTime = -1;
         marks = 0;
@@ -112,7 +117,7 @@ public class Character extends GameObject implements  Carriable {
         filter = new Filter();
         filter.categoryBits = CATEGORY.get("Sensor");
         filter.maskBits = (short)( CATEGORY.get("Scenery") | CATEGORY.get("AttachedObject") );
-        this.myFeet.setFilterData(filter);
+        this.myFeet.getMyFixture().setFilterData(filter);
     }
 
     public void setMoveState(MOVE_STATE moveState) {
@@ -131,11 +136,14 @@ public class Character extends GameObject implements  Carriable {
                     break;
                 case GROUNDED:
                     setAnimation("Walking");
-                    playSoundIndex("step", 1);
+                    if (previousMoveState==MOVE_STATE.FALLING)
+                        playSoundIndex("step", 1);
                     myBodyFixture.setFriction(0.01f);
                     break;
                 case IDLE:
                     setAnimation("Standing");
+                    if (previousMoveState==MOVE_STATE.FALLING)
+                        playSoundIndex("step", 1);
                     myBodyFixture.setFriction(1.0f);
                     break;
                 case THROWED:
@@ -147,7 +155,9 @@ public class Character extends GameObject implements  Carriable {
                     break;
                 case THROWING_CHARACTER:
                     setAnimation("Throwing");
-                    playSound("throw_character", 0.3f);
+                    playSound("throw_character", 0.0f, 0.6f);
+                    Sound sound = gamescreen.assetManager.getRandom("impact_to_ground");
+                    sound.play(1f);
                     break;
             }
         }
@@ -202,8 +212,7 @@ public class Character extends GameObject implements  Carriable {
         fd.restitution = 0.0f;
         fd.friction = 0.0f;
         fd.isSensor = true;
-        myFeet = this.body.createFixture(fd);
-        new ContactData(8, myFeet);
+        myFeet = new ContactData(8, this.body.createFixture(fd));
         p.dispose();
 
         // Hand fixture-sensor to detect object on the left of him
@@ -281,6 +290,8 @@ public class Character extends GameObject implements  Carriable {
 
     @Override
     public void render(SpriteBatch batch) {
+        gamescreen.addDebugText("\nposition character: "+(Math.round(position.x*10.0f)/10.0f) + ", "
+                                            +(Math.round(position.y*10.0f)/10.0f));
         if(timeBackFX >= 0){
             TextureRegion reg = goldenGlowing.getKeyFrame(timeBackFX);
             batch.draw(reg, position.x-0.5f, position.y-0.5f, 0, 0, 2, 2, 1, 1, 0);
@@ -313,19 +324,28 @@ public class Character extends GameObject implements  Carriable {
 //        gamescreen.addDebugText("\n " + getPlayer().getName() + " MOVE_STATE: " + moveState);
         switch (activeState) {
             case ACTIVATED:
+
                 switch (awakeState) {
                     case AWAKE:
+                        if (isOutSide(-0.1f)) {
+                            setLife(-100);
+                            throwObject(1 ,45.0f);
+                            setCarrier(null);
+                            setMoveState(MOVE_STATE.FALLING);
+                        }
+
                         if (getLife() < 0) {
                             goToConsciousState(DEAD, 0);
                             break;
                         }
                         if(moveState!=MOVE_STATE.PANICKING && moveState!=MOVE_STATE.THROWING_CHARACTER) {
-                            ContactData feetSensor = (ContactData) myFeet.getUserData();
-                            if (feetSensor.isTouched()) {
-                                lastGroundedBody = feetSensor.getTouchedFixtures().peek().getBody(); // returns the last item, but do not remove it
+
+                            if (myFeet.isTouched()) {
+                                lastGroundedBody = myFeet.getTouchedFixtures().peek().getBody(); // returns the last item, but do not remove it
                                 //Gdx.app.debug("Player", "Platform idling on: "+ lastGroundedBody);
                                 if (moveState == MOVE_STATE.THROWED) {
-                                    addToLife(-101);
+//                                    addToLife(-101);
+                                    addDamage(101, DAMAGE_TYPE.CRUSHING);
                                 }
                                 if (Math.abs(this.body.getLinearVelocity().x - lastGroundedBody.getLinearVelocity().x) < 0.001)
                                     // FIXME: \--> I think we could do something more intuitive, as NOT_MOVING
@@ -333,12 +353,18 @@ public class Character extends GameObject implements  Carriable {
                                     setMoveState(MOVE_STATE.IDLE);
                                 else
                                     setMoveState(MOVE_STATE.GROUNDED);
-                            } else if (moveState != MOVE_STATE.THROWED) { // the sensor are inactive when the character is dead, so this state is to avoid
+                            } else if (moveState != MOVE_STATE.THROWED) { // if not grounded and not throwed
+                                // the sensor are inactive when the character is dead, so this state is to avoid
                                 if (this.body.getLinearVelocity().y > 0.1 && moveState != MOVE_STATE.FALLING) // make sure we go to fall when we reset the speed
                                     setMoveState(MOVE_STATE.RISING);
                                 else
                                     setMoveState(MOVE_STATE.FALLING);
-                            }
+//                                if (isOutSide(-0.3f))
+//                                    setLife(-100);
+                            } //else if (moveState == MOVE_STATE.THROWED){
+//                                if (isOutSide(-0.3f))
+//                                    setLife(-100);
+//                            }
                         } else if(moveState == MOVE_STATE.THROWING_CHARACTER){
                             setPosition(body.getPosition().interpolate(targetInterpolation,
                                     stateTime/current_animation.getAnimationDuration(),
@@ -351,8 +377,7 @@ public class Character extends GameObject implements  Carriable {
                                         (getViewDirection()==VIEW_DIRECTION.LEFT?225:315)*MathUtils.degreesToRadians
                                         ,2060.0f);
                                 getBody().setLinearVelocity(0, 0);
-                                ContactData feetSensor = (ContactData) myFeet.getUserData();
-                                feetSensor.deepFlush();
+                                myFeet.deepFlush();
                                 getBody().setType(BodyDef.BodyType.DynamicBody);
                             }
                         }
@@ -387,6 +412,8 @@ public class Character extends GameObject implements  Carriable {
 
 
     }
+
+
 
     public boolean hasCarriedObject(){
         return this.carriedObject != null;
@@ -479,6 +506,7 @@ public class Character extends GameObject implements  Carriable {
     }
 
     private void reSpawn() {
+        killedBy = null;
         for ( JointEdge jointEdge: body.getJointList()) { // iterate over the joints that the character is involved in
             GameObject attachedObject = (GameObject) jointEdge.other.getUserData(); // find the *other* member of the joint
             if (attachedObject != null) // kill the other member
@@ -507,12 +535,13 @@ public class Character extends GameObject implements  Carriable {
             case DEAD:
                 setAnimation("Death");
 //                FIXME:: there are still bug when getting hurt while carrying a character!!
-                if(previousMoveState==MOVE_STATE.THROWED) {
+                if(killedBy == DAMAGE_TYPE.CRUSHING) {
                     timeFrontFX = 0;
                     playSound("impact_to_ground");
                     gamescreen.makeAnnouncement(ANNOUNCEMENT.LONG_TERM_KO, "", "");
                     if (marks==MAXMARKS) {
-                        respawnTime = RESPAWNTIME + 4*marks * Constants.MARKPENALTY; // thus the effect of mark max is to multiply by 3
+                        respawnTime = RESPAWNTIME + 4*marks * Constants.MARKPENALTY;
+                        // thus the effect of mark max is to multiply by 2
                     } else {
                         respawnTime = RESPAWNTIME + 2*marks * Constants.MARKPENALTY;
                     }
@@ -523,6 +552,15 @@ public class Character extends GameObject implements  Carriable {
                     } else {
                         respawnTime = RESPAWNTIME + marks * Constants.MARKPENALTY;
                     }
+                }
+                if(killedBy == DAMAGE_TYPE.BURNING_LANCE){
+                    gamescreen.makeAnnouncement(ANNOUNCEMENT.BURNING_KO, "", "");
+                }
+                if(killedBy == DAMAGE_TYPE.SLAP){
+                    gamescreen.makeAnnouncement(ANNOUNCEMENT.SLAP_KO, lastKiller, getPlayer().getName());
+                }
+                if(killedBy == DAMAGE_TYPE.LANCE){
+                    gamescreen.makeAnnouncement(ANNOUNCEMENT.KO, lastKiller, getPlayer().getName());
                 }
                 timerToAwakeState = 0;
                 Gdx.app.debug("Character", "Death Event");
@@ -587,10 +625,11 @@ public class Character extends GameObject implements  Carriable {
     }
 
     public void addMarks(int marks){
-        this.marks += marks;
-        this.marks = Math.min(Constants.MAXMARKS, this.marks);
-        if (this.marks == MAXMARKS)
-            gamescreen.makeAnnouncement(ANNOUNCEMENT.WEAK_PRABBIT, this.getPlayer().getName(), null);
+        if (this.marks < MAXMARKS) {
+            this.marks += marks;
+            if (this.marks == MAXMARKS)
+                gamescreen.makeAnnouncement(ANNOUNCEMENT.WEAK_PRABBIT, this.getPlayer().getName(), null);
+        }
 
     }
 
@@ -628,6 +667,15 @@ public class Character extends GameObject implements  Carriable {
             playSound("hurt");
             dropObjects();
         }
+
+    }
+    @Override
+    public void addDamage(float damage, Constants.DAMAGE_TYPE damagedBy){
+        super.addDamage(damage, damagedBy);
+        if(life < 0 & damage > 0)
+            // damage > 0 is to avoid being ' killed' be an interactive platform
+            // indeed all interactive objects call addDamage, and inoffensive platforms call addDamage(0)
+            killedBy = damagedBy;
 
     }
 
@@ -677,8 +725,7 @@ public class Character extends GameObject implements  Carriable {
                 newCarrier.goToPickingUpState(PICKUP_STATE.PICKINGUP);
                 this.goToPickingUpState(PICKUP_STATE.NORMAL);
             }
-            ContactData dd = (ContactData) this.myFeet.getUserData();
-            dd.deepFlush(); // to deepFlush
+            myFeet.deepFlush(); // to deepFlush
         }
     }
 

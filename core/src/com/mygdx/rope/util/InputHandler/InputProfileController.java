@@ -107,8 +107,10 @@ public class InputProfileController implements ControllerListener, InputProfile 
 
     @Override
     public Vector2 getMovingVector() {
-        return new Vector2(controller.getAxis(axisCode.get("MovingAxis_X")),
-                -controller.getAxis(axisCode.get("MovingAxis_Y")) );
+        movingAxisState.set( controller.getAxis(axisCode.get("MovingAxis_X")),
+                -controller.getAxis(axisCode.get("MovingAxis_Y"))
+        );
+        return movingAxisState;
     }
 
     @Override

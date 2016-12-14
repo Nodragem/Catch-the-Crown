@@ -203,7 +203,7 @@ public class Coins extends GameObject implements Triggerable {
 
     public void distributeGold(float gold){
         Sound coinSound = gamescreen.assetManager.getRandom("coin");
-        coinSound.play();
+        coinSound.play(0.5f);
         linkedCrown.addGoldValue(gold * Constants.CROWNGOLDRATE); // the part of gold which is not really to the player
         characterWithCrown.getPlayer().addScore(gold); // we remove the extraScore when he drops it
     }

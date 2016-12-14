@@ -7,7 +7,7 @@ Default Profile for Keyboard
 	<states>
 		<state name="Up">
 			<key code="51" />
-		</state>	
+		</state>
 		<state name="Down">
 			<key code="47" />
 		</state>
@@ -18,7 +18,7 @@ Default Profile for Keyboard
 			<key code="32" />
 		</state>
 	</states>
-	
+
 	<contexts>
 		<context name="Menu" >
 			<states>
@@ -31,30 +31,30 @@ Default Profile for Keyboard
 				</state>
 
 				<state name="Start">
-					<key code="56" />
+					<key code="40" />
 				</state>
 
 			</states>
 		</context>
-		
+
 		<context name="Game" >
 			<states>
 				<state name="Jump">
 					<key code="62" />
 				</state>
-				
+
 				<state name="LongAttack1">
 					<mouse code="0" />
 				</state>
-				
+
 				<state name="ShortAttack">
 					<mouse code="1" />
 				</state>
-				
+
 				<state name="LongAttack2">
 					<key code="129" />
 				</state>
-				
+
 				<state name="PickUp">
 					<key code="59" />
 				</state>

@@ -1,4 +1,26 @@
 {
+    "burning_k_o": [
+        {
+            "id": 1, 
+            "path": "sounds/burning_k_o_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/burning_k_o_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 3, 
+            "path": "sounds/burning_k_o_03.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 4, 
+            "path": "sounds/burning_k_o_04.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
     "burning_lance": [
         {
             "id": 1, 
@@ -25,10 +47,74 @@
             "type": "com.badlogic.gdx.audio.Sound"
         }
     ], 
+    "crown_taken": [
+        {
+            "id": 1, 
+            "path": "sounds/crown_taken_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 2, 
+            "path": "sounds/crown_taken_02.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 3, 
+            "path": "sounds/crown_taken_03.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 4, 
+            "path": "sounds/crown_taken_04.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 5, 
+            "path": "sounds/crown_taken_05.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
     "explosion_fireball": [
         {
             "id": 1, 
             "path": "sounds/explosion_fireball_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "golden_prabbit": [
+        {
+            "id": 6, 
+            "path": "sounds/golden_prabbit_06.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 7, 
+            "path": "sounds/golden_prabbit_07.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 8, 
+            "path": "sounds/golden_prabbit_08.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 9, 
+            "path": "sounds/golden_prabbit_09.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 10, 
+            "path": "sounds/golden_prabbit_10.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 11, 
+            "path": "sounds/golden_prabbit_11.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 12, 
+            "path": "sounds/golden_prabbit_12.wav", 
             "type": "com.badlogic.gdx.audio.Sound"
         }
     ], 
@@ -179,6 +265,28 @@
             "type": "com.badlogic.gdx.audio.Sound"
         }
     ], 
+    "long_term_k_o": [
+        {
+            "id": 13, 
+            "path": "sounds/long_term_k_o_13.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 14, 
+            "path": "sounds/long_term_k_o_14.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 15, 
+            "path": "sounds/long_term_k_o_15.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 16, 
+            "path": "sounds/long_term_k_o_16.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
     "platform_activation": [
         {
             "id": 1, 
@@ -241,6 +349,27 @@
             "type": "com.badlogic.gdx.audio.Sound"
         }
     ], 
+    "stressful_timer_m": [
+        {
+            "id": 1, 
+            "path": "sounds/stressful_timer_m.wav", 
+            "type": "com.badlogic.gdx.audio.Music"
+        }
+    ], 
+    "switch_music_off": [
+        {
+            "id": 1, 
+            "path": "sounds/switch_music_off_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "switch_music_on": [
+        {
+            "id": 1, 
+            "path": "sounds/switch_music_on_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
     "switch_on": [
         {
             "id": 1, 
@@ -266,6 +395,35 @@
         {
             "id": 1, 
             "path": "sounds/throw_character_01.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "weak_prabbit": [
+        {
+            "id": 17, 
+            "path": "sounds/weak_prabbit_17.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 18, 
+            "path": "sounds/weak_prabbit_18.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 19, 
+            "path": "sounds/weak_prabbit_19.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }, 
+        {
+            "id": 20, 
+            "path": "sounds/weak_prabbit_20.wav", 
+            "type": "com.badlogic.gdx.audio.Sound"
+        }
+    ], 
+    "weaken_prabbit": [
+        {
+            "id": 17, 
+            "path": "sounds/weaken_prabbit_17.wav", 
             "type": "com.badlogic.gdx.audio.Sound"
         }
     ]

@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
@@ -53,6 +54,10 @@ public class MovingPlatform extends GameObject implements Triggerable {
         this.defaultON = defaultON;
         this.waitingTime = waitingTime;
         body.getFixtureList().get(0).setFriction(1.0f);
+
+        JsonValue objectInfo = gamescreen.getObjectDataBase().get(objectDataID);
+        if (objectInfo.getBoolean("oneway", false))
+            mainBoxContact.setMyColliderType(Constants.COLLIDER_TYPE.ONEWAY);
 
         /* Libgdx body.setTransform() will places the **center** of the body to a new position because
          we made the body centered on the lef-bottom corner of GameObject to allow centered rotation.
@@ -182,8 +187,8 @@ public class MovingPlatform extends GameObject implements Triggerable {
         // we don't need it anymore, that is already in the super.update()
         //        position.set(body.getPosition()).sub(origin);
 
-        gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(origin.x*10.0f)/10.0f) + ", "
-                                            +(float) (Math.round(origin.y*10.0f)/10.0f));
+//        gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(origin.x*10.0f)/10.0f) + ", "
+//                                            +(float) (Math.round(origin.y*10.0f)/10.0f));
 
         return false;
     }
@@ -208,13 +213,13 @@ public class MovingPlatform extends GameObject implements Triggerable {
         if(!platformAlwaysVisible)
             goToActivation();
         stopPlatform(false);
-        playSound("platform_activation");
+
     }
 
     @Override
     public void triggerOFFActions(HubInterface hub) {
         stopPlatform(true);
-        playSound("platform_deactivation");
+
         if(!platformAlwaysVisible)
             goToDesactivation();
     }

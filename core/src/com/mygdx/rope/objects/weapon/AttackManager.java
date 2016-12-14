@@ -44,7 +44,7 @@ public class AttackManager extends GameObject implements Launcher {
         super(gm, new Vector2(0,0), new Vector2(1,1), 0, "No Init");
         initAnimation(objectDataID, color_texture);
         initFixture();
-        mainBoxContact = new ContactData(3, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
+        mainBoxContact = new ContactData(4, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
         initCollisionMask();
         this.setAnimation("Slapping");
 
@@ -56,6 +56,7 @@ public class AttackManager extends GameObject implements Launcher {
         defaultPower = 3.0f;
         powerLoad = defaultPower;
         mainBoxContact.addBodyToIgnore(parentBody);
+        mainBoxContact.setMyColliderType(Constants.COLLIDER_TYPE.AIMING_POINTER);
 
         rposition.x = 0.5f;
         rposition.y = 0.5f;
@@ -121,7 +122,7 @@ public class AttackManager extends GameObject implements Launcher {
                 if (lastTouchedObj != null) {
                     if (lastTouchedObj.getClass().equals(Character.class)) {  // should go in the Lance
                         Character p = (Character) lastTouchedObj;
-                        p.addDamage(Constants.SLAPDAMAGE);
+                        p.addDamage(Constants.SLAPDAMAGE, Constants.DAMAGE_TYPE.SLAP);
                         p.goToConsciousState(SLEEPING, givenSleep);
                         Sound slaphit = gamescreen.assetManager.getRandom("slap_hit");
                         slaphit.play();

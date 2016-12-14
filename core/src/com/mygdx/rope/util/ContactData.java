@@ -3,6 +3,7 @@ package com.mygdx.rope.util;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.rope.objects.GameObject;
 
 /**
  * Created by Nodragem on 11/05/2014.
@@ -15,15 +16,21 @@ public class ContactData {
     public Array<Fixture> touchedFixtures;
     public Array<Body> ignoredBodies;
     private int capacity;
+    public GameObject myGameObject;
     private float lastImpulse;
 
     public ContactData(int capacity, Fixture fixture){
         myFixture = fixture;
+        myGameObject = (GameObject) myFixture.getBody().getUserData();
         ignoredBodies = new Array<Body>(1);
         myFixture.setUserData(this);
         myColliderType = Constants.COLLIDER_TYPE.SENSOR;
         this.capacity = capacity;
         touchedFixtures = new Array<Fixture>(capacity);
+    }
+
+    public GameObject getMyGameObject() {
+        return myGameObject;
     }
 
     public void addBodyToIgnore(Body body){

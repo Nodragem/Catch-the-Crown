@@ -1,6 +1,7 @@
 package com.mygdx.rope.objects.traps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.rope.objects.Updatable;
 import com.mygdx.rope.screens.GameScreenTournament;
@@ -21,8 +22,9 @@ public class SimpleHub implements HubInterface, Updatable {
     protected boolean active;
     protected float myCurrentValue;
     protected GameScreenTournament gameScreen;
+    private boolean isSilent;
 
-    public SimpleHub(GameScreenTournament game) {
+    public SimpleHub(GameScreenTournament game, boolean silent) {
         gameScreen = game;
         gameScreen.getObjectsToUpdate().add(this);
         myThreshold = 100.0f; // percent
@@ -30,6 +32,7 @@ public class SimpleHub implements HubInterface, Updatable {
         integrators = new Array<Integrable>();
         myCurrentValue = 0.0f;
         active = false;
+        isSilent = silent;
     }
 
     public boolean isThresholdReached() {
@@ -49,12 +52,20 @@ public class SimpleHub implements HubInterface, Updatable {
             Gdx.app.debug("Hub", "list of integrators: " + integrators);
             notifyTriggerables(active);
             notifyIntegrators(active);
+            if(!isSilent) {
+                Sound sound = gameScreen.assetManager.getRandom("switch_music_on");
+                sound.play(0.8f);
+            }
         }
         else if(!isThresholdReached() && active) {
             active = false;
             Gdx.app.debug("Hub", "notifyTriggerables("+active+") --> " + triggerables);
             notifyTriggerables(active);
             notifyIntegrators(active);
+            if(!isSilent) {
+                Sound sound = gameScreen.assetManager.getRandom("switch_music_off");
+                sound.play(0.8f);
+            }
         }
         return false;
     }

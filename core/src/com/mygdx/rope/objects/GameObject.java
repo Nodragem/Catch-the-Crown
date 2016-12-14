@@ -66,6 +66,7 @@ public class GameObject implements Updatable, Renderable {
     private float soundVol;
     private float soundDelay;
     private float soundTime;
+    public Constants.DAMAGE_TYPE damageType;
 
     // we should separated the GameObject from their textures :/ like that the GameObjects of same type would use the same texture set, instead of loading several time the same textures in memory
 
@@ -84,6 +85,7 @@ public class GameObject implements Updatable, Renderable {
         immunityReset = 0.5f; // if an object is in his immune period, he can't be injured
         bufferReceivedDamage = 0.0f;
         givenDamage = 0.0f;
+        damageType = Constants.DAMAGE_TYPE.NONE;
         timeStepDamage = 0.0f;
         World b2world = game.getB2World();
         this.viewDirection = Constants.VIEW_DIRECTION.RIGHT;
@@ -290,6 +292,7 @@ public class GameObject implements Updatable, Renderable {
             animation_loops = new Array<String>(
                     objectInfo.get("animation_loops").asStringArray());
         } else {
+            // FIXME: we could make the default number of loops and spf depending on what was found in 'names'
             animation_loops = new Array<String>(
                     new String[]{"LOOP", "NORMAL", "NORMAL"});
         }
@@ -432,7 +435,7 @@ public class GameObject implements Updatable, Renderable {
             GameObject touchedObject = (GameObject) touchedFixture.getBody().getUserData();
             if (touchedObject != null){
                 if(!touchedObjects.contains(touchedObject, true)) { // if we touch two fixtures of the same object, we won't damage it twice
-                    touchedObject.addDamage(dealDamage?givenDamage:0);
+                    touchedObject.addDamage(dealDamage?givenDamage:0, damageType);
                     touchedObjects.add(touchedObject);
                 }
             }
@@ -509,10 +512,11 @@ public class GameObject implements Updatable, Renderable {
     }
 
     protected void addToLife(float f){
+        // to use only to bypass the addDamage() immunity time.
         life+=f;
     }
 
-    public void addDamage(float damage){
+    public void addDamage(float damage, Constants.DAMAGE_TYPE damagedBy){
         if(damageState == NOT_IMMUNE && isKillable && damage > 0) {
             addToLife(-damage);
             goToImmuneState(IMMUNE);
@@ -725,6 +729,13 @@ public class GameObject implements Updatable, Renderable {
         soundCache.play(1f);
         soundCache = null;
 
+    }
+
+    public boolean isOutSide(float margin) {
+        return ((position.x <= -1-margin) |
+                (position.x >= Constants.VIEWPORT_WIDTH + margin) |
+                (position.y <= -1-margin) |
+                (position.y >= Constants.VIEWPORT_HEIGHT + margin));
     }
 
 

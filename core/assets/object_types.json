@@ -128,6 +128,18 @@
       "Category": "Scenery"
 
     },
+    "oneway_platform": {
+      "animation_names": ["left", "rleft", "center", "rright", "right"],
+      "animation_loops": ["LOOP", "LOOP", "LOOP", "LOOP", "LOOP"],
+      "animation_spf": [0.2, 0.2, 0.2, 0.2, 0.2],
+      "bodyType": "KinematicBody",
+      "oneway": true,
+      "body_offsetx": 0.0,
+      "body_offsety": 0.0,
+      "Mask": "Scenery",
+      "Category": "Scenery"
+
+    },
     "stone_platform": {
       "texture_name": "moving_stone",
       "animation_names": ["left", "rleft", "center", "rright", "right"],

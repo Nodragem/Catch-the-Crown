@@ -58,19 +58,19 @@ public class Projectile extends GameObject implements Usable {
     @Override
     public Array<GameObject> onCollision(boolean dealDamage) {
 //        Gdx.audio.newSound(Gdx.files.internal("sounds/3.wav"));
-        playSound("explosion_fireball");
+        playSound("explosion_fireball", 0f, 0.5f);
         Gdx.app.debug("Projectile", "Collision Detected");
 
         Gdx.app.debug("Projectile", "life before return damage: " + getLife());
         Array<GameObject> touchedObjects = super.onCollision(false);
         for (GameObject touchedObject: touchedObjects) {
             if (touchedObject instanceof Projectile){ // we need that cause goToActivation will remove (this) projectile to the touched object contactlist.
-                touchedObject.addDamage(0); // because they will get the return damage anyway;
+                touchedObject.addDamage(0, Constants.DAMAGE_TYPE.NONE); // because they will get the return damage anyway;
             } else if (touchedObject != null){
-                touchedObject.addDamage(givenDamage);
+                touchedObject.addDamage(givenDamage, Constants.DAMAGE_TYPE.NONE);
             }
         }
-        this.addDamage(returnedDamage);
+        this.addDamage(returnedDamage, Constants.DAMAGE_TYPE.NONE);
         Gdx.app.debug("Projectile", "Return Damage!");
         Gdx.app.debug("Projectile", "life after return damage: " + getLife());
         return null;

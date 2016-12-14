@@ -2,35 +2,30 @@
 
 ## Next Actions:
 
-- [ ] @level @gameplay try to do one way (single ticket) platforms,
-- [x] @level @general the physical size of platform should be independent from the texture size
-(the character does not touch the wood platforms)
-- [ ] @bug we got the prabbit with panicking animation while in normal state at some point, but can't replicate it easily
-- [ ] @bug when there is a draw, the second best has his columns going up. It should not.
-- [ ] @bug when using the throwing power, people can get *out of the level* and they can't play anymore.
-
-- [ ] @sound @gameplay add tick-tock of the clock when 10 second lefts
-- [ ] @graphics show visual feedback that some money is going to the crown
 - [ ] @level make level 2
-  - [x] homogeneize the origin system
+  - [x] homogeneize the origin system (lance and platform are working the same now)
   - [x] make platform data-driven
-  - [x] use/make ObjectType in Tiled map editor
+  - [x] use/make ObjectType in Tiled map editork
+
+- [ ] @graphics show visual feedback that some money is going to the crown
+- [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
 
 - [ ] @gameplay crown rate may need to be lower
 - [ ] @sounds Voice for announcements is mandatory
+        - instead of announcing names (that is impossible), we can annoucne the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
 - [ ] @gameplay it seems that it is too easy to only press 4 times B to do a long term KO:
   > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level).
+  > FOR NOW, it seems that press 4 times is OK.
 - [ ] @gameplay pay 5-15% of money to revive quicker:
   > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
   > to die from the super/burning lance would remove more money.
 - [ ] @gameplay to die from the super/burning lance would remove 25% of money (50% if all marks).
+  > EVEN BETTER: the dead player would be loosing money like 100 per second, given to the killer.
   > make animation of money going from one to the other character
-
-- [ ] @menu **[B]** level menu
-- [ ] @menu **[B]** option menu
-- [x] @menu change button for going to next round to start
-- [ ] @menu make state machine system to be able to progress to left-right-up-bottom direction between buttons
-
+- [ ] @menu level menu
+- [ ] @menu option menu
+- [ ] @menu make a state machine system for the buttun in the menu
+  > to be able to progress to left-right-up-bottom direction between buttons
 - [ ] @gameplay we need to have item to regenerate from fatigue:
     - to take the crown would regenerate fatigue?
 - [ ] @gameplay more you carry the crown more you get tired?
@@ -39,6 +34,8 @@
   - [ ] collect:
   - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
   - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
+- [ ] @bug we got the prabbit with panicking animation while in normal state at some point, but can't replicate it easily
+
 
 ## Maybe:
 - [ ]  @gameplay to slap someone treats one mark,
@@ -200,6 +197,31 @@ Règle de partie perdue (recommence leniveau) :
 --------------------------------------------------------------------------------
 
 # Changelog
+
+## up to 11/12/2016:
+- [x] @level @gameplay try to do one way (single ticket) platforms,
+  - [x] we can make a platform oneway in the type_object file,
+  - [x] improve the oneway detection:
+  > before we check whether body.getPosition().y + 0.1 was under the detected collision. If yes, the body could pass.
+  > this was not working when a platform was slighty upper than 2 blocks and the player tried to jump without moving
+  > we know test body.getWorldCenter().y against the dectected collision
+  - [x] debug oneway detection:
+  > it was taking the last touch fixtures from the list to test if one object was under the platform.
+  > But sometimes the last touched fixture did not correspond to the object!
+  > For instance, when aiming downard, the last fixture became the aiming box for the platform,
+  > so that, when we test whether the character can pass, the engine was testing the position of the aiming box instead of the position of the character
+  - [x] make ability to pass through the platform if press downward.
+- [x] @level @general the physical size of platform should be independent from the texture size
+(the character does not touch the wood platforms)
+- [x] @bug when there is a draw, the second best has his columns going up. It should not.
+- [x] @bug when using the throwing power, people can get *out of the level* and they can't play anymore.
+
+- [x] @sound @gameplay add tick-tock of the clock when 10 second lefts
+  > we actually got a music :)
+- [x] @sound increase the volume of switches
+- [x] @sound change the sound of switches/traps activation to a little music (three notes)
+- [x] @sound remove the 'tich' when character changes direction, put it for when the character get to the ground instead
+- [x] @menu change button for going to next round to start
 
 ## 20/11/2016:
 - [ ] @bug controller don't work after fullscreen:

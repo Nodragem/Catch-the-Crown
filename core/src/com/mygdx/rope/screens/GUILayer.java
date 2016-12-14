@@ -1,6 +1,7 @@
 package com.mygdx.rope.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -343,32 +344,68 @@ public class GUILayer {
 
     public void makeAnnouncement(Constants.ANNOUNCEMENT announcement, String player1, String player2) {
         announceTime = 0;
-        announcementState = announcement;
         announcementStartPos.set(-Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT / 2);
         backgroundStartPos.set(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT / 2);
+        Sound sound = null;
         switch (announcement) {
             case KO:
                 announcementText = player1 + " knocked out " + player2 + "!";
                 break;
             case LONG_TERM_KO:
-                announcementText = "LONG TERM K.O. !";
+                announcementText = "LONG TERM K.O. !"; // ok
+                if(announcementState == Constants.ANNOUNCEMENT.NONE){
+                    sound = gameScreen.assetManager.getRandom("long_term_k_o");
+                    sound.play(1f);
+                }
+
+                break;
+            case FIRSTCROWN:
+                announcementText = "The Crown was Stolen!"; // ok
+//                if(announcementState == Constants.ANNOUNCEMENT.NONE){
+//                    sound = gameScreen.assetManager.getRandom("crown_taken");
+//                    sound.play(1f);
+//                }
+
                 break;
             case CROWN:
-                announcementText = player1 + " took the Crown!";
+                announcementText = player1 + " took the Crown!"; // ok
                 break;
             case GOLDEN_PRABBIT:
-                announcementText = player1 + " IS NOW GOLDEN!";
+                announcementText = player1 + " IS NOW GOLDEN!"; // ok
+                if(announcementState == Constants.ANNOUNCEMENT.NONE){
+                    sound = gameScreen.assetManager.getRandom("golden_prabbit");
+                    sound.play(1f);
+                }
+
                 break;
             case TIMER_ALMOST_OFF:
-                announcementText = player1 + " SECONDS LEFT!";
+                announcementText = player1 + " SECONDS LEFT!"; // use music
                 break;
             case NONE:
                 announcementText = "";
                 break;
             case WEAK_PRABBIT:
-                announcementText = player1 + " GOT VERY WEAK!";
+                announcementText = player1 + " GOT VERY WEAK!"; // ok
+                if(announcementState == Constants.ANNOUNCEMENT.NONE){
+                    sound = gameScreen.assetManager.getRandom("weak_prabbit");
+                    sound.play(1f);
+                }
+
                 break;
+            case SLAP_KO:
+                announcementText = player1 + " slapped " + player2 + " to death!";
+                break;
+
+            case BURNING_KO:
+                announcementText = "BURNING K.O. !"; // ok
+                if(announcementState == Constants.ANNOUNCEMENT.NONE){
+                    sound = gameScreen.assetManager.getRandom("burning_k_o");
+                    sound.play(1f);
+                }
+
+
         }
+        announcementState = announcement;
         glyphLayout.setText(font, announcementText);
         announcementTarget.set((Constants.VIEWPORT_GUI_WIDTH - glyphLayout.width) / 2, Constants.VIEWPORT_GUI_HEIGHT / 2);// contains the width of the current set text
 
