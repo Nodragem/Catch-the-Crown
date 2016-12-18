@@ -136,8 +136,8 @@
       "oneway": true,
       "body_offsetx": 0.0,
       "body_offsety": 0.0,
-      "Mask": "Scenery",
-      "Category": "Scenery"
+      "Mask": "Oneway",
+      "Category": "Oneway"
 
     },
     "stone_platform": {

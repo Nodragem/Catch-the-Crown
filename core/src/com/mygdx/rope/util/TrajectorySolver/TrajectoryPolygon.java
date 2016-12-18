@@ -14,7 +14,7 @@ import com.mygdx.rope.util.Constants;
 public class TrajectoryPolygon implements TrajectorySolver {
     public Array<Vector2> vectors;
     public FloatArray cumulated_distances;
-    private Constants.PLATFORM_STATE platformState;
+    public Constants.PLATFORM_STATE platformState;
     private float mySpeed = 0;
     private float currentSpeed = 0;
     private float current_distance = 0;
@@ -29,9 +29,9 @@ public class TrajectoryPolygon implements TrajectorySolver {
 
     public TrajectoryPolygon(Polyline poly, float speed){
         mySpeed = speed; // not really useful
-        platformState = Constants.PLATFORM_STATE.STOPPED;
+        platformState = Constants.PLATFORM_STATE.FINAL_STOP;
         currentSpeed = 0;
-        previousSpeed = - speed; // because we start at an extremity of the path and
+        previousSpeed = -speed; // because we start at an extremity of the path and
         // the algo will reverse the previous speed to get the current speed after the initial stopping time
         FloatArray vertices = new FloatArray(poly.getVertices());
         cumulated_distances = new FloatArray(2);
@@ -50,7 +50,7 @@ public class TrajectoryPolygon implements TrajectorySolver {
     }
 
     @Override
-    public Vector2 getSpeedFrom(float deltaTime, float waitingTime) {
+    public Vector2 getSpeedFrom(float deltaTime, float waitingTime, boolean looping) {
 
         //Gdx.app.debug("Solver", "current distance: "+current_distance+", total distance:"+total_distance);
         switch(platformState){
@@ -70,7 +70,10 @@ public class TrajectoryPolygon implements TrajectorySolver {
                 current_distance = nextStop; // should be zero on next turn
                 previousSpeed = currentSpeed;
                 currentSpeed = 0;
-                platformState = Constants.PLATFORM_STATE.STOPPED;
+                if (almostEqual(current_distance, total_distance) || almostEqual(current_distance, 0))
+                    platformState = Constants.PLATFORM_STATE.FINAL_STOP;
+                else
+                    platformState = Constants.PLATFORM_STATE.STOPPED;
                 initCoolDown(waitingTime);
                 break;
             case LEAVING_STOP: // it just started to move again, but it is still close to the stop position:
@@ -87,24 +90,24 @@ public class TrajectoryPolygon implements TrajectorySolver {
                 break;
             case STOPPED: // Here the object in on a Stop position (not moving)
                 //  when the cooldown reaches zero, we re-attribute the Speed that the object had before to be stopped:
-                if(coolDown <= 0){
-                    coolDown = 0;
-                    platformState = Constants.PLATFORM_STATE.LEAVING_STOP;
-                    // if we are at an extremity of the path, then we reverse the previous speed:
-                    if (almostEqual(current_distance, total_distance) || almostEqual(current_distance, 0)){
-//                        Gdx.app.debug("R", "Depassee");
-                        currentSpeed = -previousSpeed;
-                    }
-                    else{
-                        currentSpeed = previousSpeed;
-                    }
-                    // will define the next Stop position, according to if the moving object is going forward or backward:
-                    updateStops();
+                if (coolDown <= 0) {
+                    leaveStopState();
                 } else {
 //                    Gdx.app.debug("R", "Cool Down: "+coolDown);
                     coolDown -= deltaTime;
                 }
                 break;
+            case FINAL_STOP:
+                //  when the cooldown reaches zero, we re-attribute the Speed that the object had before to be stopped:
+                if(looping) {
+                    if (coolDown <= 0) {
+                        leaveStopState();
+                    } else {
+//                    Gdx.app.debug("R", "Cool Down: "+coolDown);
+                        coolDown -= deltaTime;
+                    }
+                    break;
+                }
         }
 
         if(platformState!= Constants.PLATFORM_STATE.GOING_TO_STOP)
@@ -126,6 +129,25 @@ public class TrajectoryPolygon implements TrajectorySolver {
             return new Vector2(vectors.get(currentVector)).scl(currentSpeed);
         else
             return new Vector2(vectors.get(currentVector)).scl(correctionSpeed);
+    }
+
+    public void leaveStopState() {
+        coolDown = 0;
+        platformState = Constants.PLATFORM_STATE.LEAVING_STOP;
+        // if we are at an extremity of the path, then we reverse the previous speed:
+        if (almostEqual(current_distance, total_distance) || almostEqual(current_distance, 0)) {
+//                        Gdx.app.debug("R", "Depassee");
+            currentSpeed = -previousSpeed;
+        } else {
+            currentSpeed = previousSpeed;
+        }
+        // will define the next Stop position, according to if the moving object is going forward or backward:
+        updateStops();
+    }
+
+    @Override
+    public Constants.PLATFORM_STATE getTrajectoryState() {
+        return platformState;
     }
 
     public void initCoolDown(float waitingTime) {

@@ -83,13 +83,17 @@ public class CollisionManager implements ContactListener {
                 // or another one-way plateform
                 /// We get the position of the collider (e.g. the player character) and add 0.1 to it
                 GameObject obj = contactObject.getMyGameObject();
-                float posy = obj.getBody().getWorldCenter().y;
+//               float posy = obj.getBody().getWorldCenter().y;
+                // this works better for passing through lance picked in the ground:
+                float posy = obj.getBody().getPosition().y + 0.1f;
                 // if the character come from under where was the collision, we let it pass.
                 if (posy < contact.getWorldManifold().getPoints()[0].y) {
                     contact.setEnabled(false);
-                    Gdx.app.debug("CollisionManager", "one way detected!");
+                    Gdx.app.debug("CollisionManager", "one way detected! \n" +
+                            "Object at:"+ posy +" and collision at: "+contact.getWorldManifold().getPoints()[0].y);
                 } else {
                     if (obj instanceof Character) {
+                        // make the charactet pass through the platform if he is pressing down
                         Character char1 = (Character) obj;
                         if (char1 != null && char1.getPlayer().getCurrentMovingVector().y < -0.75)
                             contact.setEnabled(false);
@@ -100,6 +104,8 @@ public class CollisionManager implements ContactListener {
         }
 
     }
+
+
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {

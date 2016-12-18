@@ -61,7 +61,7 @@ public class Lance extends GameObject {
 
     @Override
     public void initFixture() {
-        // ---- create the pick Ficture:
+        // ---- create the stick Fixture:
         PolygonShape p = new PolygonShape();
         // Note that we offset the fixtures, so that the body is centered on the bottom-left corner of the GameObject
         // that is why the center of the fist fixture is on (0, 0) (the bottom left corner)
@@ -72,10 +72,10 @@ public class Lance extends GameObject {
         fd.restitution = 0.0f;
         fd.friction = 0.0f;
         this.body.createFixture(fd);
-
         collisionStick = new ContactData(8, this.body.getFixtureList().get(0));
+
         p.dispose();
-        // ---- create the stick Fixture, which is the main contact box
+        // ---- create the pick Fixture, which is the main contact box
         p = new PolygonShape();
         p.setAsBox(dimension.x *0.075f, dimension.y *0.5f/3.5f, new Vector2(dimension.x * 0.35f, dimension.y *0.0f), 0);
         fd = new FixtureDef();
@@ -153,11 +153,11 @@ public class Lance extends GameObject {
                 goToGhostState();
             }else {
                 collisionStick.setMyColliderType(Constants.COLLIDER_TYPE.ONEWAY);
-                handleFilter.categoryBits = Constants.CATEGORY.get("AttachedObject");
-                handleFilter.maskBits = Constants.MASK.get("AttachedObject");
+                handleFilter.categoryBits = Constants.CATEGORY.get("Oneway");
+                handleFilter.maskBits = Constants.MASK.get("Oneway");
                 this.body.getFixtureList().get(0).setFilterData(handleFilter);
-                pickFilter.categoryBits = Constants.CATEGORY.get("AttachedObject");
-                pickFilter.maskBits = Constants.MASK.get("AttachedObject");
+                pickFilter.categoryBits = Constants.CATEGORY.get("Oneway");
+                pickFilter.maskBits = Constants.MASK.get("Oneway");
                 this.body.getFixtureList().get(1).setFilterData(pickFilter);
             }
             if(parentObject!=null && parentObject instanceof SimpleLauncher){
@@ -202,6 +202,7 @@ public class Lance extends GameObject {
 
     public void use(Vector2 startPos, float angle, float force, float damageMultiplicator){
         damageType = Constants.DAMAGE_TYPE.LANCE;
+
         Sound throwSound = gamescreen.assetManager.getRandom("lance_thrown");
         throwSound.play();
         if(parentObject!=null && parentObject instanceof SimpleLauncher){
@@ -239,6 +240,7 @@ public class Lance extends GameObject {
     }
 
     public void goToWeaponState() {
+        collisionStick.setMyColliderType(Constants.COLLIDER_TYPE.SENSOR);
         mainBoxContact.deepFlush();
         collisionStick.deepFlush();
         if (isBurning) {

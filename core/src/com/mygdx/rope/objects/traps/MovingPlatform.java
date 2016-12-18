@@ -27,6 +27,7 @@ import com.mygdx.rope.util.TrajectorySolver.TrajectorySolver;
  * Created by Geoffrey on 10/01/2015.
  */
 public class MovingPlatform extends GameObject implements Triggerable {
+    private boolean looping;
     /* we have here a game object which is always of one units height, and repeat its textures of one units on the width axis */
     private TrajectorySolver trajResolver;
     private Vector2 speed;
@@ -42,17 +43,18 @@ public class MovingPlatform extends GameObject implements Triggerable {
     // would load oall the type of platform used in the level.
     private int blockFlag;
 
-    public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension,
-                          float angle, MapObject path, float angularSpeed, float waitingTime, boolean defaultON,
-                          boolean alwaysVisible, String objectDataID) {
+    public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, MapObject path,
+                          float angularSpeed, float waitingTime, boolean defaultON, boolean looping, boolean alwaysVisible,
+                          String objectDataID) {
         // FIXME: 2 - should we put the data from TiledMap into a json / hashmap?
         super(game, position, dimension, angle, objectDataID);
         // Note that the dimension, position and angle are given by the Factory, from the TiledMap
         mainBoxContact = new ContactData(10, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
-        initCollisionMask();
+//        initCollisionMask();
         this.platformAlwaysVisible = alwaysVisible;
         this.defaultON = defaultON;
         this.waitingTime = waitingTime;
+        this.looping = looping;
         body.getFixtureList().get(0).setFriction(1.0f);
 
         JsonValue objectInfo = gamescreen.getObjectDataBase().get(objectDataID);
@@ -103,37 +105,37 @@ public class MovingPlatform extends GameObject implements Triggerable {
         }
     }
 
-    @Override
-    public void initCollisionMask() { // override the default / prototype object
-        Filter defaultFilter = new Filter();
-        defaultFilter.categoryBits = Constants.CATEGORY.get("Scenery");
-        defaultFilter.maskBits = Constants.MASK.get("Scenery");
-        this.body.getFixtureList().get(0).setFilterData(defaultFilter);
-    }
-
-    @Override
-    public void initAnimation(){ // override the default / prototype object
-        Pixmap pixmap2 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
-        pixmap2.setColor(0.7f, 0.2f, 0.3f, 1.0f);
-        pixmap2.fillRectangle(0, 0, 32, 32);
-        TextureRegion region =  new TextureRegion(new Texture(pixmap2));
-        animations.put("Main", new Animation(1.0f/2.0f, region));
-        setAnimation("Main");
-    }
-
-    @Override
-    public void initFixture() { // override the default / prototype object
-        PolygonShape p = new PolygonShape();
-        p.setAsBox(dimension.x / 2.0f, dimension.y / 2.0f, new Vector2(0, 0), 0);
-        FixtureDef fd = new FixtureDef();
-        fd.shape = p;
-        fd.density = 50;
-        fd.restitution = 0.0f;
-        fd.friction = 0.5f;
-        //fd.isSensor = isSensor;
-        this.body.createFixture(fd);
-        p.dispose();
-    }
+//    @Override
+//    public void initCollisionMask() { // override the default / prototype object
+//        Filter defaultFilter = new Filter();
+//        defaultFilter.categoryBits = Constants.CATEGORY.get("Scenery");
+//        defaultFilter.maskBits = Constants.MASK.get("Scenery");
+//        this.body.getFixtureList().get(0).setFilterData(defaultFilter);
+//    }
+//
+//    @Override
+//    public void initAnimation(){ // override the default / prototype object
+//        Pixmap pixmap2 = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
+//        pixmap2.setColor(0.7f, 0.2f, 0.3f, 1.0f);
+//        pixmap2.fillRectangle(0, 0, 32, 32);
+//        TextureRegion region =  new TextureRegion(new Texture(pixmap2));
+//        animations.put("Main", new Animation(1.0f/2.0f, region));
+//        setAnimation("Main");
+//    }
+//
+//    @Override
+//    public void initFixture() { // override the default / prototype object
+//        PolygonShape p = new PolygonShape();
+//        p.setAsBox(dimension.x / 2.0f, dimension.y / 2.0f, new Vector2(0, 0), 0);
+//        FixtureDef fd = new FixtureDef();
+//        fd.shape = p;
+//        fd.density = 50;
+//        fd.restitution = 0.0f;
+//        fd.friction = 0.5f;
+//        //fd.isSensor = isSensor;
+//        this.body.createFixture(fd);
+//        p.dispose();
+//    }
 
     @Override
     public void initAnimation(String objectDataID, String color_texture){
@@ -172,24 +174,27 @@ public class MovingPlatform extends GameObject implements Triggerable {
 
     @Override
     public boolean update(float deltaTime){
-        if(!stopped) {
-            if(trajResolver != null)
-                speed = trajResolver.getSpeedFrom(deltaTime, waitingTime);
-            body.setLinearVelocity(speed);
-            body.setAngularVelocity(angularSpeed);
-        }
-        else{
-            body.setLinearVelocity(0f,0f);
-            body.setAngularVelocity(0f);
+        if(trajResolver != null) {
+            if (stopped & !looping &
+                    trajResolver.getTrajectoryState() == Constants.PLATFORM_STATE.FINAL_STOP) {
+                body.setLinearVelocity(0f, 0f);
+                body.setAngularVelocity(0f);
+            } else if (stopped & looping) {
+                body.setLinearVelocity(0f, 0f);
+                body.setAngularVelocity(0f);
+            } else {
+                speed = trajResolver.getSpeedFrom(deltaTime, waitingTime, looping);
+                body.setLinearVelocity(speed);
+                body.setAngularVelocity(angularSpeed);
+            }
+        } else {
+            if (!stopped){
+                body.setAngularVelocity(angularSpeed);
+            } else {
+                body.setAngularVelocity(0f);
+            }
         }
         super.update(deltaTime);
-
-        // we don't need it anymore, that is already in the super.update()
-        //        position.set(body.getPosition()).sub(origin);
-
-//        gamescreen.addDebugText("\nPlatform: "+(float) (Math.round(origin.x*10.0f)/10.0f) + ", "
-//                                            +(float) (Math.round(origin.y*10.0f)/10.0f));
-
         return false;
     }
 
@@ -234,25 +239,13 @@ public class MovingPlatform extends GameObject implements Triggerable {
 
     private void stopPlatform(boolean b) {
         stopped = b;
-//        if (stopped) {
-//            speed = new Vector2(0, 0);
-//            angularSpeed = 0;
-//        }
-//        else{
-//            angularSpeed =
-//        }
+        if(!stopped && !looping && trajResolver.getTrajectoryState() == Constants.PLATFORM_STATE.FINAL_STOP)
+            trajResolver.leaveStopState();
     }
 
     public void render(SpriteBatch batch) {
         if(isVisible && activeState != Constants.ACTIVE_STATE.DESACTIVATED) {
             for (int i = 0; i < platformBlocks.size; i++) {
-//                batch.draw(platformBlocks.get(i).getKeyFrame(stateTime),
-//                        position.x + i*MathUtils.cos(rotation),
-//                        position.y + i*MathUtils.sin(rotation),
-//                        0, 0, // origins
-//                        1, 1, 1, dimension.y, // dimension and scale
-//                        rotation * MathUtils.radiansToDegrees
-//                );
                 batch.draw(platformBlocks.get(i).getKeyFrame(stateTime),
                         position.x + i*MathUtils.cos(rotation),
                         position.y + i*MathUtils.sin(rotation),

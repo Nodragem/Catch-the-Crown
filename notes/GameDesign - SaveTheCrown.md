@@ -5,17 +5,31 @@
 - [ ] @level make level 2
   - [x] homogeneize the origin system (lance and platform are working the same now)
   - [x] make platform data-driven
-  - [x] use/make ObjectType in Tiled map editork
+  - [x] use/make ObjectType in Tiled map editor
+
+
+
+- [ ] @bug repeat laugh sometimes after death, never stop until respawn
+- [ ] @bug the announcer voice stops to speak
+  > it seems that the announcer voice is stopped by external events
+
+- [x] @bug we could not pass through Lances picked into the ground (provock people to get stucked)
+- [ ] @sound reduce sound FX and increase music (we don' t hear it well in the mass of events)
+- [x] @bug @gameplay we need the lances to pass through oneway platforms
+- [ ] @bug we cannot jump just after we passed through a oneway platform
+  > it seems to happen only when the movestate passes from RISING to IDLE
+- [ ] @bug launcher does not always get deactivated when hit by a lance
+- [ ] @bug fireball explodes randomly when there is spikes
+- [ ] @gameplay @bug we need to be able to deactivate launcher-related sensor (invisible switch) with an other switch
 
 - [ ] @graphics show visual feedback that some money is going to the crown
 - [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
 
 - [ ] @gameplay crown rate may need to be lower
-- [ ] @sounds Voice for announcements is mandatory
+- [x] @sounds Voice for announcements is mandatory
         - instead of announcing names (that is impossible), we can annoucne the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
-- [ ] @gameplay it seems that it is too easy to only press 4 times B to do a long term KO:
-  > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level).
-  > FOR NOW, it seems that press 4 times is OK.
+
+- [ ] @general reduce the distance of the sensor that detect walls/character for the lance
 - [ ] @gameplay pay 5-15% of money to revive quicker:
   > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
   > to die from the super/burning lance would remove more money.
@@ -38,6 +52,10 @@
 
 
 ## Maybe:
+- [ ] @general make any gameobject able to follow a path
+- [ ] @gameplay it seems that it is too easy to only press 4 times B to do a long term KO:
+  > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level).
+  > FOR NOW, it seems that press 4 times is OK.
 - [ ]  @gameplay to slap someone treats one mark,
   > does not seem a good idea, but we do need something to get rid of the fatigue marks.
   > maybe an object could give temporarily the above effect to a player.

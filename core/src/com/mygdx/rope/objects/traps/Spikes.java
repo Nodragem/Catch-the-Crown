@@ -28,7 +28,7 @@ public class Spikes extends GameObject implements Triggerable {
         // would use the GameObject constructor to give the Fixture, the filter and the animation definition to GameObject.
         // Further more, the Factory could also set up the Body Type and give an animation of switching off or on.
         // The only thing missing to GameObject is float "damage", which if it is > 0 is called and removed from the other object --> We tried to do something
-        super(game, position, dimension, rotation * MathUtils.degRad, name_texture);
+        super(game, position, dimension, rotation , name_texture);
         Gdx.app.debug("Spikes", "Rotation parameter: " + rotation + "; mainBoxContact: " + mainBoxContact);
         this.defaultON = defaultON;
         this.intervalOFF = intervalOFF;

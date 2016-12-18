@@ -160,11 +160,21 @@ public class AttackManager extends GameObject implements Launcher {
         }
         if (!isPressed) {
             if (powerLoad > defaultPower) {
-                if(mainBoxContact.isTouched() && attackState != CHARGE_READY){ // cancel the attack if is touched
-                    powerLoad = defaultPower;
-                    playSound("switch_on");
 
-                } else {
+                if(mainBoxContact.isTouched() && attackState != CHARGE_READY){ // cancel the attack if is touched
+                    Fixture fixtA = mainBoxContact.peekTouchedFixtures();
+                    ContactData infoA = (ContactData) fixtA.getUserData();
+                    if (infoA != null && infoA.getMyColliderType() == Constants.COLLIDER_TYPE.ONEWAY){
+                        goToAttackState(LONGATTACK);
+                        deliverProjectile();
+                        powerLoad = defaultPower;
+                    }else {
+                        powerLoad = defaultPower;
+                        playSound("switch_on");
+                    }
+
+                }
+                else {
                     goToAttackState(LONGATTACK);
                     deliverProjectile();
                     powerLoad = defaultPower;

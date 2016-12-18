@@ -39,7 +39,7 @@ public class Constants {
     public static enum TRAPSTATE {ON, OFF, OBSTRUCTED, RELOADING}
     public static enum SWITCHSTATE {ON, OFF, ACTIVATED}
     public static enum VIEW_DIRECTION { LEFT, RIGHT, UP, DOWN}
-    public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP}
+    public static enum PLATFORM_STATE {MOVING, STOPPED, LEAVING_STOP, GOING_TO_STOP, FINAL_STOP}
     public static enum ACTIVE_STATE { ACTIVATION, ACTIVATED, DESACTIVATION, DESACTIVATED }
     public static enum DAMAGE_STATE { IMMUNE,  NOT_IMMUNE}
     public static enum DAMAGE_TYPE {BURNING_LANCE, LANCE, SLAP, CRUSHING, NONE, TRAP}
@@ -55,26 +55,27 @@ public class Constants {
         static {
             CATEGORY.put("Player",(short)0x0001);
             CATEGORY.put("Sensor",(short)0x0002);
-            CATEGORY.put("Object",(short)0x0004);
-            CATEGORY.put("Weapon",(short)0x0008);
-            CATEGORY.put("Collectable",(short)0x0010);
-            CATEGORY.put("AttachedObject",(short)0x0020);
-            CATEGORY.put("Scenery", (short) 0x0040);
+            CATEGORY.put("Object",(short)0x0004);//
+            CATEGORY.put("Weapon",(short)0x0008);//
+            CATEGORY.put("Collectable",(short)0x0010);//
+            CATEGORY.put("Oneway",(short)0x0020);//
+            CATEGORY.put("Scenery", (short) 0x0040);//
         }
 
     public static final ArrayMap<String, Short> MASK = new ArrayMap<String, Short>();
     static {
-        MASK.put("Player", (short) (CATEGORY.get("Weapon") | CATEGORY.get("Sensor") | CATEGORY.get("Collectable") | CATEGORY.get("Scenery") | CATEGORY.get("AttachedObject") ) );
+        MASK.put("Player", (short) (CATEGORY.get("Oneway") | CATEGORY.get("Weapon") | CATEGORY.get("Sensor") | CATEGORY.get("Collectable") | CATEGORY.get("Scenery") | CATEGORY.get("Oneway") ) );
         //MASK.put("Sensor", (short)(CATEGORY.get("Player") | CATEGORY.get("Scenery")) );
-        MASK.put("Sensor", (short) (CATEGORY.get("Player" )|CATEGORY.get("Scenery")));
+        MASK.put("Sensor", (short) (CATEGORY.get("Player" )|CATEGORY.get("Scenery")|CATEGORY.get("Oneway")));
         MASK.put("Object",(short)(CATEGORY.get("Sensor") | CATEGORY.get("Object") | CATEGORY.get("Scenery") ) );
         //MASK.put("Weapon",  (short) ~( CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );
-        MASK.put("Weapon",  (short) ~( CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );
+//        MASK.put("Weapon",  (short) ~(CATEGORY.get("Oneway") & CATEGORY.get("Object") & CATEGORY.get("Weapon") & CATEGORY.get("Sensor")) );
+        MASK.put("Weapon",  (short) (CATEGORY.get("Player" )|CATEGORY.get("Scenery") |CATEGORY.get("Sensor") ) );
         //MASK.put("Weapon",  (short) (CATEGORY.get("Player") | CATEGORY.get("Scenery")) );
         //MASK.put("Weapon",  (short) 0 );
         MASK.put("Collectable", CATEGORY.get("Player"));
-        MASK.put("AttachedObject",(short)(CATEGORY.get("Player") | CATEGORY.get("Sensor")) );
-        MASK.put("Scenery", (short) ~CATEGORY.get("Scenery") );
+        MASK.put("Scenery", (short) (~CATEGORY.get("Scenery")) );
+        MASK.put("Oneway", (short) (CATEGORY.get("Player" ) | CATEGORY.get("Sensor")  ));
         MASK.put("Ghost", (short) 0 );
     }
 }

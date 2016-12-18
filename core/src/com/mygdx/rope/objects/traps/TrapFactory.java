@@ -131,7 +131,8 @@ public class TrapFactory {
                     Gdx.app.debug("FactoryTrap", "RotationTiled Float: "+ rectangleObj.getProperties().get("rotation", Float.class)+"; myRotation "+rotation );
 
                     correctionPos = new Vector2(0+ MathUtils.cosDeg(-rotation-90),1+ MathUtils.sinDeg(-rotation-90));
-                    newInteractiveObject = new Spikes(gameScreen, rectangle.getPosition(new Vector2()).add(correctionPos), rectangle.getSize(new Vector2()) , -rotation, "spikes", intervalON, intervalOFF, defaultON);
+                    newInteractiveObject = new Spikes(gameScreen, rectangle.getPosition(new Vector2()).add(correctionPos),
+                            rectangle.getSize(new Vector2()) , -rotation, "spikes", intervalON, intervalOFF, defaultON);
                     break;
                 case LAUNCHER:
                     rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class);
@@ -167,12 +168,13 @@ public class TrapFactory {
                     float waitingTime = Float.parseFloat(rectangleObj.getProperties().get("waitingTime", "0", String.class));
                     MapObject path = mapLayer.getObjects().get(pathID);
                     defaultON = Boolean.valueOf(rectangleObj.getProperties().get("defaultON", "true", String.class));
+                    boolean looping = Boolean.valueOf(rectangleObj.getProperties().get("Looping", "true", String.class));
                     boolean alwaysVisible = Boolean.valueOf(rectangleObj.getProperties().get("alwaysVisible", "true", String.class));
 //                    String color_texture = rectangleObj.getProperties().get("texture", "wood", String.class);
                     newInteractiveObject = new MovingPlatform(gameScreen,
                             rectangle.getPosition(new Vector2()).add(correctionPos),
                             rectangle.getSize(new Vector2()),-rotation, path, rotationSpeed, waitingTime,
-                            defaultON, alwaysVisible, objectDataID);
+                            defaultON, looping, alwaysVisible, objectDataID);
                     break;
             }
             currentHub = listHubs.get(HubOutID);

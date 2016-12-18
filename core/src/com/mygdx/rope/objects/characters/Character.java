@@ -116,7 +116,7 @@ public class Character extends GameObject implements  Carriable {
 
         filter = new Filter();
         filter.categoryBits = CATEGORY.get("Sensor");
-        filter.maskBits = (short)( CATEGORY.get("Scenery") | CATEGORY.get("AttachedObject") );
+        filter.maskBits = (short)( CATEGORY.get("Scenery") | CATEGORY.get("Oneway") );
         this.myFeet.getMyFixture().setFilterData(filter);
     }
 
