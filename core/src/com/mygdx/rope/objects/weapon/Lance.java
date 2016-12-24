@@ -17,12 +17,14 @@ import com.mygdx.rope.screens.GameScreenTournament;
 import com.mygdx.rope.util.Constants;
 import com.mygdx.rope.util.ContactData;
 
+import static com.mygdx.rope.util.Constants.LANCE_STATE.*;
 import static java.lang.Math.abs;
 
 /**
  * Created by Nodragem on 05/05/2014.
  */
 public class Lance extends GameObject {
+    private Constants.LANCE_STATE lanceState;
     private ContactData collisionStick;
     private Vector2 anchorPoint;
 //    private WeldJoint myAnchor;
@@ -33,7 +35,6 @@ public class Lance extends GameObject {
     private float defaultDamage;
     private GameObject parentObject;
     public Launcher user; // as for projectile
-    private boolean isBurning;
     private Sound burningSound;
 
 
@@ -55,6 +56,7 @@ public class Lance extends GameObject {
         // the givenDamage (from GameObject) is defaultDamage times a multiplicator
         defaultDamage = 34.0f;
         damageType = Constants.DAMAGE_TYPE.LANCE;
+        lanceState = GHOST;
 
 
     }
@@ -95,9 +97,9 @@ public class Lance extends GameObject {
     public boolean update(float deltaTime) {
         isToDetroy = super.update(deltaTime);
 
-        if(isBurning & isOutSide(2)){
+        if(lanceState == BURNING_THROWN & isOutSide(2)){
             setAnimation("Moving");
-            isBurning = false;
+            goToGhostState();
             body.setLinearVelocity(0,0);
             burningSound.stop();
         }
@@ -128,13 +130,11 @@ public class Lance extends GameObject {
     public void goToPlatformState() {
         playSound("lance_hit");
         givenDamage = 0;
-        if(isBurning){
+        if(lanceState==BURNING_THROWN){
             setAnimation("Moving");
-            isBurning = false;
             burningSound.stop();
         }
-
-
+        lanceState = ATTACHED;
         Body touchedBody = mainBoxContact.popTouchedFixtures().getBody();
 
         if (touchedBody != null) {
@@ -180,6 +180,7 @@ public class Lance extends GameObject {
     }
 
     public void goToGhostState() {
+        lanceState = GHOST;
         handleFilter.categoryBits = Constants.CATEGORY.get("Object");
         handleFilter.maskBits = 0; // sense nobody?
         this.body.getFixtureList().get(0).setFilterData(handleFilter);
@@ -193,8 +194,9 @@ public class Lance extends GameObject {
     @Override
     public Array<GameObject> onCollision(boolean dealDamage) {
         Array<GameObject> touchedObjects = super.onCollision(true);
+
         for (GameObject touchedObject:touchedObjects) {
-            if(touchedObject.getLife()<0)
+            if(touchedObject.getLife()<0 & (lanceState==THROWN | lanceState == BURNING_THROWN))
                 notifyKill(touchedObject);
         }
         return touchedObjects;
@@ -212,12 +214,12 @@ public class Lance extends GameObject {
         clearChildren();
         givenDamage = damageMultiplicator*defaultDamage;
         if (damageMultiplicator == 3.0f) {
-            isBurning = true;
+            lanceState = BURNING_THROWN;
             damageType = Constants.DAMAGE_TYPE.BURNING_LANCE;
             burningSound.loop();
         }
         else {
-            isBurning = false;
+            lanceState = THROWN;
         }
         goToWeaponState();
 
@@ -225,7 +227,7 @@ public class Lance extends GameObject {
         body.setLinearVelocity(0, 0);
         body.setAngularVelocity(0);
         body.setTransform(startPos, angle);
-        if (isBurning){ // goToWeaponState should have made it a kinematic body
+        if (lanceState == BURNING_THROWN){ // goToWeaponState should have made it a kinematic body
             // we want burning lance to go straight
             body.setLinearVelocity(new Vector2(MathUtils.cos(angle), MathUtils.sin(angle))
                     .scl(force));
@@ -243,7 +245,7 @@ public class Lance extends GameObject {
         collisionStick.setMyColliderType(Constants.COLLIDER_TYPE.SENSOR);
         mainBoxContact.deepFlush();
         collisionStick.deepFlush();
-        if (isBurning) {
+        if (lanceState == BURNING_THROWN) {
             setAnimation("Burning");
             body.setType(BodyDef.BodyType.KinematicBody);
         }

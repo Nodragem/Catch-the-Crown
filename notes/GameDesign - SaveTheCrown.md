@@ -8,28 +8,38 @@
   - [x] use/make ObjectType in Tiled map editor
 
 
-
-- [ ] @bug repeat laugh sometimes after death, never stop until respawn
-- [ ] @bug the announcer voice stops to speak
+- [ ] @improvement do the kill and death notification chain between objects
+  > when a lance kill someone it needs to notify its user, the killer will record one kill and laugh
+  > furthermore the killed person needs to record its killer and death, for the stat
+- [x] @bug repeat laugh sometimes after death, never stop until respawn
+  > this happens then the corpse is still moving after death, it stops whenever the corpse stops to move, or respawn
+  > in fact it was happening each time a corpse was passing through a lance. So if the corpse was blocked on a lance, that was creating the bug.
+- [+] @bug the announcer voice stops to speak
   > it seems that the announcer voice is stopped by external events
-
-- [x] @bug we could not pass through Lances picked into the ground (provock people to get stucked)
-- [ ] @sound reduce sound FX and increase music (we don' t hear it well in the mass of events)
-- [x] @bug @gameplay we need the lances to pass through oneway platforms
+  > its seems that it does not happen anymore... ? i don't understand
 - [ ] @bug we cannot jump just after we passed through a oneway platform
   > it seems to happen only when the movestate passes from RISING to IDLE
+  > seems to be TOO rarely reproducible to be unbugged...
+  > that behaviour comes from the line of codes:
+  > if (character.moveState == Constants.MOVE_STATE.GROUNDED | character.moveState == MOVE_STATE.IDLE) { // here we want the state.
+  >              if(character.previousMoveState == Constants.MOVE_STATE.RISING)
+  >                  return;
+  > We probably used this to avoid an undesirable behavior... probably, we wanted to avoid continuous jump throught several attached lances. 
 - [ ] @bug launcher does not always get deactivated when hit by a lance
+- [ ] @bug sometimes the sensor of the lance thinks there is an obstacle, forever.
 - [ ] @bug fireball explodes randomly when there is spikes
 - [ ] @gameplay @bug we need to be able to deactivate launcher-related sensor (invisible switch) with an other switch
-
 - [ ] @graphics show visual feedback that some money is going to the crown
 - [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
-
+- [ ] @general reduce the distance of the sensor that detect walls/character for the lance
 - [ ] @gameplay crown rate may need to be lower
+
+- [ ] @sound reduce sound FX and increase music (we don' t hear it well in the mass of events)
+- [x] @bug we could not pass through Lances picked into the ground (provock people to get stucked)
+- [x] @bug @gameplay we need the lances to pass through oneway platforms
 - [x] @sounds Voice for announcements is mandatory
         - instead of announcing names (that is impossible), we can annoucne the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
 
-- [ ] @general reduce the distance of the sensor that detect walls/character for the lance
 - [ ] @gameplay pay 5-15% of money to revive quicker:
   > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
   > to die from the super/burning lance would remove more money.
