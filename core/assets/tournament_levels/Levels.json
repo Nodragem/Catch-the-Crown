@@ -1,6 +1,6 @@
 {
-  "levels": ["level_jungle01d", "test_platform", "level_jungle02"],
-  "unblocked": [true, true, true],
-  "selected": [false, false, true],
+  "levels": ["level_jungle01d", "test_platform", "level_jungle02","level_jungle03","level_jungle04"],
+  "unblocked": [true, false, true, true, true],
+  "selected": [false, false, true, false, false],
   "random": true
 }
