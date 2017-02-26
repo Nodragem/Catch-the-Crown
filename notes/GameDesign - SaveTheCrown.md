@@ -1,44 +1,46 @@
-# TO-DO LIST:
+# TO-DO LIST
 
-## Next Actions:
+## Next Actions For release
 
 - [ ] @level make level 2
   - [x] homogeneize the origin system (lance and platform are working the same now)
   - [x] make platform data-driven
   - [x] use/make ObjectType in Tiled map editor
 
+- [ ] @ideally make a HTML5 version
+- [ ] @ideally make a .exe version
+  > see: https://github.com/libgdx/libgdx/wiki/Bundling-a-JRE
 
 - [ ] @improvement do the kill and death notification chain between objects
   > when a lance kill someone it needs to notify its user, the killer will record one kill and laugh
   > furthermore the killed person needs to record its killer and death, for the stat
-- [x] @bug repeat laugh sometimes after death, never stop until respawn
-  > this happens then the corpse is still moving after death, it stops whenever the corpse stops to move, or respawn
-  > in fact it was happening each time a corpse was passing through a lance. So if the corpse was blocked on a lance, that was creating the bug.
-- [+] @bug the announcer voice stops to speak
-  > it seems that the announcer voice is stopped by external events
-  > its seems that it does not happen anymore... ? i don't understand
-- [ ] @bug we cannot jump just after we passed through a oneway platform
-  > it seems to happen only when the movestate passes from RISING to IDLE
-  > seems to be TOO rarely reproducible to be unbugged...
-  > that behaviour comes from the line of codes:
-  > if (character.moveState == Constants.MOVE_STATE.GROUNDED | character.moveState == MOVE_STATE.IDLE) { // here we want the state.
-  >              if(character.previousMoveState == Constants.MOVE_STATE.RISING)
-  >                  return;
-  > We probably used this to avoid an undesirable behavior... probably, we wanted to avoid continuous jump throught several attached lances. 
-- [ ] @bug launcher does not always get deactivated when hit by a lance
-- [ ] @bug sometimes the sensor of the lance thinks there is an obstacle, forever.
-- [ ] @bug fireball explodes randomly when there is spikes
-- [ ] @gameplay @bug we need to be able to deactivate launcher-related sensor (invisible switch) with an other switch
+
 - [ ] @graphics show visual feedback that some money is going to the crown
-- [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
-- [ ] @general reduce the distance of the sensor that detect walls/character for the lance
-- [ ] @gameplay crown rate may need to be lower
+- [ ] @gameplay improve the introduction to the control
+  - [ ] if that is the first time you play, there should be a screen showing the controls
+  - [ ] maybe before the start of a map, a tips and trick screen can give advises
+- [ ] @screen add a screen "connect a controller" at the beginning if no controller detected
+
+- [ ] @menu improve menu
+  - [ ] @menu add level menu
+  - [ ] @menu add option menu
+  - [ ] @menu make a state machine system for the buttun in the menu
+  > to be able to progress to left-right-up-bottom direction between buttons
 
 - [ ] @sound reduce sound FX and increase music (we don' t hear it well in the mass of events)
-- [x] @bug we could not pass through Lances picked into the ground (provock people to get stucked)
-- [x] @bug @gameplay we need the lances to pass through oneway platforms
-- [x] @sounds Voice for announcements is mandatory
-        - instead of announcing names (that is impossible), we can annoucne the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
+
+
+## Next Actions after release
+- [ ] @general improve launcher and HUB:
+  - [ ] @bug launcher does not always get deactivated when hit by a lance
+  - [ ] @gameplay @bug we need to be able to deactivate launcher-related sensor (invisible switch) with an other switch
+  - [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
+
+- [ ] @bug sometimes the sensor of the lance thinks there is an obstacle, forever.
+- [ ] @bug fireball explodes randomly when there is spikes
+- [ ] @general make any gameobject able to follow a path
+- [ ] @general reduce the distance of the sensor that detect walls/character for the lance
+- [ ] @gameplay crown rate may need to be lower
 
 - [ ] @gameplay pay 5-15% of money to revive quicker:
   > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
@@ -46,10 +48,7 @@
 - [ ] @gameplay to die from the super/burning lance would remove 25% of money (50% if all marks).
   > EVEN BETTER: the dead player would be loosing money like 100 per second, given to the killer.
   > make animation of money going from one to the other character
-- [ ] @menu level menu
-- [ ] @menu option menu
-- [ ] @menu make a state machine system for the buttun in the menu
-  > to be able to progress to left-right-up-bottom direction between buttons
+
 - [ ] @gameplay we need to have item to regenerate from fatigue:
     - to take the crown would regenerate fatigue?
 - [ ] @gameplay more you carry the crown more you get tired?
@@ -58,11 +57,16 @@
   - [ ] collect:
   - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
   - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
+
 - [ ] @bug we got the prabbit with panicking animation while in normal state at some point, but can't replicate it easily
+- [?] @bug the announcer voice stops to speak
+  > it seems that the announcer voice is stopped by external events
+  > its seems that it does not happen anymore... ? i don't understand
 
 
-## Maybe:
-- [ ] @general make any gameobject able to follow a path
+## Maybe
+
+- [ ] @ux instead of announcing names (that is impossible), we can annoucne the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
 - [ ] @gameplay it seems that it is too easy to only press 4 times B to do a long term KO:
   > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level).
   > FOR NOW, it seems that press 4 times is OK.
@@ -226,7 +230,29 @@ Règle de partie perdue (recommence leniveau) :
 
 # Changelog
 
+
+
 ## up to 11/12/2016:
+
+- [x] @bug we could not pass through Lances picked into the ground (provock people to get stucked)
+- [x] @bug @gameplay we need the lances to pass through oneway platforms
+- [x] @sounds Voice for announcements is mandatory
+
+- [c] @cancelled @bug we cannot jump just after we passed through a oneway platform
+  > it seems to happen only when the movestate passes from RISING to IDLE
+  > seems to be TOO rarely reproducible to be unbugged...
+  > that behaviour comes from the line of codes:
+  > ```if (character.moveState == Constants.MOVE_STATE.GROUNDED | character.moveState == MOVE_STATE.IDLE) { // here we want the state.
+  >              if(character.previousMoveState == Constants.MOVE_STATE.RISING)
+  >                  return;
+  >```
+  > We probably used this to avoid an undesirable behavior... probably, we wanted to avoid continuous jump throught several attached lances.
+
+
+- [x] @bug repeat laugh sometimes after death, never stop until respawn
+  > this happens then the corpse is still moving after death, it stops whenever the corpse stops to move, or respawn
+  > in fact it was happening each time a corpse was passing through a lance. So if the corpse was blocked on a lance, that was creating the bug.
+
 - [x] @level @gameplay try to do one way (single ticket) platforms,
   - [x] we can make a platform oneway in the type_object file,
   - [x] improve the oneway detection:
@@ -239,8 +265,7 @@ Règle de partie perdue (recommence leniveau) :
   > For instance, when aiming downard, the last fixture became the aiming box for the platform,
   > so that, when we test whether the character can pass, the engine was testing the position of the aiming box instead of the position of the character
   - [x] make ability to pass through the platform if press downward.
-- [x] @level @general the physical size of platform should be independent from the texture size
-(the character does not touch the wood platforms)
+- [x] @level @general the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
 - [x] @bug when there is a draw, the second best has his columns going up. It should not.
 - [x] @bug when using the throwing power, people can get *out of the level* and they can't play anymore.
 
@@ -252,6 +277,7 @@ Règle de partie perdue (recommence leniveau) :
 - [x] @menu change button for going to next round to start
 
 ## 20/11/2016:
+
 - [ ] @bug controller don't work after fullscreen:
   > can't be solved
 - [x] bug with throwing object: need to setActivate(true) when throwing ^^ probably cause of an update of libGDX
@@ -260,6 +286,7 @@ Règle de partie perdue (recommence leniveau) :
 - [ ] lance goes to deactivation now when colliding with an other lance
 
 ## 15/10/2016:
+
 - [x] **[A]** @bug there are still bug when getting hurt/dead while carrying a character!!
 - [x] **[A]** Lance Burning Sound @general
 - [x] **[A]** make announcement texts (on GUI), with an anouncement sounds. @general
@@ -314,8 +341,8 @@ Règle de partie perdue (recommence leniveau) :
     > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
     > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
 
-    >   - When winning: simple aura, keeping the color of the prabbit
-    >   - When winning and special conditions: Golden Prabbits.
+    >   * When winning: simple aura, keeping the color of the prabbit
+    >   * When winning and special conditions: Golden Prabbits.
 
     - [x] the yellow skin should be only used for the Golden Prabbit
     - [x] add a layer in character class to add effects (here it will be a golden aura)
