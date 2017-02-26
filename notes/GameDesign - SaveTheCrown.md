@@ -2,14 +2,33 @@
 
 ## Next Actions For release
 
+- [ ] write a blogpost
 - [ ] @level make level 2
   - [x] homogeneize the origin system (lance and platform are working the same now)
   - [x] make platform data-driven
   - [x] use/make ObjectType in Tiled map editor
 
-- [ ] @ideally make a HTML5 version
-- [ ] @ideally make a .exe version
+- [c] @ideally make a HTML5 version
+- [x] @ideally make a .exe version
   > see: https://github.com/libgdx/libgdx/wiki/Bundling-a-JRE
+  >
+  > Ok, to build the desktop .jar, the artifact system of intelliJ does not work,
+  > We need to run 'gradlew desktop:dist' intelliJ command line (or the windows 10 command line)
+  > the build will then be foundable at desktop/build/libs/
+  > run the jar with:
+  >
+  > ```java -jar blabla.jar```
+  >
+  > then go to RopeGame folder and run **as an Administrator** :
+  >
+  > ```java -jar packr.jar config_xxxx.json```
+  >
+  > Notes:
+  > - you can also run the bat file 'packthemall.bat', it will run all the config files (remember to run as an administrator).
+  > - **WARNING**: the windows32 application needs to be built with the win32 JRE.
+  > - don' t work on the  zip file of the builds
+  > - get the builds for mac, linux and windows there:
+  > https://github.com/alexkasko/openjdk-unofficial-builds
 
 - [ ] @improvement do the kill and death notification chain between objects
   > when a lance kill someone it needs to notify its user, the killer will record one kill and laugh

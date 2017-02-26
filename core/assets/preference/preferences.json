@@ -5,14 +5,14 @@
 		{
           "name": "TheBitch",
           "color": "purple",
-          "input": "keyboard",
+          "input": "controller",
           "id_input": 1
 		},
       {
           "name": "TheRedWizard",
           "color": "red",
           "input": "controller",
-          "id_input": 1
+          "id_input": 2
       },
       {
           "name": "TheKingSlayer",

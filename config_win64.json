@@ -1,0 +1,11 @@
+{
+    "platform": "windows64",
+    "jdk": ".\\out\\openjdk-1.7.0-u80-unofficial-windows-amd64-image",
+    "executable": "catchthecrown",
+    "classpath": [
+        ".\\desktop\\build\\libs\\desktop-1.0.jar"
+    ],
+    "mainclass": "com.mygdx.rope.desktop.DesktopLauncher",
+    "minimizejre": "hard",
+    "output": ".\\out\\out_win64"
+}
