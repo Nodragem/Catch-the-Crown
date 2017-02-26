@@ -69,3 +69,4 @@ nb-configuration.xml
 .gradle
 build/
 raw-asset/GUI/buttons.ase
+*.kra~

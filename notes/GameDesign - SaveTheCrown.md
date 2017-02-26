@@ -2,6 +2,7 @@
 
 ## Next Actions:
 
+- [] change arraymap with objectmap?
 - [ ] @level make level 2
 
   - [x] homogeneize the origin system (lance and platform are working the same now)
@@ -38,6 +39,7 @@
 - [ ] @bug fireball explodes randomly when there is spikes
 
 - [ ] @gameplay @bug we need to be able to deactivate launcher-related sensor (invisible switch) with an other switch
+
 - [ ] @graphics show visual feedback that some money is going to the crown
 - [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
 - [ ] @general reduce the distance of the sensor that detect walls/character for the lance
@@ -108,6 +110,7 @@
 - [ ] @bug when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
 
 - [ ] @bug Lance are bouncing on wall sometimes? (it is a bullet, no solution found),
+
 - [ ] @general keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
 - [ ] @general make background for the level,
 - [ ] @general use the launcher class in the AttackManager??
@@ -131,6 +134,7 @@
 - [ ] @gameplay [C] Usable/throwable object system (use the LanceManager, make it an ItemManager)
 
 - [ ] @gameplay [C] Modifier Object system (transient/constant?)
+
 - [ ] @gameplay [C] lance locking system ?
 
   > useful for puzzles where we need to keep our lance on a switch
@@ -297,6 +301,7 @@ Règle de partie perdue (recommence leniveau) :
 - [x] @sound change the sound of switches/traps activation to a little music (three notes)
 
 - [x] @sound remove the 'tich' when character changes direction, put it for when the character get to the ground instead
+
 - [x] @menu change button for going to next round to start
 
 ## 20/11/2016:
@@ -310,6 +315,7 @@ Règle de partie perdue (recommence leniveau) :
 - [x] bug stackoverflow: when two lance collide and then we use on of the lance, we got a stackoverflow because they are both children of each other and start making recursive call to goToActivation.
 
 - [x] improvement: remove the children from the current parent when we used setParent(null)
+
 - [ ] lance goes to deactivation now when colliding with an other lance
 
 ## 15/10/2016:
@@ -417,6 +423,7 @@ Règle de partie perdue (recommence leniveau) :
 - [x] improve animation of the throwing, using interpolation :D
 
 - [x] improve the lance sensor, so that the minimum distance where we can throw a lance while facing an object make the lance attach to that object (was passing through before)
+
 - [x] Decrease the thickness of the lance pick to allow it to pass in narrow paths
 - [x] **[A]** deactivate lances when the platform supporting them disappears.
 
