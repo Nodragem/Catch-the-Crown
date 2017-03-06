@@ -33,15 +33,18 @@ public class LevelSelectionWindow extends DefaultWindow {
         levelSelected = new BooleanArray(levelInfo.get("selected").asBooleanArray());
         isRandom = levelInfo.get("random").asBoolean();
         setListActions(listLevels);
+        addActionToList("--");
         addActionToList("-- Random Order --");
         addActionToList("-- Start Tournament --");
         addActionToList("- Back to Menu -");
         for (int i = 0; i < levelSelected.size; i++) {
             toggled.set(i, levelSelected.get(i));
         }
-        toggled.set(levelSelected.size, isRandom);
+        toggled.set(levelSelected.size + 1, isRandom);
         //this.messageText = "\"Let's have \n a break ...\"";
         this.titleText = "LEVEL SELECTION: ";
+        updateWinSize();
+        centerXPositions();
 
         //this.timer = 0;
     }
@@ -50,9 +53,9 @@ public class LevelSelectionWindow extends DefaultWindow {
         Gdx.app.debug("LevelSelectionWindow", "action "+selectedAction + ", nb. of level: "+listLevels.size);
         if (selectedAction < listLevels.size)
             toggleAction(selectedAction);
-        else if(selectedAction == listLevels.size)
+        else if(selectedAction == listLevels.size + 1)
             toggleAction(selectedAction);
-        else if(selectedAction == listLevels.size + 1) {
+        else if(selectedAction == listLevels.size + 2) {
             for (int i = 0; i < listLevels.size; i++) {
                 levelSelected.set(i, toggled.get(i));
             }
@@ -60,7 +63,7 @@ public class LevelSelectionWindow extends DefaultWindow {
             menuScreen.updateLevelSelectionForTournament(levelSelected, isRandom);
             menuScreen.startTournament();
         }
-        else if(selectedAction == listLevels.size + 2){
+        else if(selectedAction == listLevels.size + 3){
             requestClosing();
         }
 

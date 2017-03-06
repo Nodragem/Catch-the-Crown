@@ -38,9 +38,9 @@ public class ScoreTableWindow extends DefaultWindow {
 
     public ScoreTableWindow(GameScreenTournament gameScreen, Viewport viewport, BitmapFont font) {
         super(gameScreen.getBatch(), viewport, font, new String[] {"Stop Tournament","Start new Round"});
-        Yspread = 0;
-        Xspread = 1;
+        setXYspread(1, 0, false);
         Xspacing = 200f;
+        updateXPositions();
         updateYPositions();
         setWinSize(new Vector2(viewport.getWorldWidth() - 300, viewport.getWorldHeight() - 200));
         centerWindow();
@@ -49,14 +49,18 @@ public class ScoreTableWindow extends DefaultWindow {
         this.titleText = "Score Table";
         setSelectButton("Start");
         messageText = "Press [Start] to select.";
+        gLayout.setText(font, messageText);
+        posMessage.set(winCenter.x - gLayout.width/2.0f, winTopLeft.y - winSize.y - 40);
 
-        titleYOffset = 110;
+        titleYOffset = -10;
         colorTitle = "[RED]";
-        ymargin = -600;
+        ymargin = 750;
         columnDistance = (1f / 2f) * (winSize.x - 2 * 110f); // default value
         winnerIndex = -1;
         timer = 0;
+        xmargin = 0;
         players = new ArrayMap<String, Player>(0);
+        isYAxisSelection = false;
 
 
     }
@@ -68,6 +72,7 @@ public class ScoreTableWindow extends DefaultWindow {
         else
             listActions.set(1, "Next Round");
         timer = 0;
+        updateXPositions();
         initWinLoseAnimation(scoreTable);
         columnStepY = (400.0f / gameScreen.getVictoryThreshold());
         scoreText = new Array<String>(4);
@@ -118,8 +123,8 @@ public class ScoreTableWindow extends DefaultWindow {
     public void render(float delta) {
         timer += delta;
         super.render(delta);
-        font.draw(batch, resultAnnouncement, winTopLeft.x, winTopLeft.y - 110); // 110 if the border size
-        posMessage.set(winCenter.x - gLayout.width/2.0f, winTopLeft.y - winSize.y - 40);
+        font.draw(batch, resultAnnouncement, winTopLeft.x, winTopLeft.y -110); // 110 is the border size
+
         font.getData().markupEnabled = true;
         TextureRegion region = null;
         for (int i = 0; i < players.size; i++) {

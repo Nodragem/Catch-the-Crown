@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BooleanArray;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.rope.objects.GameObject;
 import com.mygdx.rope.util.Constants;
@@ -20,6 +22,8 @@ import com.mygdx.rope.util.InputHandler.InputProfile;
 public class DefaultWindow implements Window {
     public final GlyphLayout gLayout = new GlyphLayout();
     protected final SpriteBatch batch;
+    private float maxTextWidth;
+    private float textWidth;
     public Array<DefaultWindow> children;
     protected SpriteDrawable cursor;
     BooleanArray toggled;
@@ -44,11 +48,12 @@ public class DefaultWindow implements Window {
     protected float xmargin;
     protected String colorTitle;
     protected String colorSelected;
-    protected float Xspread; // 0 or 1
-    protected float Yspread;
+    private float Xspread; // 0 or 1
+    private float Yspread;
     protected float Xspacing;
     private float Yspacing;
     private Array<Float> cumulatedTextWidth;
+    private Array<Float> cumulatedTextHeight;
     private Vector2 currentMovingVector;
     private float selectionCoolDown;
     protected InputProfile inputProfile;
@@ -59,8 +64,11 @@ public class DefaultWindow implements Window {
     private String selectButton;
     public String messageText;
     public Vector2 posMessage;
+    private float cursor_offset;
+    protected boolean isYAxisSelection;
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font) {
+        isYAxisSelection = true;
         this.batch = batch;
         gameScreen = null;
         inputProfile = null;
@@ -72,12 +80,20 @@ public class DefaultWindow implements Window {
         messageText = "";
         posMessage = new Vector2(0, 0);
 
+        Array <String> temp = new Array<String>(1);
+        temp.add("Exit");
+        setListActions(temp);
+        this.selectedAction = 0;
+        gLayout.setText(font, listActions.get(0));
+        this.textHeight = gLayout.height;
+        this.textWidth = gLayout.width;
+
         this.titleText = "WindowTitle";
         colorTitle = "[#9E5D41]";
         colorSelected = "[#EE6655]";
         colorToggled = "[#EEEE55]";
         closingRequested = false;
-        titleYOffset = 0;
+        titleYOffset = 85;
         Xspread = 0;
         Yspread = 1;
         Xspacing = 10f;
@@ -94,26 +110,29 @@ public class DefaultWindow implements Window {
         columnNinePatch.scale(4.0f, 4.0f);
         winSize = new Vector2(viewport.getWorldWidth() / 2.5f, viewport.getWorldHeight() / 2.7f);
         winPos = new Vector2((viewport.getWorldWidth() - winSize.x) / 2f, (viewport.getWorldHeight() - winSize.y) / 2f);
-        winTopLeft = new Vector2(winPos.x+110, winPos.y + winSize.y);
+        winTopLeft = new Vector2(winPos.x, winPos.y + winSize.y);
         winCenter = new Vector2(winPos.x+ winSize.x/2.0f, winPos.y + winSize.y/2.0f);
         winTexture = GameObject.atlas.createPatch("paper_lance");
         winTexture.scale(4.0f, 4.0f);
-        xmargin = 30;
-        ymargin = 0;
-        Array <String> temp = new Array<String>(1);
-        temp.add("Exit");
-        setListActions(temp);
-        this.selectedAction = 0;
-        gLayout.setText(font, listActions.get(0));
+        xmargin = 110+30.5f;
+        ymargin = titleYOffset + 60;
+        cursor_offset = -5;
+        // by default there is only the action 'Exit'
         cumulatedTextWidth = new Array<Float>(2);
         cumulatedTextWidth.add(0f);
-        this.textHeight = gLayout.height;
+        cumulatedTextHeight = new Array<Float>(2);
+        cumulatedTextHeight.add(0f);
+        maxTextWidth = textWidth;
+
+
+
     }
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font, String[] listActions){
         this(batch, viewport, font);
         setListActions(new Array<String>(listActions) );
         updateYPositions();
+        updateXPositions();
     }
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font, Vector2 winSize){
@@ -134,17 +153,61 @@ public class DefaultWindow implements Window {
         toggled.set(index, !toggled.get(index));
     }
 
-    public void updateYPositions(){ // to call when using YSpread of the text, after any change of the text,
+    public void setXYspread(float xspread, float yspread, boolean updatePosition) {
+        Xspread = xspread;
+        Yspread = yspread;
+        if(updatePosition) {
+            updateXPositions();
+            updateYPositions();
+            updateWinSize();
+        }
+    }
+
+
+
+    public void updateXPositions(){ // to call when using XSpread of the text, after any change of the text,
+        // this will cancel centerXPosition
         float cumulated = 0;
+        maxTextWidth = 0;
         cumulatedTextWidth = new Array<Float>(listActions.size);
         for (String listAction : listActions) {
             cumulatedTextWidth.add(cumulated);
             gLayout.setText(font, listAction);
-            cumulated += (gLayout.width + Xspacing);
+            cumulated += (gLayout.width + Xspacing)*Xspread;
+            if (maxTextWidth < gLayout.width) maxTextWidth = gLayout.width;
         }
-        gLayout.setText(font, "");
-        Gdx.app.debug("Cumul", ""+listActions);
-        Gdx.app.debug("Cumul", ""+cumulatedTextWidth);
+        gLayout.setText(font, listActions.get(0));
+    }
+
+    public void centerXPositions(){ // make the text centred, call updateXPositions() to cancel
+        for (int i = 0; i < listActions.size ; i++) {
+            gLayout.setText(font, listActions.get(i));
+            cumulatedTextWidth.set(i, cumulatedTextWidth.get(i) - gLayout.width/2 + maxTextWidth/2 );
+        }
+        gLayout.setText(font, listActions.get(0));
+    }
+
+    public void updateYPositions(){ // to call when using YSpread of the text, after any change of the text,
+        float cumulated = 0;
+        cumulatedTextHeight = new Array<Float>(listActions.size);
+        for (String listAction : listActions) {
+            cumulatedTextHeight.add(cumulated);
+            gLayout.setText(font, listAction);
+            cumulated += (gLayout.height + Yspacing)*Yspread;
+        }
+        //cumulatedTextHeight.reverse(); // remember the y axis is reversed
+        gLayout.setText(font, listActions.get(0));
+    }
+
+    public void updateWinSize(){ // to call when using changing Yspread or Xspread,
+        // minimum one column, then add one column by action if we want to spread on X axis
+        winSize.x = ((listActions.size - 1) * Xspread + 1) * (maxTextWidth + Xspacing) + 2*xmargin;
+        gLayout.setText(font, titleText);
+        float titleHeight = gLayout.height;
+        winSize.y = ((listActions.size - 1) * Yspread + 1) * (textHeight + Yspacing) + 2.1f*ymargin - titleYOffset + titleHeight;
+        gLayout.setText(font, listActions.get(0));
+        winTopLeft = new Vector2(winPos.x, winPos.y + winSize.y);
+        winCenter = new Vector2(winPos.x+ winSize.x/2.0f, winPos.y + winSize.y/2.0f);
     }
 
     public void centerWindow(){
@@ -156,12 +219,14 @@ public class DefaultWindow implements Window {
     public void setListActions(Array<String> listActions) {
         this.listActions = new Array<String>(listActions);
         updateYPositions();
+        updateXPositions();
         resizeToogleList();
     }
 
     public void addActionToList(String string){
         this.listActions.add(string);
         updateYPositions();
+        updateXPositions();
         resizeToogleList();
     }
 
@@ -205,26 +270,21 @@ public class DefaultWindow implements Window {
         winTexture.draw(batch, winPos.x, winPos.y, winSize.x, winSize.y);
         font.getData().markupEnabled = true;
         gLayout.setText(font, colorTitle+titleText+"[]");
-        font.draw(batch, gLayout, winCenter.x - gLayout.width/2.0f, winTopLeft.y-100+titleYOffset ); // 110 if the border size
+        font.draw(batch, gLayout, winCenter.x - gLayout.width/2.0f, winTopLeft.y-titleYOffset ); // 110 if the border size
         for (int i = 0; i < listActions.size; i++) {
             if (i == selectedAction) {
                 gLayout.setText(font, colorSelected+listActions.get(i)+"[]");
-                font.draw(batch, gLayout,
-                        winTopLeft.x + 0.5f + xmargin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
-                cursor.draw(batch, winTopLeft.x - 5f - textHeight + xmargin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread) - textHeight, textHeight, textHeight);
+                cursor.draw(batch,
+                        winTopLeft.x + cursor_offset - textHeight + xmargin + cumulatedTextWidth.get(i) * Xspread,
+                        winTopLeft.y - ymargin - cumulatedTextHeight.get(i) - textHeight, textHeight, textHeight);
             } else if(toggled.get(i) == true){
                 gLayout.setText(font, colorToggled+listActions.get(i)+"[]");
-                font.draw(batch, gLayout,
-                        winTopLeft.x + 0.5f + xmargin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
             } else {
                 gLayout.setText(font, "[WHITE]"+listActions.get(i)+"[]");
-                font.draw(batch, gLayout,
-                        winTopLeft.x +  0.5f + xmargin + cumulatedTextWidth.get(i) * Xspread,
-                        winTopLeft.y -150 + ymargin - ((textHeight + Yspacing) * i * Yspread));
             }
+            font.draw(batch, gLayout,
+                    winTopLeft.x + xmargin + cumulatedTextWidth.get(i),
+                    winTopLeft.y - ymargin - cumulatedTextHeight.get(i) ); // y goes down
 
         }
         font.getData().markupEnabled = false;
@@ -325,12 +385,13 @@ public class DefaultWindow implements Window {
     }
 
     private void processWindowMovingInput() {
-        if (currentMovingVector.y > 0.5 && selectionCoolDown == 0) {
+        float direction = (isYAxisSelection) ? currentMovingVector.y : currentMovingVector.x;
+        if (direction > 0.5 && selectionCoolDown == 0) {
             selectionCoolDown = 1;
             this.selectNextAction();
             //gameScreen.setDebugText("UP");
         }
-        else if (currentMovingVector.y < -0.5 && selectionCoolDown == 0){
+        else if (direction < -0.5 && selectionCoolDown == 0){
             selectionCoolDown = 1;
             this.selectPreviousAction();
             //gameScreen.setDebugText("DOWN");

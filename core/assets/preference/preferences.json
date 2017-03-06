@@ -3,7 +3,7 @@
 	"sound_volume": 100,
 	"players": [
 		{
-          "name": "TheBitch",
+          "name": "TheHunter",
           "color": "purple",
           "input": "controller",
           "id_input": 1
@@ -21,7 +21,7 @@
           "id_input": 3
       },
       {
-          "name": "My Clone",
+          "name": "MyClone",
           "color": "green",
           "input": "controller",
           "id_input": 4

@@ -19,14 +19,14 @@
   >
   > ```java -jar blabla.jar```
   >
-  > then go to RopeGame folder and run **as an Administrator** :
+  > then go to Ropegame folder and run **as an Administrator** :
   >
   > ```java -jar packr.jar config_xxxx.json```
   >
   > Notes:
   > - you can also run the bat file 'packthemall.bat', it will run all the config files (remember to run as an administrator).
   > - **WARNING**: the windows32 application needs to be built with the win32 JRE.
-  > - don' t work on the  zip file of the builds
+  > - don't work on the  zip file of the builds
   > - get the builds for mac, linux and windows there:
   > https://github.com/alexkasko/openjdk-unofficial-builds
 

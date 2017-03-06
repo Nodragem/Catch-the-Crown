@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -25,7 +26,11 @@ public class MainMenuWindow extends DefaultWindow {
                 {"Quick Start", "Tournament Mode", "Adventure Mode", "Option","Control", "Quit"}));
         //this.messageText = "\"Let's have \n a break ...\"";
         this.titleText = "MENU";
-        //this.timer = 0;
+//        setWinSize(new Vector2(800, 500));
+        //updateWinSize();
+        setXYspread(0, 1, true);
+        centerXPositions();
+
     }
     @Override
     public boolean executeSelectedAction() {
