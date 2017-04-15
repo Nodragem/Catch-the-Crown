@@ -5,7 +5,7 @@
   <property name="Parent" type="int"/>
   <property name="Subtype" type="string"/>
   <property name="Triggerable" type="bool"/>
-  <property name="defaultON" type="bool"/>
+  <property name="isActiveByDefault" type="bool"/>
   <property name="intervalOFF" type="float"/>
   <property name="intervalON" type="float"/>
  </objecttype>
@@ -29,7 +29,7 @@
   <property name="Speed" type="float"/>
   <property name="Subtype" type="string"/>
   <property name="alwaysVisible" type="bool"/>
-  <property name="defaultON" type="bool"/>
+  <property name="isActiveByDefault" type="bool"/>
   <property name="rotationSpeed" type="float"/>
   <property name="waitingTime" type="float"/>
  </objecttype>

@@ -63,15 +63,18 @@
       "Category": "Sensor"
     },
     "stone_switch": {
-      "hold": true,
+      "hold": false,
       "texture_name": "stone",
       "animation_names": ["SwitchingON", "SwitchingOFF", "Activated"],
-      "animation_loops": ["LOOP", "LOOP", "LOOP"],
+      "animation_loops": ["LOOP", "LOOP", "NORMAL"],
       "animation_spf": [0.2, 0.2, 0.2],
       "body_scalex": 0.33,
       "body_scaley": 0.13 ,
       "body_offsetx": 0.5,
-      "body_offsety": 0.25,
+      "body_offsety": 0.40,
+      "texture_offsety": 0.2,
+      "dimensionx": 1.0,
+      "dimensiony": 0.5,
       "bodyType": "StaticBody",
       "sensor": true,
       "Mask": "Sensor",
@@ -129,6 +132,7 @@
 
     },
     "oneway_platform": {
+      "texture_name": "oneway",
       "animation_names": ["left", "rleft", "center", "rright", "right"],
       "animation_loops": ["LOOP", "LOOP", "LOOP", "LOOP", "LOOP"],
       "animation_spf": [0.2, 0.2, 0.2, 0.2, 0.2],
@@ -136,6 +140,7 @@
       "oneway": true,
       "body_offsetx": 0.0,
       "body_offsety": 0.0,
+      "body_scaley": 0.666,
       "Mask": "Oneway",
       "Category": "Oneway"
 

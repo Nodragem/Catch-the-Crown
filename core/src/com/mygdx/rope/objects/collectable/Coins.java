@@ -63,6 +63,7 @@ public class Coins extends GameObject implements Triggerable {
                 Gdx.app.debug("Coin Debug: ", "Coin Layer added to Hub: ");
             }
         }
+        reset();
 
         if (animOfCollectables == null){
             animOfCollectables = new ArrayMap<String, Animation>();

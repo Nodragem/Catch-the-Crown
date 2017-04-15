@@ -31,7 +31,19 @@ public class RopeGame extends Game {
 
 	@Override
 	public void create() { // TODO: I think here we will provide the lastly played set of levels, for the quick start option
-//		enableFullScreen();
+
+		FileHandle handle = Gdx.files.local("preferences.json");
+		if (!handle.exists())
+			handle = Gdx.files.internal("preference/preferences.json");
+		JsonReader jsonreader = new JsonReader();
+		JsonValue root = jsonreader.parse(handle);
+		JsonValue res_array = root.getChild("resolution");
+		int width = res_array.asInt();
+		res_array = res_array.next;
+		int height = res_array.asInt();
+		this.fullscreen = root.getBoolean("full_screen", true);
+		Gdx.graphics.setDisplayMode(width, height, this.fullscreen);
+
 		batch = new SpriteBatch();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		levels = new Array<String>(1);
@@ -44,7 +56,7 @@ public class RopeGame extends Game {
 
 
 	}
-	private void enableFullScreen() {
+	public void toggleFullScreen() {
 		if (fullscreen) {
 			Gdx.graphics.setDisplayMode(640, 320, false);
 			fullscreen = false;
@@ -67,6 +79,7 @@ public class RopeGame extends Game {
             isRandom = levelInfo.get("random").asBoolean();
         }
 		if (levelNames != null  && levelBlocked != null && levelBlocked.size == levelNames.length && levelNames.length == levelSelected.size){
+			levels.clear();
 			for (int i = 0; i < levelSelected.size; i++) {
 				if (levelSelected.get(i) && levelBlocked.get(i))
 					levels.add(levelPath+"/"+levelNames[i]+".tmx");
@@ -90,7 +103,7 @@ public class RopeGame extends Game {
 		setScreen(new GameScreenTournament(this));
 	}
 
-	private void createProfiles(){
+	public void createProfiles(){
 		JsonReader jsonreader = new JsonReader();
 		FileHandle handle = Gdx.files.local("preferences.json");
 		if (!handle.exists())

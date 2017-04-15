@@ -24,7 +24,7 @@ public class PauseWindow extends DefaultWindow {
     public PauseWindow(GameScreenTournament gameScreen, Viewport viewport, BitmapFont font) {
         super(gameScreen.getBatch(), viewport,font);
         setListActions(new Array(new String[]
-                    {"Resume Level", "Restart Level", "Option", "Back to Main Menu"}));
+                    {"Resume Level", "Restart Level", "Controls", "Back to Main Menu"}));
         this.gameScreen = gameScreen;
         this.messageText = "\"Let's have \n a break ...\"";
         this.titleText = "PAUSE";
@@ -50,8 +50,10 @@ public class PauseWindow extends DefaultWindow {
     public void render(float delta){
         super.render(delta);
         TextureRegion region = null;
-        posMessage.set(winCenter.x - gLayout.width/2.0f, winTopLeft.y + 90);
-        animePauser(batch, region);
+        if (children.size < 1) {
+            posMessage.set(winCenter.x - gLayout.width / 2.0f, winTopLeft.y + 90);
+            animePauser(batch, region);
+        }
 
     }
 
@@ -65,6 +67,7 @@ public class PauseWindow extends DefaultWindow {
                 gameScreen.startNewLevel(gameScreen.getCurrentLevel());
                 break;
             case 2:
+                addChild(new TutorialWindow(null, this.batch, this.viewport, this.font));
                 break;
             case 3:
                 gameScreen.toMainMenu();

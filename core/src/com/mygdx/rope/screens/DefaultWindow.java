@@ -55,7 +55,7 @@ public class DefaultWindow implements Window {
     private Array<Float> cumulatedTextWidth;
     private Array<Float> cumulatedTextHeight;
     private Vector2 currentMovingVector;
-    private float selectionCoolDown;
+    protected float selectionCoolDown;
     protected InputProfile inputProfile;
     protected GameScreenTournament gameScreen;
     protected boolean closingRequested;
@@ -287,12 +287,12 @@ public class DefaultWindow implements Window {
                     winTopLeft.y - ymargin - cumulatedTextHeight.get(i) ); // y goes down
 
         }
+        gLayout.setText(font, messageText);
+        font.draw(batch, gLayout, posMessage.x, posMessage.y); // 110 if the border size
         font.getData().markupEnabled = false;
         for (DefaultWindow child:children) {
             child.render(delta);
         }
-        gLayout.setText(font, messageText);
-        font.draw(batch, gLayout, posMessage.x, posMessage.y); // 110 if the border size
 
     }
 
@@ -336,7 +336,7 @@ public class DefaultWindow implements Window {
         selectionCoolDown = 1;
         this.previousWindow = previousWindow;
         this.inputProfile = inputProfile;
-        this.inputProfile.setContext("Menu");
+        if (this.inputProfile != null) this.inputProfile.setContext("Menu");
         this.closed = false;
     }
     @Override

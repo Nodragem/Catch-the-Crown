@@ -107,8 +107,16 @@ public class SimpleHub implements HubInterface, Updatable {
 
     @Override
     public void addTriggerable(Triggerable triggerable) {
-        triggerable.reset();
+        //triggerable.reset();
         triggerables.add(triggerable);
+    }
+
+    @Override
+    public void resetTriggerables(){
+        for (Triggerable triggerable:
+             triggerables) {
+            triggerable.reset();
+        }
     }
 
     @Override

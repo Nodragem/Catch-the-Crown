@@ -36,7 +36,9 @@ public class MainMenuWindow extends DefaultWindow {
     public boolean executeSelectedAction() {
         switch(selectedAction){
             case 0:
-                menuScreen.startTournament();
+                addChild(new TutorialWindow(this.menuScreen, this.batch, this.viewport, this.font));
+
+                //menuScreen.startTournament();
                 break;
             case 1:
                 addChild(new LevelSelectionWindow(this.menuScreen, this.batch, this.viewport, this.font));

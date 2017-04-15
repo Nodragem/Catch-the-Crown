@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" backgroundcolor="#55aaff" nextobjectid="71">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" backgroundcolor="#55aaff" nextobjectid="74">
  <properties>
   <property name="CrownSharing" value="0.0"/>
   <property name="GoldRespawn" value="OnTrigger"/>
@@ -348,6 +348,32 @@
   </object>
   <object id="70" name="1" type="Path" x="248" y="248">
    <polyline points="64,0 192,0"/>
+  </object>
+  <object id="71" name="Stone" type="Switch" x="480" y="544" width="32" height="32">
+   <properties>
+    <property name="Hub_out" value="HUB11"/>
+    <property name="Subtype" value="stone_switch"/>
+    <property name="weight" value="150"/>
+   </properties>
+  </object>
+  <object id="72" name="HUB11" type="Hub" x="448" y="576" width="32" height="32">
+   <properties>
+    <property name="ID" value="HUB11"/>
+    <property name="Threshold" value="0.95"/>
+   </properties>
+   <ellipse/>
+  </object>
+  <object id="73" name="FireLauncher" type="Launcher" x="480" y="576" width="32" height="32">
+   <properties>
+    <property name="Child" value="fire_ball"/>
+    <property name="Hub_in" value="HUB11"/>
+    <property name="Subtype" value="Launcher"/>
+    <property name="defaultON" value="false"/>
+    <property name="impulse" value="6"/>
+    <property name="intervalShoot" value="1000"/>
+    <property name="pool" value="4"/>
+    <property name="reloadTime" value="0"/>
+   </properties>
   </object>
  </objectgroup>
  <layer name="additional-preview" width="32" height="32" visible="0">

@@ -125,8 +125,13 @@ public class SimpleSwitcher extends GameObject  implements Integrable, Triggerab
 
     @Override
     public void reset() {
-        setActivate(isActiveByDefault);
+//        setActivate(isActiveByDefault);
+        if(isActiveByDefault)
+            goToActivation();
+        else
+            goToDesactivation();
     }
+
 
     @Override
     public boolean isActiveByDefault() {

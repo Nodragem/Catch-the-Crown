@@ -3,101 +3,88 @@
 ## Next Actions For release
 
 - [ ] write a blogpost
-- [ ] @level make level 2
-  - [x] homogeneize the origin system (lance and platform are working the same now)
-  - [x] make platform data-driven
-  - [x] use/make ObjectType in Tiled map editor
 
-- [c] @ideally make a HTML5 version
-- [x] @ideally make a .exe version
-  > see: https://github.com/libgdx/libgdx/wiki/Bundling-a-JRE
-  >
-  > Ok, to build the desktop .jar, the artifact system of intelliJ does not work,
-  > We need to run 'gradlew desktop:dist' intelliJ command line (or the windows 10 command line)
-  > the build will then be foundable at desktop/build/libs/
-  > run the jar with:
-  >
-  > ```java -jar blabla.jar```
-  >
-  > then go to Ropegame folder and run **as an Administrator** :
-  >
-  > ```java -jar packr.jar config_xxxx.json```
-  >
-  > Notes:
-  > - you can also run the bat file 'packthemall.bat', it will run all the config files (remember to run as an administrator).
-  > - **WARNING**: the windows32 application needs to be built with the win32 JRE.
-  > - don't work on the  zip file of the builds
-  > - get the builds for mac, linux and windows there:
-  > https://github.com/alexkasko/openjdk-unofficial-builds
+
+## Next Actions after release
 
 - [ ] @improvement do the kill and death notification chain between objects
-  > when a lance kill someone it needs to notify its user, the killer will record one kill and laugh
-  > furthermore the killed person needs to record its killer and death, for the stat
+
+  > when a lance kill someone it needs to notify its user, the killer will record one kill and laugh furthermore the killed person needs to record its killer and death, for the stat
 
 - [ ] @graphics show visual feedback that some money is going to the crown
-- [ ] @gameplay improve the introduction to the control
-  - [ ] if that is the first time you play, there should be a screen showing the controls
-  - [ ] maybe before the start of a map, a tips and trick screen can give advises
-- [ ] @screen add a screen "connect a controller" at the beginning if no controller detected
 
-- [ ] @menu improve menu
-  - [ ] @menu add level menu
-  - [ ] @menu add option menu
-  - [ ] @menu make a state machine system for the buttun in the menu
+
+- [ ] @menu make a state machine system for the button in the menu
+
   > to be able to progress to left-right-up-bottom direction between buttons
 
 - [ ] @sound reduce sound FX and increase music (we don' t hear it well in the mass of events)
 
-
-## Next Actions after release
 - [ ] @general improve launcher and HUB:
+
   - [ ] @bug launcher does not always get deactivated when hit by a lance
   - [ ] @gameplay @bug we need to be able to deactivate launcher-related sensor (invisible switch) with an other switch
-  - [ ] @level @general should we put the list of switch and weigth in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
+  - [ ] @level @general should we put the list of switch and weight in the HUB, instead of having one HUB in each switch. So that it is simpler for one switch to activate several things.
 
 - [ ] @bug sometimes the sensor of the lance thinks there is an obstacle, forever.
+
 - [ ] @bug fireball explodes randomly when there is spikes
-- [ ] @general make any gameobject able to follow a path
+
+- [ ] @general make any GameObject able to follow a path
+
 - [ ] @general reduce the distance of the sensor that detect walls/character for the lance
 - [ ] @gameplay crown rate may need to be lower
 
 - [ ] @gameplay pay 5-15% of money to revive quicker:
-  > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34)
-  > to die from the super/burning lance would remove more money.
+
+  > may be the player could pay money to come back earlier! (100 per 10s, the max being 1mn34) to die from the super/burning lance would remove more money.
+
 - [ ] @gameplay to die from the super/burning lance would remove 25% of money (50% if all marks).
-  > EVEN BETTER: the dead player would be loosing money like 100 per second, given to the killer.
-  > make animation of money going from one to the other character
+
+  > EVEN BETTER: the dead player would be loosing money like 100 per second, given to the killer. make animation of money going from one to the other character
 
 - [ ] @gameplay we need to have item to regenerate from fatigue:
-    - to take the crown would regenerate fatigue?
+
+  - to take the crown would regenerate fatigue?
+
 - [ ] @gameplay more you carry the crown more you get tired?
+
   - [ ] get tired if you're not collecting money while carrying the crown
   - [ ] a fully tired character could not carry the crown? (so that people need to abandon it at some point)
   - [ ] collect:
-  - a Ruby give you 1 second of invicibility + treat one mark + 1/4 life!
-  - a Diamond give you 5 second of invicibility + treat all marks + 1 life!
+  - a Ruby give you 1 second of invincibility + treat one mark + 1/4 life!
+  - a Diamond give you 5 second of invincibility + treat all marks + 1 life!
 
 - [ ] @bug we got the prabbit with panicking animation while in normal state at some point, but can't replicate it easily
-- [?] @bug the announcer voice stops to speak
-  > it seems that the announcer voice is stopped by external events
-  > its seems that it does not happen anymore... ? i don't understand
 
+- [?] @bug the announcer voice stops to speak
+
+  > it seems that the announcer voice is stopped by external events its seems that it does not happen anymore... ? i don't understand
 
 ## Maybe
 
-- [ ] @ux instead of announcing names (that is impossible), we can annoucne the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
+- [ ] @ux instead of announcing names (that is impossible), we can announce the color of the prabbit as in Move or Die: "Yellow wiiiiins!"
 - [ ] @gameplay it seems that it is too easy to only press 4 times B to do a long term KO:
-  > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level).
-  > FOR NOW, it seems that press 4 times is OK.
-- [ ]  @gameplay to slap someone treats one mark,
-  > does not seem a good idea, but we do need something to get rid of the fatigue marks.
-  > maybe an object could give temporarily the above effect to a player.
+
+  > In fact, in we need to do B to pick up, then A to jump, then B to throw, it may be better, and it would maybe solve the related bug (out of the level). FOR NOW, it seems that press 4 times is OK.
+
+- [ ] @gameplay to slap someone treats one mark,
+
+  > does not seem a good idea, but we do need something to get rid of the fatigue marks. maybe an object could give temporarily the above effect to a player.
+
 - [ ] @graphics could we add blood?
+
+- [c] @menu add option menu
+
 - [ ] @sound Small music:
+
   - [ ] Winning small music,
   - [ ] No winner small music,
+
 - [ ] @bug when the player jumps, the last throwed lance disappears
+
 - [ ] @bug when moving platform dissappear (are invisible) their position keeps growing, this might lead to an error when the PC reach the limit of float.
+
 - [ ] @bug Lance are bouncing on wall sometimes? (it is a bullet, no solution found),
 - [ ] @general keyboard control: pick-up and slap with right-click, respectively with and without the SHIFT pressed
 - [ ] @general make background for the level,
@@ -110,17 +97,26 @@
 - [ ] @gameplay [C] double jump?
 - [ ] @gameplay [C] reloading time after used 3 lances?
 - [ ] @gameplay [C] slow down character who carry something,
+
   > should we slow down the crown carrier?
+
 - [ ] @gameplay [C] dodging system?
-  > every 3 seconds
-  > **Not sure that it is useful**
+
+  > every 3 seconds **Not sure that it is useful**
+
 - [ ] @gameplay [C] boxes/blocks system: character could move blocks on the map to activate switch (basic puzzle system)
+
 - [ ] @gameplay [C] Usable/throwable object system (use the LanceManager, make it an ItemManager)
+
 - [ ] @gameplay [C] Modifier Object system (transient/constant?)
 - [ ] @gameplay [C] lance locking system ?
+
   > useful for puzzles where we need to keep our lance on a switch
+
 - [ ] @gameplay [C] lance are locked when touched the other player,
+
   > why? what does that add to the gameplay?
+
 - [ ] @gameplay [C] do bridges with the Lances??
 
 ## Further Ideas
@@ -249,7 +245,51 @@ Règle de partie perdue (recommence leniveau) :
 
 # Changelog
 
+## up to 14/04/2017:
+- [x] @gameplay improve the introduction to the control
 
+  - [x] if that is the first time you play, there should be a screen showing the controls
+  - [x] maybe before the start of a map, a tips and trick screen can give advises
+
+- [x] @screen add a screen "connect a controller" at the beginning if no controller detected
+
+
+- [x] @menu add level menu
+
+- [x] @menu make a control menu
+
+- [x] @bug: the fire launchers have a weird behaviour in level 2:
+
+  > seems to be linked to the fact of being children of the moving platform 122 we made it a child of this platform so that the fire launcher will be not working when the platform 122 is not present. we will need to reconsider...
+
+  > In fact it was linked to the fact that the sensor was moving with the platform 122.
+
+- [x] @level make level 2
+
+  - [x] homogeneize the origin system (lance and platform are working the same now)
+  - [x] make platform data-driven
+  - [x] use/make ObjectType in Tiled map editor
+
+- [c] @ideally make a HTML5 version
+
+- [x] @ideally make a .exe version
+
+  > see: <https://github.com/libgdx/libgdx/wiki/Bundling-a-JRE>
+
+  > Ok, to build the desktop .jar, the artifact system of intelliJ does not work, We need to run 'gradlew desktop:dist' intelliJ command line (or the windows 10 command line) the build will then be foundable at desktop/build/libs/ run the jar with:
+
+  > `java -jar blabla.jar`
+
+  > then go to Ropegame folder and run **as an Administrator** :
+
+  > `java -jar packr.jar config_xxxx.json`
+
+  > Notes:
+
+  > - you can also run the bat file 'packthemall.bat', it will run all the config files (remember to run as an administrator).
+  > - **WARNING**: the windows32 application needs to be built with the win32 JRE.
+  > - don't work on the zip file of the builds
+  > - get the builds for mac, linux and windows there: <https://github.com/alexkasko/openjdk-unofficial-builds>
 
 ## up to 11/12/2016:
 
@@ -258,49 +298,60 @@ Règle de partie perdue (recommence leniveau) :
 - [x] @sounds Voice for announcements is mandatory
 
 - [c] @cancelled @bug we cannot jump just after we passed through a oneway platform
-  > it seems to happen only when the movestate passes from RISING to IDLE
-  > seems to be TOO rarely reproducible to be unbugged...
-  > that behaviour comes from the line of codes:
-  > ```if (character.moveState == Constants.MOVE_STATE.GROUNDED | character.moveState == MOVE_STATE.IDLE) { // here we want the state.
-  >              if(character.previousMoveState == Constants.MOVE_STATE.RISING)
-  >                  return;
-  >```
-  > We probably used this to avoid an undesirable behavior... probably, we wanted to avoid continuous jump throught several attached lances.
 
+  > it seems to happen only when the movestate passes from RISING to IDLE seems to be TOO rarely reproducible to be unbugged... that behaviour comes from the line of codes: ```if (character.moveState == Constants.MOVE_STATE.GROUNDED | character.moveState == MOVE_STATE.IDLE) { // here we want the state.
+
+  > ```
+  >          if(character.previousMoveState == Constants.MOVE_STATE.RISING)
+  >              return;
+  > ```
+
+  > ``` We probably used this to avoid an undesirable behavior... probably, we wanted to avoid continuous jump throught several attached lances.
 
 - [x] @bug repeat laugh sometimes after death, never stop until respawn
-  > this happens then the corpse is still moving after death, it stops whenever the corpse stops to move, or respawn
-  > in fact it was happening each time a corpse was passing through a lance. So if the corpse was blocked on a lance, that was creating the bug.
+
+  > this happens then the corpse is still moving after death, it stops whenever the corpse stops to move, or respawn in fact it was happening each time a corpse was passing through a lance. So if the corpse was blocked on a lance, that was creating the bug.
 
 - [x] @level @gameplay try to do one way (single ticket) platforms,
+
   - [x] we can make a platform oneway in the type_object file,
   - [x] improve the oneway detection:
-  > before we check whether body.getPosition().y + 0.1 was under the detected collision. If yes, the body could pass.
-  > this was not working when a platform was slighty upper than 2 blocks and the player tried to jump without moving
-  > we know test body.getWorldCenter().y against the dectected collision
+
+    > before we check whether body.getPosition().y + 0.1 was under the detected collision. If yes, the body could pass. this was not working when a platform was slighty upper than 2 blocks and the player tried to jump without moving we know test body.getWorldCenter().y against the dectected collision
+
   - [x] debug oneway detection:
-  > it was taking the last touch fixtures from the list to test if one object was under the platform.
-  > But sometimes the last touched fixture did not correspond to the object!
-  > For instance, when aiming downard, the last fixture became the aiming box for the platform,
-  > so that, when we test whether the character can pass, the engine was testing the position of the aiming box instead of the position of the character
+
+    > it was taking the last touch fixtures from the list to test if one object was under the platform. But sometimes the last touched fixture did not correspond to the object! For instance, when aiming downard, the last fixture became the aiming box for the platform, so that, when we test whether the character can pass, the engine was testing the position of the aiming box instead of the position of the character
+
   - [x] make ability to pass through the platform if press downward.
+
 - [x] @level @general the physical size of platform should be independent from the texture size (the character does not touch the wood platforms)
+
 - [x] @bug when there is a draw, the second best has his columns going up. It should not.
-- [x] @bug when using the throwing power, people can get *out of the level* and they can't play anymore.
+
+- [x] @bug when using the throwing power, people can get _out of the level_ and they can't play anymore.
 
 - [x] @sound @gameplay add tick-tock of the clock when 10 second lefts
+
   > we actually got a music :)
+
 - [x] @sound increase the volume of switches
+
 - [x] @sound change the sound of switches/traps activation to a little music (three notes)
+
 - [x] @sound remove the 'tich' when character changes direction, put it for when the character get to the ground instead
 - [x] @menu change button for going to next round to start
 
 ## 20/11/2016:
 
 - [ ] @bug controller don't work after fullscreen:
+
   > can't be solved
+
 - [x] bug with throwing object: need to setActivate(true) when throwing ^^ probably cause of an update of libGDX
+
 - [x] bug stackoverflow: when two lance collide and then we use on of the lance, we got a stackoverflow because they are both children of each other and start making recursive call to goToActivation.
+
 - [x] improvement: remove the children from the current parent when we used setParent(null)
 - [ ] lance goes to deactivation now when colliding with an other lance
 
@@ -309,16 +360,19 @@ Règle de partie perdue (recommence leniveau) :
 - [x] **[A]** @bug there are still bug when getting hurt/dead while carrying a character!!
 - [x] **[A]** Lance Burning Sound @general
 - [x] **[A]** make announcement texts (on GUI), with an anouncement sounds. @general
+
   - [x] when people kills
   - [x] when people take the crown
   - [x] when people make a long term OK
   - [x] when people become Gold
   - [x] when people are weak
+
 - [x] **[A]** the bug of the flying prabbit @bug
+
   > Atanaska succeeded to replicate it; the prabbit's jump works as a jetpack. We thought we handle that problem. Not well enough apparently!
-  - [x] I improve the matter a bit, when a Lance disappear under the feet of a prabit, the bug appeared: I simply flush the contact data of the lance when it is recalled.
-  - [x] However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears.
-  > that is weird because I am flushing the pick too, and I even tried to add flushing each time the lance changes of state, but nothing seems to resolve this bug.
+
+  > - [x] I improve the matter a bit, when a Lance disappear under the feet of a prabit, the bug appeared: I simply flush the contact data of the lance when it is recalled.
+  > - [x] However, we still have the prblem of the flying prabit if the prabit is touching the pick of the lance and the lance disappears. that is weird because I am flushing the pick too, and I even tried to add flushing each time the lance changes of state, but nothing seems to resolve this bug.
 
   > --> the bug was cause by a mainBoxContact.flush(); at the end of Lance::update()
 
@@ -336,7 +390,9 @@ Règle de partie perdue (recommence leniveau) :
 - [x] **[A]** player with crown can not attack (except slaps)
 
 - [x] **[A]** the lance should deactivate the launcher
+
 - [x] quick fix: we desactivate the body of fireball when they gotoDeactivation, so that the characters can walk into explosion.
+
 - [x] quick fix: we gotoDeactivation on Death (life < 0 ) and not on Collision, somehow, the collision does not alway works, so as least, it would die on a second Collision.
 
 - [x] **[A]** Animations:
@@ -360,8 +416,8 @@ Règle de partie perdue (recommence leniveau) :
     > - if a character passes the threshold at which he will win even without the crown, he get a golden glare.
     > - note that the actual aura was made on the blue prabbit and it is quite pretty on the normal prabbits. The aura, when tried on the golden prabbit was quite creepy. So maybe we could use both aura:
 
-    >   * When winning: simple aura, keeping the color of the prabbit
-    >   * When winning and special conditions: Golden Prabbits.
+    >   - When winning: simple aura, keeping the color of the prabbit
+    >   - When winning and special conditions: Golden Prabbits.
 
     - [x] the yellow skin should be only used for the Golden Prabbit
     - [x] add a layer in character class to add effects (here it will be a golden aura)
@@ -398,8 +454,11 @@ Règle de partie perdue (recommence leniveau) :
   - [x] create a sounds importer/selector script
 
 - [x] correct bug: the last throwed character stayed in the handContact after being throwed (so that we could teleport him to us by pressing the picking up button)
+
 - [x] improve slap sensor, so that it is the handContact and not the lanceSensor that decide whether an oppenent is reachable
+
 - [x] improve animation of the throwing, using interpolation :D
+
 - [x] improve the lance sensor, so that the minimum distance where we can throw a lance while facing an object make the lance attach to that object (was passing through before)
 - [x] Decrease the thickness of the lance pick to allow it to pass in narrow paths
 - [x] **[A]** deactivate lances when the platform supporting them disappears.
@@ -417,7 +476,9 @@ Règle de partie perdue (recommence leniveau) :
   > - I think that it is actually better to flush in the respawn function!!
 
 - [x] add fireball explosion sound
+
 - [x] change immunity system and make it simpler so that it is easier to play a sound when injured
+
 - [x] add a registration for kills
 
   > that is the change in the damage system that allows it. we have a chain that goes from projectiles to launchers to character to player
@@ -441,8 +502,11 @@ Règle de partie perdue (recommence leniveau) :
 - [x] Lances were making damage even in platform mode and after death +bug
 
 - [x] Lance were giving twice their given damage
+
 - [x] gotoState() instead of several functions in AttackManager
+
 - [x] lance starting point need to be centered on the arrow
+
 - [x] use the same rotation origin system for moving platform and aiming arrow
 
   > there is an origin problem: can't rotate a body on something else than the left-bottom corner of the GameObject/Texture

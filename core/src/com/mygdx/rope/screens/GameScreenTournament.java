@@ -247,6 +247,9 @@ public class GameScreenTournament implements Screen {
                 }
             }
         }
+        // now that all the parent relationship are created it is a good time to reset all the swicth/platform
+        // for that they spread their default state to their children
+        trapFactory.resetHubs();
 
 
         // the coins need the factory and its list of Hubs:
@@ -597,7 +600,7 @@ public class GameScreenTournament implements Screen {
             if (Gdx.input.isKeyPressed(Keys.END)) cameraHelper.setZoom(1);
             if (Gdx.input.isKeyPressed(Keys.ENTER)) cameraHelper.setTarget(cameraHelper.hasTarget() ? null : cameraTarget);
             if (Gdx.input.isKeyJustPressed(Keys.R)) startNewLevel(listLevels.get(currentLevel));
-            //if (Gdx.input.isKeyPressed(Keys.F)) enableFullScreen();
+            // if (Gdx.input.isKeyPressed(Keys.F)) game.toggleFullScreen(); // WARNING: A bug in libgdx makes the game loses the controller after passing in fullscreen
             if (Gdx.input.isKeyPressed(Keys.P)) stateGame = (stateGame == GAME_STATE.PAUSED)?GAME_STATE.PLAYED : GAME_STATE.PAUSED;
             if (Gdx.input.isKeyPressed(Keys.T)) this.timer -= 10;
             if (Gdx.input.isKeyJustPressed(Keys.B)) this.isDebugMode = !isDebugMode;

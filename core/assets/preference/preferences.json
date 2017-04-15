@@ -1,30 +1,32 @@
 {
 	"nb_players": 4,
 	"sound_volume": 100,
+    "full_screen": true,
+    "resolution": [1920, 1080],
 	"players": [
 		{
-          "name": "TheHunter",
+          "name": "Purple",
           "color": "purple",
           "input": "controller",
           "id_input": 1
 		},
       {
-          "name": "TheRedWizard",
+          "name": "Red",
           "color": "red",
-          "input": "controller",
-          "id_input": 2
-      },
-      {
-          "name": "TheKingSlayer",
-          "color": "blue",
           "input": "controller",
           "id_input": 3
       },
       {
-          "name": "MyClone",
-          "color": "green",
+          "name": "Blue",
+          "color": "blue",
           "input": "controller",
           "id_input": 4
+      },
+      {
+          "name": "Green",
+          "color": "green",
+          "input": "controller",
+          "id_input": 2
       }
 	]
 }

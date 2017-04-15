@@ -97,8 +97,12 @@ public class InputProfileKeyboard implements InputProfile, InputProcessor {
 
     @Override
     public boolean getButtonState(String name) {
-        if (name.equals("Attack1")) // that's really dirty bu in the same time, who would change the attack button?
+        if (name.equals("LongAttack1")) // that's really dirty bu in the same time, who would change the attack button?
             return Gdx.input.isButtonPressed(0);
+        if (name.equals("ShortAttack"))
+            return Gdx.input.isButtonPressed(1);
+        if (name.equals("PickUp"))
+            return Gdx.input.isButtonPressed(2);
         Integer keycode = context.getButtonCode(name);
         if (keycode != null) {
             return Gdx.input.isKeyPressed(keycode);

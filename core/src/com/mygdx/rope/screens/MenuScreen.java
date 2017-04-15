@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.BooleanArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.rope.RopeGame;
 import com.mygdx.rope.util.Constants;
+import com.mygdx.rope.util.InputHandler.InputProfile;
+import com.mygdx.rope.util.InputHandler.InputProfileKeyboard;
 
 /**
  * Created by Geoffrey on 06/09/2015.
@@ -21,7 +23,7 @@ public class MenuScreen implements Screen {
     private final SpriteBatch batch;
     private FitViewport viewport;
     private OrthographicCamera camera;
-    private MainMenuWindow mainMenuWindow;
+    private DefaultWindow mainMenuWindow;
     private BitmapFont font;
 
     public MenuScreen(RopeGame game){
@@ -39,8 +41,14 @@ public class MenuScreen implements Screen {
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         font = new BitmapFont(Gdx.files.internal("fonts/try64x64.fnt"), false);
         font.getData().setScale(0.90f);
-        mainMenuWindow = new MainMenuWindow(this, batch, viewport, font);
-        mainMenuWindow.openWindow(game.getInputProfiles().getValueAt(0), (Window) null);
+        if (game.getInputProfiles().size < 1){
+            InputProfile tempProf = new InputProfileKeyboard(Gdx.files.internal("preference/profileKeyboard.xml"), camera);
+            mainMenuWindow = new PleaseConnectWindow(this, batch, viewport, font);
+            mainMenuWindow.openWindow(tempProf, (Window) null);
+        } else {
+            mainMenuWindow = new MainMenuWindow(this, batch, viewport, font);
+            mainMenuWindow.openWindow(game.getInputProfiles().getValueAt(0), (Window) null);
+        }
     }
     public void startTournament() {
         game.startTournament();

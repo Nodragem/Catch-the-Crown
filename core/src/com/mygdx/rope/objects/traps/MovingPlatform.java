@@ -1,11 +1,8 @@
 package com.mygdx.rope.objects.traps;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.CircleMapObject;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
@@ -13,7 +10,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.rope.objects.GameObject;
@@ -34,7 +30,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     private float angularSpeed;
     private float correctionRadius;
     private float correctionAngle;
-    private boolean defaultON;
+    private boolean isActiveByDefault;
     private boolean stopped;
     private float waitingTime;
     private boolean platformAlwaysVisible;
@@ -44,7 +40,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
     private int blockFlag;
 
     public MovingPlatform(GameScreenTournament game, Vector2 position, Vector2 dimension, float angle, MapObject path,
-                          float angularSpeed, float waitingTime, boolean defaultON, boolean looping, boolean alwaysVisible,
+                          float angularSpeed, float waitingTime, boolean isActiveByDefault, boolean looping, boolean alwaysVisible,
                           String objectDataID) {
         // FIXME: 2 - should we put the data from TiledMap into a json / hashmap?
         super(game, position, dimension, angle, objectDataID);
@@ -52,7 +48,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
         mainBoxContact = new ContactData(10, this.body.getFixtureList().get(mainFixtureIndex)); // note that it is not linked to any fixture
 //        initCollisionMask();
         this.platformAlwaysVisible = alwaysVisible;
-        this.defaultON = defaultON;
+        this.isActiveByDefault = isActiveByDefault;
         this.waitingTime = waitingTime;
         this.looping = looping;
         body.getFixtureList().get(0).setFriction(1.0f);
@@ -200,16 +196,22 @@ public class MovingPlatform extends GameObject implements Triggerable {
 
     @Override
     public void reset() {
-        stopPlatform(!defaultON);
-        if (!platformAlwaysVisible)
-            setActivate(defaultON);
+        stopPlatform(!isActiveByDefault);
+        if (!platformAlwaysVisible){
+            if (isActiveByDefault)
+                goToActivation();
+            else
+                goToDesactivation();
+        }
+//            setActivate(isActiveByDefault);
         else
-            setActivate(true);
+            goToActivation();
+//            setActivate(true);
     }
 
     @Override
     public boolean isActiveByDefault() {
-        return defaultON;
+        return isActiveByDefault;
     }
 
     @Override

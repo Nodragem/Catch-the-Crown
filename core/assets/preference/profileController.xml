@@ -54,6 +54,14 @@ AXIS_RIGHT_TRIGGER = 4; //value 0 to -1f
 				<state name="Start">
 					<key code="7" />
 				</state>
+
+				<state name="Previous">
+					<key code="4" />
+				</state>
+
+				<state name="Next">
+					<key code="5" />
+				</state>
 				
 			</states>
 		</context>

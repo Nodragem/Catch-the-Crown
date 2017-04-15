@@ -7,5 +7,5 @@
     ],
     "mainclass": "com.mygdx.rope.desktop.DesktopLauncher",
     "minimizejre": "hard",
-    "output": ".\\out\\out_linux32"
+    "output": ".\\out\\catchthecrown_linux32"
 }

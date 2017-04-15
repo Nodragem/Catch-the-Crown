@@ -98,7 +98,7 @@ public class TrapFactory {
                     rotation = rectangleObj.getProperties().get("rotation", 0f, Float.class); // degree
                     int weight = Integer.parseInt(rectangleObj.getProperties().get("weight", String.class)); // all custom properties are strings in TileMap Editor
                     objectDataID = rectangleObj.getProperties().get("Subtype", "0", String.class);
-                    boolean isEnabledByDefault = rectangleObj.getProperties().get("isEnabledByDefault", true, Boolean.class);
+                    boolean isEnabledByDefault = Boolean.parseBoolean(rectangleObj.getProperties().get("isEnabledByDefault", "true", String.class));
 
                     JsonValue objectInfo = null;
                     if (objectDataID != null && gameScreen.getObjectDataBase().has(objectDataID))
@@ -207,4 +207,9 @@ public class TrapFactory {
     }
 
 
+    public void resetHubs() {
+        for (ObjectMap.Entry<String, HubInterface> hub : listHubs) {
+            hub.value.resetTriggerables();
+        }
+    }
 }

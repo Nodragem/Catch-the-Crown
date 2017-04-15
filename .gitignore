@@ -6,10 +6,12 @@
 hs_err_pid*
 
 ## Asset
-divers/*.csv
-divers/*.ods
-divers/backup_img
-divers/screen_shots
+notes/*.csv
+notes/*.ods
+notes/backup_img
+notes/backup_asset
+notes/screen_shots
+out
 *.uxf
 *.mdj
 *.kra
