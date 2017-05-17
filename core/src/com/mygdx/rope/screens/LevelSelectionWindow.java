@@ -17,7 +17,7 @@ import com.mygdx.rope.util.Constants;
 public class LevelSelectionWindow extends DefaultWindow {
 
     private final MenuScreen menuScreen;
-    private BooleanArray levelBlocked;
+    private BooleanArray levelUnblocked;
     private BooleanArray levelSelected;
     private boolean isRandom;
     private Game game;
@@ -29,15 +29,23 @@ public class LevelSelectionWindow extends DefaultWindow {
         JsonReader reader = new JsonReader();
         JsonValue levelInfo = reader.parse(Gdx.files.internal(Constants.TOURNAMENT_LEVEL_PATH + "/Levels.json") );
         listLevels = new Array<String>(levelInfo.get("levels").asStringArray());
-        levelBlocked = new BooleanArray(levelInfo.get("unblocked").asBooleanArray());
+        levelUnblocked = new BooleanArray(levelInfo.get("unblocked").asBooleanArray());
         levelSelected = new BooleanArray(levelInfo.get("selected").asBooleanArray());
+        for (int i = levelUnblocked.size-1; i >=0; i--) {
+            if (levelUnblocked.get(i) == false){
+                listLevels.removeIndex(i);
+                // we need levelSelected to keep the same size as unblocked, for updateLevelSelection()
+                levelSelected.set(i, false);
+            }
+
+        }
         isRandom = levelInfo.get("random").asBoolean();
         setListActions(listLevels);
         addActionToList("--");
         addActionToList("-- Random Order --");
         addActionToList("-- Start Tournament --");
         addActionToList("- Back to Menu -");
-        for (int i = 0; i < levelSelected.size; i++) {
+        for (int i = 0; i < listLevels.size; i++) {
             toggled.set(i, levelSelected.get(i));
         }
         toggled.set(levelSelected.size + 1, isRandom);

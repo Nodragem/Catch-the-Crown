@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Array;
@@ -66,6 +67,8 @@ public class DefaultWindow implements Window {
     public Vector2 posMessage;
     private float cursor_offset;
     protected boolean isYAxisSelection;
+    public Array <String> additionalTexts = null;
+    public Array <Vector3> posAddTexts = null;
 
     public DefaultWindow(SpriteBatch batch, Viewport viewport, BitmapFont font) {
         isYAxisSelection = true;
@@ -287,9 +290,18 @@ public class DefaultWindow implements Window {
                     winTopLeft.y - ymargin - cumulatedTextHeight.get(i) ); // y goes down
 
         }
+
         gLayout.setText(font, messageText);
         font.draw(batch, gLayout, posMessage.x, posMessage.y); // 110 if the border size
+        if (additionalTexts != null & posAddTexts!=null) {
+            for (int i = 0; i < additionalTexts.size; i++) {
+                font.getData().setScale(posAddTexts.get(i).z);
+                gLayout.setText(font, additionalTexts.get(i));
+                font.draw(batch, gLayout, posAddTexts.get(i).x, posAddTexts.get(i).y); // 110 if the border size
+            }
+        }
         font.getData().markupEnabled = false;
+        font.getData().setScale(1f);
         for (DefaultWindow child:children) {
             child.render(delta);
         }

@@ -40,6 +40,7 @@ public class MenuScreen implements Screen {
         viewport = new FitViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT, camera);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         font = new BitmapFont(Gdx.files.internal("fonts/try64x64.fnt"), false);
+
         font.getData().setScale(0.90f);
         if (game.getInputProfiles().size < 1){
             InputProfile tempProf = new InputProfileKeyboard(Gdx.files.internal("preference/profileKeyboard.xml"), camera);
