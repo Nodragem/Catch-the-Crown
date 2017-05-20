@@ -87,7 +87,7 @@ public class MovingPlatform extends GameObject implements Triggerable {
         else if (path instanceof  PolylineMapObject ){
             PolylineMapObject polygonPath = (PolylineMapObject) path;
             Polyline polyline = polygonPath.getPolyline();
-            trajResolver = new TrajectoryPolygon(polyline, 1.0f);
+            trajResolver = new TrajectoryPolygon(polyline, 1.0f, this.body.getPosition());
             trajResolver.initCoolDown(waitingTime);
         }
         else if (path instanceof CircleMapObject){
@@ -179,7 +179,8 @@ public class MovingPlatform extends GameObject implements Triggerable {
                 body.setLinearVelocity(0f, 0f);
                 body.setAngularVelocity(0f);
             } else {
-                speed = trajResolver.getSpeedFrom(deltaTime, waitingTime, looping);
+                speed = trajResolver.getSpeedFrom(deltaTime, waitingTime, looping, this.body);
+                // FIXME:  now that we need to pass the body to the function, we could include the below actions in the function !
                 body.setLinearVelocity(speed);
                 body.setAngularVelocity(angularSpeed);
             }

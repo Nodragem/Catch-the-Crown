@@ -2,10 +2,21 @@
 
 ## Next Actions For release
 
-- [ ] write a blogpost
+
+- [x] write a blogpost
 
 
 ## Next Actions after release
+
+- [x] @bug moving platform does not compensate for frame drops, which sadly happends when we load a level!
+  > // we add a little hack to compensate for frame drop, 
+        // the best solution would be to not use a kynematic body? 
+        // or use target position that would send events to change the velocity of the kynematc body
+        // basically to be dependent on the speed and framerate is bad, because the physic is not dependent on the framerate.
+        
+- [x] @error "LWJGL Application" com.badlogic.gdx.utils.GdxRuntimeException: Couldn't load file: jungle_tiles.png
+
+- [ ] @bug/imrovement replace the distance/accumulation system for the moving platform with a position to position system (using a normed vector targeting the next points), so that we are sure that the platform passes by these points.
 
 - [ ] @improvement do the kill and death notification chain between objects
 

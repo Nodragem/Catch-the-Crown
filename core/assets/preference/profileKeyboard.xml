@@ -1,5 +1,15 @@
 <!--
 Default Profile for Keyboard
+131: ESCAPE
+62: SPACE
+129: CONTROL LEFT
+59: SHIFT_LEFT
+51: W
+47: S
+29: A
+32: D
+19: UP ARROW // up and down does not work on my config
+20: DOWM ARROW
 
 -->
 <InputProfile>
@@ -27,13 +37,19 @@ Default Profile for Keyboard
 				</state>
 
 				<state name="Back">
-					<key code="1" />
+					<key code="131" />
 				</state>
 
 				<state name="Start">
-					<key code="40" />
+					<key code="62" />
+				</state>
+				<state name="Previous">
+					<key code="19" />
 				</state>
 
+				<state name="Next">
+					<key code="20" />
+				</state>
 			</states>
 		</context>
 
@@ -57,6 +73,10 @@ Default Profile for Keyboard
 
 				<state name="PickUp">
 					<key code="59" />
+				</state>
+
+				<state name="Start">
+				<key code="131" />
 				</state>
 			</states>
 		</context>

@@ -45,11 +45,14 @@ public class Coins extends GameObject implements Triggerable {
     final static JsonValue collectableInfo = new JsonReader().parse(Gdx.files.internal("object_types.json")).get("collectable_type");
     static ArrayMap<String, Animation> animOfCollectables;
     private Vector2 positionCache;
+    private float crownGoldRate;
 
 
     // we may want it to be compatible with the trap system
     public Coins(GameScreenTournament game, Vector2 position, TiledMapTileLayer collectableMap, ArrayMap<String, HubInterface> HubList) {
         super(game, position, new Vector2(0.5f,0.5f));
+        JsonValue pref = new JsonReader().parse(Gdx.files.internal("preference/preferences.json"));
+        crownGoldRate = pref.getFloat("crown_rate", Constants.CROWNGOLDRATE);
         currentDestination = null;
         activationAllowed = false;
         coinsRespawnTime = Constants.COINSTIME;
@@ -205,7 +208,7 @@ public class Coins extends GameObject implements Triggerable {
     public void distributeGold(float gold){
         Sound coinSound = gamescreen.assetManager.getRandom("coin");
         coinSound.play(0.5f);
-        linkedCrown.addGoldValue(gold * Constants.CROWNGOLDRATE); // the part of gold which is not really to the player
+        linkedCrown.addGoldValue(gold * crownGoldRate); // the part of gold which is not really to the player
         characterWithCrown.getPlayer().addScore(gold); // we remove the extraScore when he drops it
     }
 

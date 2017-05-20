@@ -1,6 +1,7 @@
 package com.mygdx.rope.util.TrajectorySolver;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.rope.util.Constants;
 
 /**
@@ -19,7 +20,7 @@ public class MockTrajectory implements TrajectorySolver{
     }
 
     @Override
-    public Vector2 getSpeedFrom(float deltatime, float waitingTime, boolean looping)
+    public Vector2 getSpeedFrom(float deltatime, float waitingTime, boolean looping, Body body)
     {
         return Speed ;
     }

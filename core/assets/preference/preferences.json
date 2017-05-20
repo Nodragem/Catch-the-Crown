@@ -2,12 +2,15 @@
 	"nb_players": 4,
 	"sound_volume": 100,
     "full_screen": false,
-    "resolution": [1920, 1080],
+    "resolution": [1366, 768],
+    "nb_victory_to_win": 5,
+    "turn_duration": 3,
+    "crown_rate": 0.3333,
 	"players": [
 		{
           "name": "Purple",
           "color": "purple",
-          "input": "controller",
+          "input": "keyboard",
           "id_input": 1
 		},
       {

@@ -10,6 +10,7 @@ public class Constants {
 	public static final float VIEWPORT_GUI_HEIGHT = 1080.0f;
 	public static final float CROWNGOLDRATE = 0.333f;
     public static final float MARKPENALTY = 3f ;
+    public static final int NB_VICTORY = 3;
 
     public enum ANNOUNCEMENT {KO, LONG_TERM_KO, CROWN, GOLDEN_PRABBIT, TIMER_ALMOST_OFF, WEAK_PRABBIT, FIRSTCROWN, NONE,
     BURNING_KO, SLAP_KO}
@@ -32,7 +33,7 @@ public class Constants {
     public static final float RESPAWNTIME = 5.0f;
     public static final float SLAPDAMAGE = 8.4f;
     public static final float COINSTIME = - 20.0f;
-    public static final float STARTTIMER = 5*60;//2*60; //10*60; //2*60; // 2*60; // 2 minutes
+    public static final float STARTTIMER = 3*60;//2*60; //10*60; //2*60; // 2*60; // 2 minutes
 
 
     public static enum INPUTSTATE {MOVE_X, MOVE_Y, AIMING_X, AIMING_Y, ATTACK1, ATTACK2, JUMP, PICKUP}

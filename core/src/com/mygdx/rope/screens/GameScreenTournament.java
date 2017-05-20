@@ -45,6 +45,7 @@ import java.util.Iterator;
 
 public class GameScreenTournament implements Screen {
     private final RopeGame game;
+    private final float turnDuration;
     private TiledMap map;
     private ArrayMap <String, Player> playersList;
     public int ipauser = 0; // the player who pressed the pause button and control the pause menu.
@@ -94,7 +95,9 @@ public class GameScreenTournament implements Screen {
         isDebugMode = false;
         this.game = ropeGame;
         batch = ropeGame.getBatch();
-        victoryThreshold = 2;
+        JsonValue pref = new JsonReader().parse(Gdx.files.internal("preference/preferences.json"));
+        victoryThreshold = pref.getInt("nb_victory_to_win", Constants.NB_VICTORY);
+        turnDuration = pref.getFloat("turn_duration", Constants.STARTTIMER);
         this.listLevels = ropeGame.getLevels();
         this.randomLevel = ropeGame.isRandomSelectionLevel();
         if (randomLevel)
@@ -138,7 +141,7 @@ public class GameScreenTournament implements Screen {
             musicTimer.stop();
 
         GUIlayer.setGUIstate(Constants.GUI_STATE.DISPLAY_GUI);
-        timer = Constants.STARTTIMER;
+        timer = turnDuration;
         objectsToRender = new Array<Renderable>();
         objectsToUpdate = new Array<Updatable>();
         objectsToWipeOut = new Array<Updatable>();
@@ -203,7 +206,7 @@ public class GameScreenTournament implements Screen {
     public void toNextLevel(){
         if (stateGame == GAME_STATE.TOURNAMENT_END){
             initScore();
-            this.currentLevel = 0;
+            this.currentLevel = 0; // why??
         }
         if (randomLevel)
             this.currentLevel = MathUtils.random(listLevels.size-1);

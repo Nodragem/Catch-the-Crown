@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import com.mygdx.rope.util.Constants;
@@ -26,9 +27,11 @@ public class TrajectoryPolygon implements TrajectorySolver {
     private float previousStop;
     public float nextStop;
     private float toNextStop;
+    private Vector2 last_position;
 
-    public TrajectoryPolygon(Polyline poly, float speed){
+    public TrajectoryPolygon(Polyline poly, float speed, Vector2 position){
         mySpeed = speed; // not really useful
+        last_position = position;
         platformState = Constants.PLATFORM_STATE.FINAL_STOP;
         currentSpeed = 0;
         previousSpeed = -speed; // because we start at an extremity of the path and
@@ -50,8 +53,14 @@ public class TrajectoryPolygon implements TrajectorySolver {
     }
 
     @Override
-    public Vector2 getSpeedFrom(float deltaTime, float waitingTime, boolean looping) {
-
+    public Vector2 getSpeedFrom(float deltaTime, float waitingTime, boolean looping, Body body) {
+        // we add a little hack to compensate for frame drop,
+        if (deltaTime > 0.05)
+        {
+            body.setTransform(last_position, 0f);
+            return new Vector2(0, 0);
+        }
+        last_position = body.getPosition();
         //Gdx.app.debug("Solver", "current distance: "+current_distance+", total distance:"+total_distance);
         switch(platformState){
             case MOVING:
@@ -60,7 +69,7 @@ public class TrajectoryPolygon implements TrajectorySolver {
                 // (it means that the current displacement would pass over the stop position),
                 // we stop the object, pin it to the stop position and update the stop flag:
                 toNextStop = Math.abs(current_distance - nextStop);
-                if(toNextStop <= Math.abs(deltaTime*currentSpeed) ) {
+                if(toNextStop <= Math.abs(deltaTime*currentSpeed) ) { // if we going to go over the target point
                     correctionSpeed = (nextStop - current_distance)/deltaTime;
                     platformState = Constants.PLATFORM_STATE.GOING_TO_STOP;
                     //initCoolDown(waitingTime);
@@ -163,7 +172,8 @@ public class TrajectoryPolygon implements TrajectorySolver {
     private void updateStops() {
         previousStop = nextStop;
         for (int i =0; i < cumulated_distances.size; i++){
-            if(current_distance+currentSpeed < cumulated_distances.get(i)) { // we simulate that the block has moved to avoid the problems we have with equality
+            if(current_distance+currentSpeed < cumulated_distances.get(i)) {
+                // we simulate that the block has moved to avoid the problems we have with equality
                 if (currentSpeed > 0) // if going forward
                     nextStop = cumulated_distances.get(i);
                 else if (currentSpeed < 0){ // if going backward

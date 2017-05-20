@@ -1,5 +1,7 @@
 # README #
 
+use gradlew first then
+
 To build the game, use the packr app. You can also use the batch file:
 
 ```
